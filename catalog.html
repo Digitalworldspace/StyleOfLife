@@ -7,8 +7,10 @@
 <link rel="stylesheet" href="assets/style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/config.js"></script>
+<script src="assets/themes.js"></script>
 <style>
   /* ---- catalog-only styles ---- */
+  .brand-logo-img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
   .hero {
     padding: 56px 28px 40px; border-bottom: 1px solid var(--line);
     background:
@@ -107,11 +109,11 @@
 <body>
 
 <header class="topbar">
-  <div class="brand">
-    <span class="brand-mark">B&amp;L</span>
+  <div class="brand" id="brandMarkWrap">
+    <span class="brand-mark" id="brandMark">B&amp;L</span>
     <div>
-      <div class="brand-name">Bolt &amp; Ledger</div>
-      <div class="brand-sub">Wholesale Textile Trading Co.</div>
+      <div class="brand-name" id="brandName">Bolt &amp; Ledger</div>
+      <div class="brand-sub" id="brandSub">Wholesale Textile Trading Co.</div>
     </div>
   </div>
   <div class="flex gap-12" style="align-items:center;">
@@ -126,8 +128,8 @@
 <section class="hero">
   <div class="container">
     <div class="eyebrow">Wholesale · MOQ per SKU · Trade accounts welcome</div>
-    <h1 class="display">Fabric and finished goods, sold by the roll and the lot.</h1>
-    <p class="lede">Browse the current mill run. Add items to a quote list and send us your requirements — a rep will reply with pricing, lead time, and sample availability within one business day.</p>
+    <h1 class="display" id="heroTitle">Fabric and finished goods, sold by the roll and the lot.</h1>
+    <p class="lede" id="heroLede">Browse the current mill run. Add items to a quote list and send us your requirements — a rep will reply with pricing, lead time, and sample availability within one business day.</p>
   </div>
 </section>
 
@@ -219,6 +221,31 @@ function toast(msg, type = '') {
   t.className = 'toast show ' + type;
   clearTimeout(t._timer);
   t._timer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ============================================================================
+   SITE SETTINGS (theme + branding)
+   ============================================================================ */
+async function loadSiteSettings() {
+  const { data, error } = await supabaseClient.from('site_settings').select('*').eq('id', 1).maybeSingle();
+  if (error || !data) { applyTheme('indigo-mill'); return; }
+
+  applyTheme(data.theme_id || 'indigo-mill');
+  document.title = `${data.brand_name} — Wholesale Textile Catalog`;
+  document.getElementById('brandName').textContent = data.brand_name;
+  document.getElementById('brandSub').textContent = data.brand_sub;
+  document.getElementById('heroTitle').textContent = data.hero_title;
+  document.getElementById('heroLede').textContent = data.hero_lede;
+
+  if (data.logo_url) {
+    const wrap = document.getElementById('brandMarkWrap');
+    const initials = document.getElementById('brandMark');
+    const img = document.createElement('img');
+    img.src = data.logo_url;
+    img.alt = data.brand_name;
+    img.className = 'brand-logo-img';
+    initials.replaceWith(img);
+  }
 }
 
 /* ============================================================================
@@ -628,6 +655,7 @@ function escapeHtml(str) {
    INIT
    ============================================================================ */
 (async function init() {
+  await loadSiteSettings();
   await refreshSession();
   await Promise.all([loadCategories(), loadProducts()]);
   renderCart();
