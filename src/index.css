@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Marcellus&family=Work+Sans:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #FAF5EC;
+  color: #2B2320;
+  scroll-behavior: smooth;
+}
+
+body { font-family: 'Work Sans', sans-serif; }
+
+::selection { background: #D9B978; color: #2B2320; }
+
+.woven-edge {
+  background-image: repeating-linear-gradient(135deg, #B3862C 0px, #B3862C 6px, transparent 6px, transparent 12px);
+  height: 3px;
+  opacity: 0.55;
+}
+
+.woven-edge-dense {
+  background-image: repeating-linear-gradient(135deg, #6E1E2E 0px, #6E1E2E 4px, #B3862C 4px, #B3862C 8px);
+  height: 4px;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fade-up 0.4s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up { animation: none; }
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #FAF5EC; }
+::-webkit-scrollbar-thumb { background: #D9B978; border-radius: 6px; }
+
+.focus-ring:focus-visible { outline: 2px solid #6E1E2E; outline-offset: 2px; }
