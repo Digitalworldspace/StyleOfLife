@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bolt & Ledger — Admin</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js"></script>
+<style>
+  body { background: var(--paper); }
+  .app { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 220px; background: var(--ink); color: var(--muslin);
+    display: flex; flex-direction: column; flex-shrink: 0;
+  }
+  .sidebar .brand { padding: 22px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .sidebar .brand-name { color: var(--muslin); }
+  .sidebar .brand-sub { color: rgba(237,232,222,0.55); }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 13px 20px;
+    color: rgba(237,232,222,0.7); cursor: pointer; font-size: 14px; border-left: 3px solid transparent;
+  }
+  .nav-item:hover { color: var(--muslin); background: rgba(255,255,255,0.04); }
+  .nav-item.active { color: var(--muslin); border-left-color: var(--ochre); background: rgba(255,255,255,0.06); }
+  .nav-count {
+    margin-left: auto; font-family: var(--font-mono); font-size: 10.5px;
+    background: rgba(255,255,255,0.12); padding: 1px 7px; border-radius: 20px;
+  }
+  .sidebar-foot { margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .main { flex: 1; min-width: 0; }
+  .page-header {
+    padding: 22px 30px; border-bottom: 1px solid var(--line); display: flex;
+    justify-content: space-between; align-items: center; background: var(--paper);
+    position: sticky; top: 0; z-index: 20;
+  }
+  .page-body { padding: 26px 30px 60px; }
+
+  .login-wrap {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: var(--muslin);
+  }
+  .login-card { width: 380px; padding: 34px; }
+
+  .toolrow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 12px; flex-wrap: wrap; }
+  .thumb { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: var(--indigo-tint); }
+
+  .img-uploader {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;
+  }
+  .img-slot {
+    width: 76px; height: 76px; border-radius: 4px; overflow: hidden; position: relative;
+    border: 1px solid var(--line); background: var(--indigo-tint);
+  }
+  .img-slot img { width: 100%; height: 100%; object-fit: cover; }
+  .img-slot .rm {
+    position: absolute; top: 2px; right: 2px; background: rgba(35,34,32,0.7); color: white;
+    border: none; width: 18px; height: 18px; border-radius: 50%; font-size: 11px; cursor: pointer;
+  }
+  .img-add {
+    width: 76px; height: 76px; border-radius: 4px; border: 1.5px dashed var(--line);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-soft);
+    font-size: 22px;
+  }
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-wrap">
+  <div class="card login-card">
+    <div class="brand" style="margin-bottom:22px;">
+      <span class="brand-mark">B&amp;L</span>
+      <div><div class="brand-name">Bolt &amp; Ledger</div><div class="brand-sub">Admin Panel</div></div>
+    </div>
+    <form id="loginForm">
+      <div class="field"><label>Email</label><input type="email" required id="li_email"></div>
+      <div class="field"><label>Password</label><input type="password" required id="li_password"></div>
+      <button class="btn btn-primary btn-block" type="submit" id="li_submit">Log In</button>
+      <p class="text-sm text-soft" id="li_error" style="margin-top:10px; display:none; color:var(--thread-red);"></p>
+    </form>
+  </div>
+</div>
+
+<div class="app" id="app" style="display:none;">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">B&amp;L</span>
+      <div><div class="brand-name">Bolt &amp; Ledger</div><div class="brand-sub">Admin Panel</div></div>
+    </div>
+    <nav style="padding-top:10px;">
+      <div class="nav-item active" data-tab="products">Products</div>
+      <div class="nav-item" data-tab="inquiries">Inquiries <span class="nav-count" id="countInquiries">0</span></div>
+      <div class="nav-item" data-tab="companies">B2B Accounts <span class="nav-count" id="countCompanies">0</span></div>
+      <div class="nav-item" data-tab="categories">Categories</div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="text-sm" id="adminEmail" style="color:rgba(237,232,222,0.6); margin-bottom:10px;"></div>
+      <button class="btn btn-outline btn-sm btn-block" id="logoutBtn" style="border-color:rgba(237,232,222,0.4); color:var(--muslin);">Log Out</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="page-header">
+      <h2 class="display" id="pageTitle" style="font-size:22px;">Products</h2>
+      <button class="btn btn-primary" id="pageAction">+ New Product</button>
+    </div>
+    <div class="page-body" id="pageBody"></div>
+  </div>
+</div>
+
+<!-- PRODUCT FORM MODAL -->
+<div class="overlay" id="productOverlay"></div>
+<div class="modal" id="productModal" style="max-width:620px;">
+  <div style="padding:26px;">
+    <div class="flex-between" style="margin-bottom:16px;">
+      <h3 class="display" id="productModalTitle" style="font-size:19px;">New Product</h3>
+      <button class="btn-ghost btn" id="productCloseBtn" style="padding:4px 8px;">✕</button>
+    </div>
+    <form id="productForm">
+      <input type="hidden" id="pf_id">
+      <div class="field-row">
+        <div class="field"><label>SKU *</label><input required id="pf_sku"></div>
+        <div class="field"><label>Category</label><select id="pf_category"></select></div>
+      </div>
+      <div class="field"><label>Name *</label><input required id="pf_name"></div>
+      <div class="field"><label>Description</label><textarea id="pf_description"></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Composition</label><input id="pf_composition" placeholder="60% Cotton, 40% Linen"></div>
+        <div class="field"><label>Colorways (comma separated)</label><input id="pf_colorways" placeholder="Indigo, Rust, Bone"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Weight (gsm)</label><input type="number" id="pf_weight"></div>
+        <div class="field"><label>Width (cm)</label><input type="number" id="pf_width"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Unit</label>
+          <select id="pf_unit"><option value="meter">meter</option><option value="yard">yard</option><option value="piece">piece</option><option value="dozen">dozen</option></select>
+        </div>
+        <div class="field"><label>MOQ *</label><input type="number" required id="pf_moq" value="1"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Base price (blank = quote on request)</label><input type="number" step="0.01" id="pf_price"></div>
+        <div class="field"><label>Status</label>
+          <select id="pf_status"><option value="active">Active</option><option value="draft">Draft</option><option value="discontinued">Discontinued</option></select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Images</label>
+        <div class="img-uploader" id="pf_images">
+          <label class="img-add">+<input type="file" id="pf_imageInput" accept="image/*" multiple style="display:none;"></label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="pf_submit" style="margin-top:8px;">Save Product</button>
+    </form>
+  </div>
+</div>
+
+<!-- INQUIRY DETAIL MODAL -->
+<div class="overlay" id="inquiryOverlay"></div>
+<div class="modal" id="inquiryModal" style="max-width:560px;"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================================
+   STATE
+   ============================================================================ */
+let CATEGORIES = [];
+let PRODUCTS = [];
+let INQUIRIES = [];
+let COMPANIES = [];
+let PENDING_IMAGES = [];   // [{url, is_primary}] for the product form in progress
+let ACTIVE_TAB = 'products';
+
+function toast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function showOverlayModal(o, m) { document.getElementById(o).classList.add('show'); document.getElementById(m).classList.add('show'); }
+function hideOverlayModal(o, m) { document.getElementById(o).classList.remove('show'); document.getElementById(m).classList.remove('show'); }
+
+/* ============================================================================
+   AUTH
+   ============================================================================ */
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('li_submit');
+  const errEl = document.getElementById('li_error');
+  errEl.style.display = 'none';
+  btn.disabled = true; btn.textContent = 'Logging in…';
+  const email = document.getElementById('li_email').value.trim();
+  const password = document.getElementById('li_password').value;
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  btn.disabled = false; btn.textContent = 'Log In';
+  if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+
+  const { data: adminRow } = await supabaseClient.from('admins').select('id').eq('id', data.user.id).maybeSingle();
+  if (!adminRow) {
+    errEl.textContent = 'This account is not an admin. Ask an existing admin to add your user ID to the admins table.';
+    errEl.style.display = 'block';
+    await supabaseClient.auth.signOut();
+    return;
+  }
+  document.getElementById('adminEmail').textContent = data.user.email;
+  boot();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await supabaseClient.auth.signOut();
+  location.reload();
+});
+
+async function checkSession() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return false;
+  const { data: adminRow } = await supabaseClient.from('admins').select('id').eq('id', user.id).maybeSingle();
+  if (!adminRow) return false;
+  document.getElementById('adminEmail').textContent = user.email;
+  return true;
+}
+
+/* ============================================================================
+   TAB NAVIGATION
+   ============================================================================ */
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    ACTIVE_TAB = el.dataset.tab;
+    renderTab();
+  });
+});
+
+function renderTab() {
+  const titles = { products: 'Products', inquiries: 'Inquiries', companies: 'B2B Accounts', categories: 'Categories' };
+  document.getElementById('pageTitle').textContent = titles[ACTIVE_TAB];
+  const actionBtn = document.getElementById('pageAction');
+  actionBtn.style.display = (ACTIVE_TAB === 'products' || ACTIVE_TAB === 'categories') ? 'inline-flex' : 'none';
+  actionBtn.textContent = ACTIVE_TAB === 'products' ? '+ New Product' : '+ New Category';
+
+  if (ACTIVE_TAB === 'products') renderProductsTab();
+  if (ACTIVE_TAB === 'inquiries') renderInquiriesTab();
+  if (ACTIVE_TAB === 'companies') renderCompaniesTab();
+  if (ACTIVE_TAB === 'categories') renderCategoriesTab();
+}
+
+document.getElementById('pageAction').addEventListener('click', () => {
+  if (ACTIVE_TAB === 'products') openProductForm(null);
+  if (ACTIVE_TAB === 'categories') {
+    const name = prompt('Category name:');
+    if (!name) return;
+    const slug = name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    supabaseClient.from('categories').insert({ name, slug }).then(({ error }) => {
+      if (error) toast(error.message, 'error'); else { toast('Category added', 'success'); loadCategories().then(renderTab); }
+    });
+  }
+});
+
+/* ============================================================================
+   DATA LOADING
+   ============================================================================ */
+async function loadCategories() {
+  const { data, error } = await supabaseClient.from('categories').select('*').order('sort_order');
+  if (!error) CATEGORIES = data || [];
+}
+async function loadProducts() {
+  const { data, error } = await supabaseClient
+    .from('products').select('*, product_images(id, url, sort_order, is_primary)')
+    .order('created_at', { ascending: false });
+  if (!error) PRODUCTS = data || [];
+}
+async function loadInquiries() {
+  const { data, error } = await supabaseClient
+    .from('inquiries').select('*, inquiry_items(*)')
+    .order('created_at', { ascending: false });
+  if (!error) { INQUIRIES = data || []; document.getElementById('countInquiries').textContent = INQUIRIES.filter(i => i.status === 'new').length; }
+}
+async function loadCompanies() {
+  const { data, error } = await supabaseClient.from('companies').select('*').order('created_at', { ascending: false });
+  if (!error) { COMPANIES = data || []; document.getElementById('countCompanies').textContent = COMPANIES.filter(c => !c.approved).length; }
+}
+
+/* ============================================================================
+   PRODUCTS TAB
+   ============================================================================ */
+function renderProductsTab() {
+  const body = document.getElementById('pageBody');
+  if (!PRODUCTS.length) {
+    body.innerHTML = `<div class="card empty-state"><div class="display">No products yet</div><p>Click "New Product" to add your first SKU.</p></div>`;
+    return;
+  }
+  body.innerHTML = `<div class="card" style="overflow-x:auto;"><table>
+    <thead><tr><th></th><th>SKU</th><th>Name</th><th>Category</th><th>Price</th><th>MOQ</th><th>Status</th><th></th></tr></thead>
+    <tbody>${PRODUCTS.map(p => {
+      const img = (p.product_images || []).sort((a,b)=>(b.is_primary-a.is_primary))[0]?.url;
+      const cat = CATEGORIES.find(c => c.id === p.category_id)?.name || '—';
+      const statusTag = { active: 'tag-green', draft: 'tag-ochre', discontinued: 'tag-red' }[p.status];
+      return `<tr>
+        <td>${img ? `<img class="thumb" src="${img}">` : `<div class="thumb"></div>`}</td>
+        <td class="mono">${escapeHtml(p.sku)}</td>
+        <td>${escapeHtml(p.name)}</td>
+        <td>${escapeHtml(cat)}</td>
+        <td class="mono">${p.base_price ? '$' + Number(p.base_price).toFixed(2) : 'Quote'}</td>
+        <td>${p.moq}</td>
+        <td><span class="tag ${statusTag}">${p.status}</span></td>
+        <td><button class="btn btn-ghost btn-sm" data-edit="${p.id}">Edit</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+  body.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openProductForm(b.dataset.edit)));
+}
+
+function openProductForm(id) {
+  const p = id ? PRODUCTS.find(x => x.id === id) : null;
+  document.getElementById('productModalTitle').textContent = p ? 'Edit Product' : 'New Product';
+  document.getElementById('pf_id').value = p?.id || '';
+  document.getElementById('pf_sku').value = p?.sku || '';
+  document.getElementById('pf_name').value = p?.name || '';
+  document.getElementById('pf_description').value = p?.description || '';
+  document.getElementById('pf_composition').value = p?.composition || '';
+  document.getElementById('pf_colorways').value = (p?.colorways || []).join(', ');
+  document.getElementById('pf_weight').value = p?.weight_gsm || '';
+  document.getElementById('pf_width').value = p?.width_cm || '';
+  document.getElementById('pf_unit').value = p?.unit || 'meter';
+  document.getElementById('pf_moq').value = p?.moq || 1;
+  document.getElementById('pf_price').value = p?.base_price || '';
+  document.getElementById('pf_status').value = p?.status || 'active';
+
+  const catSelect = document.getElementById('pf_category');
+  catSelect.innerHTML = '<option value="">— None —</option>' + CATEGORIES.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+  catSelect.value = p?.category_id || '';
+
+  PENDING_IMAGES = (p?.product_images || []).slice().sort((a,b)=>a.sort_order-b.sort_order).map(i => ({ id: i.id, url: i.url, is_primary: i.is_primary }));
+  renderImageSlots();
+
+  showOverlayModal('productOverlay', 'productModal');
+}
+
+function renderImageSlots() {
+  const wrap = document.getElementById('pf_images');
+  const addSlot = `<label class="img-add">+<input type="file" id="pf_imageInput" accept="image/*" multiple style="display:none;"></label>`;
+  wrap.innerHTML = PENDING_IMAGES.map((img, idx) => `
+    <div class="img-slot">
+      <img src="${img.url}">
+      <button type="button" class="rm" data-rm="${idx}">✕</button>
+    </div>`).join('') + addSlot;
+  wrap.querySelectorAll('[data-rm]').forEach(b => b.addEventListener('click', () => {
+    PENDING_IMAGES.splice(Number(b.dataset.rm), 1); renderImageSlots();
+  }));
+  document.getElementById('pf_imageInput').addEventListener('change', handleImageUpload);
+}
+
+async function handleImageUpload(e) {
+  const files = Array.from(e.target.files || []);
+  for (const file of files) {
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
+    const { error } = await supabaseClient.storage.from('product-images').upload(path, file);
+    if (error) { toast(error.message, 'error'); continue; }
+    const { data: pub } = supabaseClient.storage.from('product-images').getPublicUrl(path);
+    PENDING_IMAGES.push({ url: pub.publicUrl, is_primary: PENDING_IMAGES.length === 0 });
+  }
+  renderImageSlots();
+}
+
+document.getElementById('productForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('pf_submit');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Saving…';
+
+  const id = document.getElementById('pf_id').value;
+  const colorways = document.getElementById('pf_colorways').value.split(',').map(s => s.trim()).filter(Boolean);
+  const payload = {
+    sku: document.getElementById('pf_sku').value.trim(),
+    name: document.getElementById('pf_name').value.trim(),
+    category_id: document.getElementById('pf_category').value || null,
+    description: document.getElementById('pf_description').value.trim(),
+    composition: document.getElementById('pf_composition').value.trim(),
+    colorways,
+    weight_gsm: document.getElementById('pf_weight').value || null,
+    width_cm: document.getElementById('pf_width').value || null,
+    unit: document.getElementById('pf_unit').value,
+    moq: Number(document.getElementById('pf_moq').value) || 1,
+    base_price: document.getElementById('pf_price').value || null,
+    status: document.getElementById('pf_status').value,
+    updated_at: new Date().toISOString(),
+  };
+
+  let productId = id;
+  if (id) {
+    const { error } = await supabaseClient.from('products').update(payload).eq('id', id);
+    if (error) { toast(error.message, 'error'); btn.disabled = false; btn.textContent = 'Save Product'; return; }
+  } else {
+    const { data, error } = await supabaseClient.from('products').insert(payload).select().single();
+    if (error) { toast(error.message, 'error'); btn.disabled = false; btn.textContent = 'Save Product'; return; }
+    productId = data.id;
+  }
+
+  // sync images: delete removed rows, insert new ones
+  const { data: existingImgs } = await supabaseClient.from('product_images').select('id').eq('product_id', productId);
+  const keepIds = PENDING_IMAGES.filter(i => i.id).map(i => i.id);
+  const toDelete = (existingImgs || []).filter(i => !keepIds.includes(i.id)).map(i => i.id);
+  if (toDelete.length) await supabaseClient.from('product_images').delete().in('id', toDelete);
+
+  const newImgs = PENDING_IMAGES.filter(i => !i.id).map((i, idx) => ({
+    product_id: productId, url: i.url, is_primary: i.is_primary, sort_order: idx,
+  }));
+  if (newImgs.length) await supabaseClient.from('product_images').insert(newImgs);
+
+  toast('Product saved', 'success');
+  btn.disabled = false; btn.textContent = 'Save Product';
+  hideOverlayModal('productOverlay', 'productModal');
+  await loadProducts();
+  renderTab();
+});
+
+document.getElementById('productCloseBtn').addEventListener('click', () => hideOverlayModal('productOverlay', 'productModal'));
+
+/* ============================================================================
+   INQUIRIES TAB
+   ============================================================================ */
+function renderInquiriesTab() {
+  const body = document.getElementById('pageBody');
+  if (!INQUIRIES.length) {
+    body.innerHTML = `<div class="card empty-state"><div class="display">No inquiries yet</div><p>Quote requests submitted from the catalog will appear here.</p></div>`;
+    return;
+  }
+  const statusTag = { new: 'tag-ochre', reviewed: 'tag-indigo', quoted: 'tag-green', closed: 'tag-red' };
+  body.innerHTML = `<div class="card" style="overflow-x:auto;"><table>
+    <thead><tr><th>Date</th><th>Company</th><th>Contact</th><th>Items</th><th>Status</th><th></th></tr></thead>
+    <tbody>${INQUIRIES.map(i => `
+      <tr>
+        <td class="mono text-sm">${new Date(i.created_at).toLocaleDateString()}</td>
+        <td>${escapeHtml(i.guest_company || '—')}</td>
+        <td>${escapeHtml(i.guest_name)}<br><span class="text-sm text-soft">${escapeHtml(i.guest_email)}</span></td>
+        <td>${(i.inquiry_items || []).length} item(s)</td>
+        <td><span class="tag ${statusTag[i.status]}">${i.status}</span></td>
+        <td><button class="btn btn-ghost btn-sm" data-view="${i.id}">View</button></td>
+      </tr>`).join('')}</tbody>
+  </table></div>`;
+  body.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => openInquiryDetail(b.dataset.view)));
+}
+
+function openInquiryDetail(id) {
+  const i = INQUIRIES.find(x => x.id === id);
+  if (!i) return;
+  document.getElementById('inquiryModal').innerHTML = `
+    <div style="padding:26px;">
+      <div class="flex-between" style="margin-bottom:16px;">
+        <h3 class="display" style="font-size:19px;">Quote Request</h3>
+        <button class="btn-ghost btn" id="inqCloseBtn" style="padding:4px 8px;">✕</button>
+      </div>
+      <div class="spec-row"><span class="k">Company</span><span class="v">${escapeHtml(i.guest_company || '—')}</span></div>
+      <div class="spec-row"><span class="k">Contact</span><span class="v">${escapeHtml(i.guest_name)}</span></div>
+      <div class="spec-row"><span class="k">Email</span><span class="v">${escapeHtml(i.guest_email)}</span></div>
+      <div class="spec-row"><span class="k">Phone</span><span class="v">${escapeHtml(i.guest_phone || '—')}</span></div>
+      <div class="spec-row"><span class="k">Received</span><span class="v">${new Date(i.created_at).toLocaleString()}</span></div>
+      ${i.message ? `<p class="text-sm text-soft" style="margin-top:12px;">${escapeHtml(i.message)}</p>` : ''}
+      <hr class="hairline">
+      <table>
+        <thead><tr><th>SKU</th><th>Product</th><th>Qty</th></tr></thead>
+        <tbody>${(i.inquiry_items || []).map(it => `<tr><td class="mono">${escapeHtml(it.product_sku || '—')}</td><td>${escapeHtml(it.product_name)}</td><td>${it.quantity}</td></tr>`).join('')}</tbody>
+      </table>
+      <div class="field" style="margin-top:20px;">
+        <label>Status</label>
+        <select id="inqStatus">
+          <option value="new">New</option><option value="reviewed">Reviewed</option>
+          <option value="quoted">Quoted</option><option value="closed">Closed</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-block" id="inqSaveBtn">Update Status</button>
+    </div>
+  `;
+  document.getElementById('inqStatus').value = i.status;
+  document.getElementById('inqCloseBtn').addEventListener('click', () => hideOverlayModal('inquiryOverlay', 'inquiryModal'));
+  document.getElementById('inqSaveBtn').addEventListener('click', async () => {
+    const status = document.getElementById('inqStatus').value;
+    const { error } = await supabaseClient.from('inquiries').update({ status }).eq('id', i.id);
+    if (error) { toast(error.message, 'error'); return; }
+    toast('Status updated', 'success');
+    hideOverlayModal('inquiryOverlay', 'inquiryModal');
+    await loadInquiries(); renderTab();
+  });
+  showOverlayModal('inquiryOverlay', 'inquiryModal');
+}
+
+/* ============================================================================
+   COMPANIES TAB
+   ============================================================================ */
+function renderCompaniesTab() {
+  const body = document.getElementById('pageBody');
+  if (!COMPANIES.length) {
+    body.innerHTML = `<div class="card empty-state"><div class="display">No B2B accounts yet</div><p>Companies that register on the catalog will appear here for approval.</p></div>`;
+    return;
+  }
+  body.innerHTML = `<div class="card" style="overflow-x:auto;"><table>
+    <thead><tr><th>Company</th><th>Contact</th><th>Type</th><th>Country</th><th>Status</th><th></th></tr></thead>
+    <tbody>${COMPANIES.map(c => `
+      <tr>
+        <td>${escapeHtml(c.company_name)}</td>
+        <td>${escapeHtml(c.contact_name)}<br><span class="text-sm text-soft">${escapeHtml(c.email)}</span></td>
+        <td>${escapeHtml(c.business_type || '—')}</td>
+        <td>${escapeHtml(c.country || '—')}</td>
+        <td><span class="tag ${c.approved ? 'tag-green' : 'tag-ochre'}">${c.approved ? 'Approved' : 'Pending'}</span></td>
+        <td>${c.approved
+          ? `<button class="btn btn-ghost btn-sm" data-revoke="${c.id}">Revoke</button>`
+          : `<button class="btn btn-primary btn-sm" data-approve="${c.id}">Approve</button>`}</td>
+      </tr>`).join('')}</tbody>
+  </table></div>`;
+  body.querySelectorAll('[data-approve]').forEach(b => b.addEventListener('click', () => setApproval(b.dataset.approve, true)));
+  body.querySelectorAll('[data-revoke]').forEach(b => b.addEventListener('click', () => setApproval(b.dataset.revoke, false)));
+}
+async function setApproval(id, approved) {
+  const { error } = await supabaseClient.from('companies').update({ approved }).eq('id', id);
+  if (error) { toast(error.message, 'error'); return; }
+  toast(approved ? 'Account approved' : 'Approval revoked', 'success');
+  await loadCompanies(); renderTab();
+}
+
+/* ============================================================================
+   CATEGORIES TAB
+   ============================================================================ */
+function renderCategoriesTab() {
+  const body = document.getElementById('pageBody');
+  body.innerHTML = `<div class="card" style="overflow-x:auto;"><table>
+    <thead><tr><th>Name</th><th>Slug</th><th>Products</th><th></th></tr></thead>
+    <tbody>${CATEGORIES.map(c => {
+      const count = PRODUCTS.filter(p => p.category_id === c.id).length;
+      return `<tr><td>${escapeHtml(c.name)}</td><td class="mono text-sm">${escapeHtml(c.slug)}</td><td>${count}</td>
+        <td><button class="btn btn-ghost btn-sm" data-delcat="${c.id}">Delete</button></td></tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+  body.querySelectorAll('[data-delcat]').forEach(b => b.addEventListener('click', async () => {
+    if (!confirm('Delete this category? Products keep their data but lose the category link.')) return;
+    const { error } = await supabaseClient.from('categories').delete().eq('id', b.dataset.delcat);
+    if (error) { toast(error.message, 'error'); return; }
+    await loadCategories(); await loadProducts(); renderTab();
+  }));
+}
+
+['productOverlay', 'inquiryOverlay'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () => {
+    hideOverlayModal(id, id.replace('Overlay', 'Modal'));
+  });
+});
+
+/* ============================================================================
+   BOOT
+   ============================================================================ */
+async function boot() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  await Promise.all([loadCategories(), loadProducts(), loadInquiries(), loadCompanies()]);
+  renderTab();
+}
+
+(async function init() {
+  const ok = await checkSession();
+  if (ok) boot();
+})();
+</script>
+</body>
+</html>

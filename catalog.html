@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bolt & Ledger — Wholesale Textile Catalog</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js"></script>
+<style>
+  /* ---- catalog-only styles ---- */
+  .hero {
+    padding: 56px 28px 40px; border-bottom: 1px solid var(--line);
+    background:
+      radial-gradient(circle at 85% 20%, rgba(51,69,107,0.08), transparent 45%),
+      var(--muslin);
+  }
+  .hero .eyebrow {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--indigo); margin-bottom: 10px;
+  }
+  .hero h1 { font-size: clamp(30px, 4vw, 44px); max-width: 640px; }
+  .hero p.lede { max-width: 520px; color: var(--ink-soft); margin-top: 12px; font-size: 15.5px; }
+
+  .toolbar {
+    position: sticky; top: 65px; z-index: 30; background: var(--muslin);
+    border-bottom: 1px solid var(--line); padding: 14px 28px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .search-box {
+    flex: 1; min-width: 200px; display: flex; align-items: center; gap: 8px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 8px 12px;
+  }
+  .search-box input { border: none; padding: 2px 0; background: transparent; }
+  .search-box input:focus-visible { outline: none; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    font-family: var(--font-mono); font-size: 12px; padding: 7px 13px;
+    border: 1px solid var(--line); border-radius: 20px; cursor: pointer;
+    background: var(--paper); white-space: nowrap; transition: all .15s ease;
+  }
+  .chip.active { background: var(--indigo); border-color: var(--indigo); color: var(--muslin); }
+  .chip:hover:not(.active) { border-color: var(--indigo); }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px; padding: 32px 28px 80px;
+  }
+  .p-card {
+    cursor: pointer; overflow: hidden; display: flex; flex-direction: column;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .p-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-pop); }
+  .p-swatch {
+    aspect-ratio: 1; background: var(--indigo-tint); position: relative; overflow: hidden;
+  }
+  .p-swatch img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .p-swatch .no-img {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    color: var(--indigo); font-family: var(--font-mono); font-size: 11px; text-transform: uppercase;
+  }
+  .p-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .p-sku { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-soft); letter-spacing: 0.03em; }
+  .p-name { font-family: var(--font-display); font-size: 16.5px; font-weight: 600; line-height: 1.25; }
+  .p-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+  .p-price { font-family: var(--font-mono); font-size: 13px; color: var(--indigo-deep); font-weight: 500; }
+
+  /* spec ticket detail */
+  .ticket { display: grid; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 720px) { .ticket { grid-template-columns: 1fr; } }
+  .ticket-gallery { background: var(--indigo-tint); }
+  .ticket-gallery img { width: 100%; display: block; aspect-ratio: 1; object-fit: cover; }
+  .ticket-thumbs { display: flex; gap: 6px; padding: 8px; }
+  .ticket-thumbs img { width: 48px; height: 48px; object-fit: cover; border-radius: 3px; cursor: pointer; border: 1px solid var(--line); }
+  .ticket-info { padding: 26px; position: relative; }
+  .ticket-info .close-x {
+    position: absolute; top: 14px; right: 14px; cursor: pointer; font-size: 20px;
+    color: var(--ink-soft); background: none; border: none; line-height: 1;
+  }
+  .spec-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px; }
+  .spec-row .k { color: var(--ink-soft); }
+  .spec-row .v { font-family: var(--font-mono); text-align: right; }
+  .colorway-dots { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .cdot { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); }
+
+  /* cart drawer */
+  .cart-item { padding: 14px; border-bottom: 1px solid var(--line); }
+  .cart-item .row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .qty-stepper { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .qty-stepper button {
+    width: 26px; height: 26px; border: 1px solid var(--line); background: var(--paper);
+    border-radius: 3px; cursor: pointer; font-family: var(--font-mono);
+  }
+  .qty-stepper input { width: 56px; text-align: center; padding: 4px; }
+
+  .fab-cart {
+    position: relative; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .fab-badge {
+    position: absolute; top: -8px; right: -8px; background: var(--thread-red); color: white;
+    font-family: var(--font-mono); font-size: 10px; min-width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; padding: 0 3px;
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">B&amp;L</span>
+    <div>
+      <div class="brand-name">Bolt &amp; Ledger</div>
+      <div class="brand-sub">Wholesale Textile Trading Co.</div>
+    </div>
+  </div>
+  <div class="flex gap-12" style="align-items:center;">
+    <button class="btn btn-ghost text-sm" id="accountBtn">Account</button>
+    <button class="btn btn-outline fab-cart" id="cartBtn">
+      Quote List <span id="cartCount">0</span>
+      <span class="fab-badge" id="cartBadge" style="display:none;">0</span>
+    </button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow">Wholesale · MOQ per SKU · Trade accounts welcome</div>
+    <h1 class="display">Fabric and finished goods, sold by the roll and the lot.</h1>
+    <p class="lede">Browse the current mill run. Add items to a quote list and send us your requirements — a rep will reply with pricing, lead time, and sample availability within one business day.</p>
+  </div>
+</section>
+
+<div class="toolbar">
+  <div class="search-box">
+    <span class="text-soft">⌕</span>
+    <input type="text" id="searchInput" placeholder="Search by name, SKU, or composition…">
+  </div>
+  <div class="chips" id="categoryChips"></div>
+</div>
+
+<main id="grid" class="grid">
+  <div class="empty-state" style="grid-column:1/-1;"><span class="spinner"></span></div>
+</main>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="overlay" id="detailOverlay"></div>
+<div class="modal" id="detailModal" style="padding:0; max-width:760px;"></div>
+
+<!-- CART DRAWER -->
+<div class="overlay" id="cartOverlay"></div>
+<div class="drawer" id="cartDrawer">
+  <div class="flex-between" style="padding:18px 20px; border-bottom:1px solid var(--line);">
+    <h3 class="display" style="font-size:18px;">Quote List</h3>
+    <button class="btn btn-ghost" id="cartCloseBtn">✕</button>
+  </div>
+  <div id="cartItems" style="flex:1; overflow-y:auto;"></div>
+  <div style="padding:18px 20px; border-top:1px solid var(--line);">
+    <button class="btn btn-primary btn-block" id="requestQuoteBtn" disabled>Request Quote →</button>
+  </div>
+</div>
+
+<!-- QUOTE FORM MODAL -->
+<div class="overlay" id="quoteOverlay"></div>
+<div class="modal" id="quoteModal" style="max-width:480px;">
+  <div style="padding:26px;">
+    <div class="flex-between" style="margin-bottom:14px;">
+      <h3 class="display" style="font-size:19px;">Send Quote Request</h3>
+      <button class="btn-ghost btn" id="quoteCloseBtn" style="padding:4px 8px;">✕</button>
+    </div>
+    <p class="text-soft text-sm" style="margin-bottom:18px;" id="quoteItemSummary"></p>
+    <form id="quoteForm">
+      <div class="field-row">
+        <div class="field"><label>Contact name *</label><input required id="qf_name"></div>
+        <div class="field"><label>Company *</label><input required id="qf_company"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Email *</label><input type="email" required id="qf_email"></div>
+        <div class="field"><label>Phone</label><input id="qf_phone"></div>
+      </div>
+      <div class="field"><label>Message</label><textarea id="qf_message" placeholder="Delivery timeline, destination port, sample requests, etc."></textarea></div>
+      <button type="submit" class="btn btn-primary btn-block" id="qf_submit">Submit Request</button>
+    </form>
+  </div>
+</div>
+
+<!-- ACCOUNT MODAL -->
+<div class="overlay" id="acctOverlay"></div>
+<div class="modal" id="acctModal" style="max-width:420px;">
+  <div style="padding:26px;">
+    <div class="flex-between" style="margin-bottom:14px;">
+      <h3 class="display" style="font-size:19px;" id="acctTitle">Trade Account</h3>
+      <button class="btn-ghost btn" id="acctCloseBtn" style="padding:4px 8px;">✕</button>
+    </div>
+    <div id="acctBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================================
+   STATE
+   ============================================================================ */
+let ALL_PRODUCTS = [];
+let CATEGORIES = [];
+let ACTIVE_CATEGORY = 'all';
+let SEARCH_TERM = '';
+let CART = [];               // [{product, quantity}]
+let CURRENT_USER = null;     // supabase auth user
+let CURRENT_COMPANY = null;  // companies row
+
+/* ============================================================================
+   TOAST
+   ============================================================================ */
+function toast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ============================================================================
+   DATA LOADING
+   ============================================================================ */
+async function loadCategories() {
+  const { data, error } = await supabaseClient.from('categories').select('*').order('sort_order');
+  if (error) { console.error(error); return; }
+  CATEGORIES = data || [];
+  renderChips();
+}
+
+async function loadProducts() {
+  const { data, error } = await supabaseClient
+    .from('products')
+    .select('*, product_images(url, sort_order, is_primary)')
+    .eq('status', 'active')
+    .order('created_at', { ascending: false });
+  if (error) { console.error(error); toast('Could not load products', 'error'); return; }
+  ALL_PRODUCTS = data || [];
+  renderGrid();
+}
+
+/* ============================================================================
+   RENDER: CATEGORY CHIPS
+   ============================================================================ */
+function renderChips() {
+  const wrap = document.getElementById('categoryChips');
+  const chips = [{ id: 'all', name: 'All' }, ...CATEGORIES];
+  wrap.innerHTML = chips.map(c => `
+    <button class="chip ${ACTIVE_CATEGORY === c.id ? 'active' : ''}" data-cat="${c.id}">${escapeHtml(c.name)}</button>
+  `).join('');
+  wrap.querySelectorAll('.chip').forEach(el => {
+    el.addEventListener('click', () => { ACTIVE_CATEGORY = el.dataset.cat; renderChips(); renderGrid(); });
+  });
+}
+
+/* ============================================================================
+   RENDER: PRODUCT GRID
+   ============================================================================ */
+function primaryImage(p) {
+  const imgs = (p.product_images || []).slice().sort((a, b) => (b.is_primary - a.is_primary) || (a.sort_order - b.sort_order));
+  return imgs[0]?.url || null;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  let list = ALL_PRODUCTS;
+  if (ACTIVE_CATEGORY !== 'all') list = list.filter(p => p.category_id === ACTIVE_CATEGORY);
+  if (SEARCH_TERM.trim()) {
+    const q = SEARCH_TERM.toLowerCase();
+    list = list.filter(p =>
+      p.name?.toLowerCase().includes(q) ||
+      p.sku?.toLowerCase().includes(q) ||
+      p.composition?.toLowerCase().includes(q)
+    );
+  }
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <div class="display">No matching pieces</div>
+      <p>Try a different search term or category.</p>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = list.map(p => {
+    const img = primaryImage(p);
+    const price = p.base_price ? `$${Number(p.base_price).toFixed(2)} / ${escapeHtml(p.unit)}` : 'Quote on request';
+    return `
+      <div class="card p-card" data-id="${p.id}">
+        <div class="p-swatch">
+          ${img ? `<img src="${img}" alt="${escapeHtml(p.name)}" loading="lazy">` : `<div class="no-img">No Swatch</div>`}
+        </div>
+        <div class="p-body">
+          <div class="p-sku mono">${escapeHtml(p.sku)}</div>
+          <div class="p-name">${escapeHtml(p.name)}</div>
+          <div class="p-meta">
+            <span class="p-price">${price}</span>
+            <span class="tag tag-indigo">MOQ ${p.moq}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+  grid.querySelectorAll('.p-card').forEach(el => {
+    el.addEventListener('click', () => openDetail(el.dataset.id));
+  });
+}
+
+/* ============================================================================
+   PRODUCT DETAIL — "spec ticket"
+   ============================================================================ */
+function openDetail(id) {
+  const p = ALL_PRODUCTS.find(x => x.id === id);
+  if (!p) return;
+  const imgs = (p.product_images || []).slice().sort((a, b) => (b.is_primary - a.is_primary) || (a.sort_order - b.sort_order));
+  const mainImg = imgs[0]?.url;
+  const price = p.base_price ? `$${Number(p.base_price).toFixed(2)} / ${escapeHtml(p.unit)}` : 'Quote on request';
+
+  document.getElementById('detailModal').innerHTML = `
+    <div class="ticket">
+      <div class="ticket-gallery">
+        ${mainImg ? `<img id="ticketMainImg" src="${mainImg}" alt="${escapeHtml(p.name)}">`
+                  : `<div class="no-img" style="aspect-ratio:1;">No Swatch Available</div>`}
+        ${imgs.length > 1 ? `<div class="ticket-thumbs">
+          ${imgs.map(i => `<img src="${i.url}" data-src="${i.url}">`).join('')}
+        </div>` : ''}
+      </div>
+      <div class="ticket-info">
+        <button class="close-x" id="detailCloseBtn">✕</button>
+        <div class="p-sku mono text-soft">${escapeHtml(p.sku)}</div>
+        <h2 class="display" style="font-size:24px; margin:4px 0 10px;">${escapeHtml(p.name)}</h2>
+        <span class="stamp">MOQ ${p.moq} ${escapeHtml(p.unit)}(s)</span>
+        <p class="text-soft" style="margin-top:14px; font-size:14px;">${escapeHtml(p.description || '')}</p>
+
+        <div style="margin-top:14px;">
+          ${p.composition ? `<div class="spec-row"><span class="k">Composition</span><span class="v">${escapeHtml(p.composition)}</span></div>` : ''}
+          ${p.weight_gsm ? `<div class="spec-row"><span class="k">Weight</span><span class="v">${p.weight_gsm} gsm</span></div>` : ''}
+          ${p.width_cm ? `<div class="spec-row"><span class="k">Width</span><span class="v">${p.width_cm} cm</span></div>` : ''}
+          <div class="spec-row"><span class="k">Price</span><span class="v">${price}</span></div>
+        </div>
+
+        ${p.colorways && p.colorways.length ? `
+          <div style="margin-top:14px;">
+            <label style="margin-bottom:8px;">Colorways</label>
+            <div class="text-sm">${p.colorways.map(c => escapeHtml(c)).join(' · ')}</div>
+          </div>` : ''}
+
+        <div class="field" style="margin-top:20px;">
+          <label>Quantity (${escapeHtml(p.unit)}s)</label>
+          <input type="number" id="detailQty" min="${p.moq}" value="${p.moq}" step="1">
+        </div>
+        <button class="btn btn-primary btn-block" id="detailAddBtn">Add to Quote List</button>
+      </div>
+    </div>
+  `;
+  document.querySelectorAll('.ticket-thumbs img').forEach(t => {
+    t.addEventListener('click', () => { document.getElementById('ticketMainImg').src = t.dataset.src; });
+  });
+  document.getElementById('detailCloseBtn').addEventListener('click', closeDetail);
+  document.getElementById('detailAddBtn').addEventListener('click', () => {
+    const qty = Math.max(p.moq, Number(document.getElementById('detailQty').value) || p.moq);
+    addToCart(p, qty);
+    closeDetail();
+  });
+  showOverlayModal('detailOverlay', 'detailModal');
+}
+function closeDetail() { hideOverlayModal('detailOverlay', 'detailModal'); }
+
+/* ============================================================================
+   CART
+   ============================================================================ */
+function addToCart(product, quantity) {
+  const existing = CART.find(c => c.product.id === product.id);
+  if (existing) existing.quantity = quantity;
+  else CART.push({ product, quantity });
+  renderCart();
+  toast(`Added ${escapeHtml(product.name)} to your quote list`, 'success');
+}
+function removeFromCart(productId) {
+  CART = CART.filter(c => c.product.id !== productId);
+  renderCart();
+}
+function renderCart() {
+  const count = CART.length;
+  document.getElementById('cartCount').textContent = count;
+  const badge = document.getElementById('cartBadge');
+  badge.style.display = count ? 'flex' : 'none';
+  badge.textContent = count;
+  document.getElementById('requestQuoteBtn').disabled = count === 0;
+
+  const wrap = document.getElementById('cartItems');
+  if (!count) {
+    wrap.innerHTML = `<div class="empty-state"><div class="display" style="font-size:16px;">Your list is empty</div><p class="text-sm">Add pieces from the catalog to build a quote request.</p></div>`;
+    return;
+  }
+  wrap.innerHTML = CART.map(c => `
+    <div class="cart-item" data-id="${c.product.id}">
+      <div class="row">
+        <div>
+          <div class="p-sku mono">${escapeHtml(c.product.sku)}</div>
+          <div style="font-family:var(--font-display); font-weight:600;">${escapeHtml(c.product.name)}</div>
+        </div>
+        <button class="btn-ghost btn btn-sm" data-remove="${c.product.id}">✕</button>
+      </div>
+      <div class="qty-stepper">
+        <button data-dec="${c.product.id}">−</button>
+        <input type="number" value="${c.quantity}" min="${c.product.moq}" data-qty="${c.product.id}">
+        <button data-inc="${c.product.id}">+</button>
+        <span class="text-sm text-soft">${escapeHtml(c.product.unit)}(s)</span>
+      </div>
+    </div>
+  `).join('');
+  wrap.querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeFromCart(b.dataset.remove)));
+  wrap.querySelectorAll('[data-inc]').forEach(b => b.addEventListener('click', () => stepQty(b.dataset.inc, 1)));
+  wrap.querySelectorAll('[data-dec]').forEach(b => b.addEventListener('click', () => stepQty(b.dataset.dec, -1)));
+  wrap.querySelectorAll('[data-qty]').forEach(inp => inp.addEventListener('change', () => {
+    const item = CART.find(c => c.product.id === inp.dataset.qty);
+    if (item) item.quantity = Math.max(item.product.moq, Number(inp.value) || item.product.moq);
+    renderCart();
+  }));
+}
+function stepQty(id, delta) {
+  const item = CART.find(c => c.product.id === id);
+  if (!item) return;
+  item.quantity = Math.max(item.product.moq, item.quantity + delta);
+  renderCart();
+}
+
+/* ============================================================================
+   QUOTE REQUEST SUBMISSION
+   ============================================================================ */
+document.getElementById('requestQuoteBtn').addEventListener('click', () => {
+  document.getElementById('quoteItemSummary').textContent =
+    `${CART.length} item${CART.length > 1 ? 's' : ''}: ` + CART.map(c => `${c.product.name} (${c.quantity})`).join(', ');
+  if (CURRENT_COMPANY) {
+    document.getElementById('qf_name').value = CURRENT_COMPANY.contact_name || '';
+    document.getElementById('qf_company').value = CURRENT_COMPANY.company_name || '';
+    document.getElementById('qf_email').value = CURRENT_COMPANY.email || '';
+    document.getElementById('qf_phone').value = CURRENT_COMPANY.phone || '';
+  }
+  hideOverlayModal('cartOverlay', 'cartDrawer', true);
+  showOverlayModal('quoteOverlay', 'quoteModal');
+});
+
+document.getElementById('quoteForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('qf_submit');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Sending…';
+
+  const payload = {
+    company_id: CURRENT_USER ? CURRENT_USER.id : null,
+    guest_name: document.getElementById('qf_name').value.trim(),
+    guest_company: document.getElementById('qf_company').value.trim(),
+    guest_email: document.getElementById('qf_email').value.trim(),
+    guest_phone: document.getElementById('qf_phone').value.trim(),
+    message: document.getElementById('qf_message').value.trim(),
+  };
+
+  const { data: inquiry, error } = await supabaseClient.from('inquiries').insert(payload).select().single();
+  if (error) { console.error(error); toast('Could not send request — try again', 'error'); btn.disabled = false; btn.textContent = 'Submit Request'; return; }
+
+  const items = CART.map(c => ({
+    inquiry_id: inquiry.id,
+    product_id: c.product.id,
+    product_name: c.product.name,
+    product_sku: c.product.sku,
+    quantity: c.quantity,
+  }));
+  const { error: itemErr } = await supabaseClient.from('inquiry_items').insert(items);
+  if (itemErr) console.error(itemErr);
+
+  toast('Quote request sent — we\'ll reply by email soon', 'success');
+  CART = [];
+  renderCart();
+  document.getElementById('quoteForm').reset();
+  hideOverlayModal('quoteOverlay', 'quoteModal');
+  btn.disabled = false; btn.textContent = 'Submit Request';
+});
+
+/* ============================================================================
+   ACCOUNT (sign up / log in)
+   ============================================================================ */
+function renderAccountLoggedOut() {
+  document.getElementById('acctTitle').textContent = 'Trade Account';
+  document.getElementById('acctBody').innerHTML = `
+    <div class="flex gap-8" style="margin-bottom:16px;">
+      <button class="btn btn-outline btn-sm" id="tabLogin">Log In</button>
+      <button class="btn btn-outline btn-sm" id="tabSignup">Register Company</button>
+    </div>
+    <div id="acctForm"></div>
+  `;
+  document.getElementById('tabLogin').addEventListener('click', renderLoginForm);
+  document.getElementById('tabSignup').addEventListener('click', renderSignupForm);
+  renderLoginForm();
+}
+function renderLoginForm() {
+  document.getElementById('acctForm').innerHTML = `
+    <form id="loginForm">
+      <div class="field"><label>Email</label><input type="email" required id="li_email"></div>
+      <div class="field"><label>Password</label><input type="password" required id="li_password"></div>
+      <button class="btn btn-primary btn-block" type="submit">Log In</button>
+    </form>`;
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('li_email').value.trim();
+    const password = document.getElementById('li_password').value;
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) { toast(error.message, 'error'); return; }
+    toast('Logged in', 'success');
+    await refreshSession();
+    hideOverlayModal('acctOverlay', 'acctModal');
+  });
+}
+function renderSignupForm() {
+  document.getElementById('acctForm').innerHTML = `
+    <form id="signupForm">
+      <div class="field"><label>Company name *</label><input required id="su_company"></div>
+      <div class="field-row">
+        <div class="field"><label>Contact name *</label><input required id="su_contact"></div>
+        <div class="field"><label>Business type</label>
+          <select id="su_type"><option>Retailer</option><option>Manufacturer</option><option>Distributor</option><option>Other</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Email *</label><input type="email" required id="su_email"></div>
+        <div class="field"><label>Phone</label><input id="su_phone"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Country</label><input id="su_country"></div>
+        <div class="field"><label>Password *</label><input type="password" required minlength="6" id="su_password"></div>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">Register</button>
+      <p class="text-sm text-soft" style="margin-top:10px;">New accounts are reviewed by our team before trade pricing is enabled. You can still submit quote requests immediately.</p>
+    </form>`;
+  document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('su_email').value.trim();
+    const password = document.getElementById('su_password').value;
+    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+    if (error) { toast(error.message, 'error'); return; }
+    if (data.user) {
+      const { error: companyErr } = await supabaseClient.from('companies').insert({
+        id: data.user.id,
+        company_name: document.getElementById('su_company').value.trim(),
+        contact_name: document.getElementById('su_contact').value.trim(),
+        business_type: document.getElementById('su_type').value,
+        email, phone: document.getElementById('su_phone').value.trim(),
+        country: document.getElementById('su_country').value.trim(),
+      });
+      if (companyErr) console.error(companyErr);
+    }
+    toast('Account created — check your email to confirm', 'success');
+    hideOverlayModal('acctOverlay', 'acctModal');
+  });
+}
+function renderAccountLoggedIn() {
+  document.getElementById('acctTitle').textContent = 'My Account';
+  document.getElementById('acctBody').innerHTML = `
+    <div class="spec-row"><span class="k">Company</span><span class="v">${escapeHtml(CURRENT_COMPANY?.company_name || '—')}</span></div>
+    <div class="spec-row"><span class="k">Contact</span><span class="v">${escapeHtml(CURRENT_COMPANY?.contact_name || '—')}</span></div>
+    <div class="spec-row"><span class="k">Email</span><span class="v">${escapeHtml(CURRENT_COMPANY?.email || '—')}</span></div>
+    <div class="spec-row"><span class="k">Status</span><span class="v">${CURRENT_COMPANY?.approved ? '<span class="tag tag-green">Approved</span>' : '<span class="tag tag-ochre">Pending Review</span>'}</span></div>
+    <button class="btn btn-outline btn-block" style="margin-top:20px;" id="logoutBtn">Log Out</button>
+  `;
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    await refreshSession();
+    toast('Logged out');
+    hideOverlayModal('acctOverlay', 'acctModal');
+  });
+}
+document.getElementById('accountBtn').addEventListener('click', () => {
+  if (CURRENT_USER) renderAccountLoggedIn(); else renderAccountLoggedOut();
+  showOverlayModal('acctOverlay', 'acctModal');
+});
+
+async function refreshSession() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  CURRENT_USER = user || null;
+  if (CURRENT_USER) {
+    const { data } = await supabaseClient.from('companies').select('*').eq('id', CURRENT_USER.id).maybeSingle();
+    CURRENT_COMPANY = data || null;
+    document.getElementById('accountBtn').textContent = CURRENT_COMPANY?.company_name || 'Account';
+  } else {
+    CURRENT_COMPANY = null;
+    document.getElementById('accountBtn').textContent = 'Account';
+  }
+}
+
+/* ============================================================================
+   MODAL / DRAWER HELPERS
+   ============================================================================ */
+function showOverlayModal(overlayId, panelId) {
+  document.getElementById(overlayId).classList.add('show');
+  document.getElementById(panelId).classList.add('show');
+}
+function hideOverlayModal(overlayId, panelId) {
+  document.getElementById(overlayId).classList.remove('show');
+  document.getElementById(panelId).classList.remove('show');
+}
+['detailOverlay', 'quoteOverlay', 'acctOverlay'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () => {
+    if (id === 'detailOverlay') closeDetail();
+    else document.getElementById(id).classList.remove('show'),
+         document.getElementById(id.replace('Overlay', 'Modal')).classList.remove('show');
+  });
+});
+document.getElementById('quoteCloseBtn').addEventListener('click', () => hideOverlayModal('quoteOverlay', 'quoteModal'));
+document.getElementById('acctCloseBtn').addEventListener('click', () => hideOverlayModal('acctOverlay', 'acctModal'));
+
+document.getElementById('cartBtn').addEventListener('click', () => showOverlayModal('cartOverlay', 'cartDrawer'));
+document.getElementById('cartCloseBtn').addEventListener('click', () => hideOverlayModal('cartOverlay', 'cartDrawer'));
+document.getElementById('cartOverlay').addEventListener('click', () => hideOverlayModal('cartOverlay', 'cartDrawer'));
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  SEARCH_TERM = e.target.value; renderGrid();
+});
+
+/* ============================================================================
+   UTIL
+   ============================================================================ */
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* ============================================================================
+   INIT
+   ============================================================================ */
+(async function init() {
+  await refreshSession();
+  await Promise.all([loadCategories(), loadProducts()]);
+  renderCart();
+})();
+</script>
+</body>
+</html>
