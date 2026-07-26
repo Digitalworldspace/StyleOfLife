@@ -91,10 +91,13 @@ policies in the schema), there's nothing else to deploy or configure.
 - **Categories**: add/remove product categories.
 - **Design**: pick one of five preset visual themes (Indigo Mill, Bone & Rust,
   Ink & Selvage, Raw Fiber, Denim Ledger), edit the brand name/tagline/logo,
-  hero headline/subtext, and the scrolling announcement ticker text, and
-  preview it live before saving. The catalog reads these settings from
-  `site_settings` on every page load, so changes show up for visitors
-  without touching any code.
+  and the scrolling announcement ticker text, and preview it live before
+  saving. The catalog reads these settings from `site_settings` on every
+  page load, so changes show up for visitors without touching any code.
+
+Both `catalog.html` and `admin.html` are responsive down to phone-sized
+screens (product grid, quote drawer, and forms all reflow on mobile; the
+admin sidebar becomes a horizontal tab bar).
 
 ## Notes on security (read this)
 
