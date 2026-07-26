@@ -3,8 +3,9 @@
 A B2B wholesale catalog for textiles and finished garments, with a public
 front panel and an admin panel, backed entirely by Supabase (Postgres +
 Storage). No offline/local storage — everything reads and writes live to
-your Supabase project. There's no login for either panel — see the
-security note near the bottom before you deploy this anywhere public.
+your Supabase project. The admin panel has a simple login you manage
+entirely from Supabase's **Table Editor** — no Supabase Auth setup needed.
+See the security note near the bottom before you deploy this anywhere public.
 
 ## What's included
 
@@ -30,12 +31,24 @@ textile-b2b/
 1. In the Supabase dashboard, open **SQL Editor → New query**.
 2. Paste the entire contents of `supabase-schema.sql` and click **Run**.
    This drops and recreates all tables (`products`, `categories`,
-   `product_images`, `inquiries`, `inquiry_items`, `site_settings`), sets
-   up fully-open Row Level Security policies (see the security note below),
-   and creates public `product-images` and `site-assets` storage buckets.
+   `product_images`, `inquiries`, `inquiry_items`, `site_settings`,
+   `admin_credentials`), sets up Row Level Security policies, and creates
+   public `product-images` and `site-assets` storage buckets.
    It's safe to re-run any time — it always starts from a clean slate.
 
-## 3. Configure the app
+## 3. Set your admin login
+
+The schema creates one default login:
+
+- **Username:** `admin`
+- **Password:** `changeme123`
+
+**Change this immediately.** In Supabase: **Table Editor → admin_credentials**,
+click the row, and edit the `username`/`password` fields directly. Add more
+rows the same way if more than one person needs to log in. That's the whole
+process — no SQL, no Supabase Auth dashboard.
+
+## 4. Configure the app
 
 1. In Supabase: **Project Settings → API**.
 2. Copy your **Project URL** and **anon public key**.
@@ -46,7 +59,7 @@ textile-b2b/
    ```
    Both `catalog.html` and `admin.html` share this one file.
 
-## 4. Host the files
+## 5. Host the files
 
 These are static files — no build step, no server code. Host them anywhere
 that serves static HTML, for example:
@@ -68,7 +81,8 @@ policies in the schema), there's nothing else to deploy or configure.
   email, phone, message) — this creates a row in `inquiries` plus one
   `inquiry_items` row per product.
 
-**Admin (`admin.html`)** — opens directly, no login:
+**Admin (`admin.html`)** — log in with the username/password from
+`admin_credentials`:
 - **Products**: create/edit SKUs, upload photos (stored in the
   `product-images` Storage bucket), set composition, weight, width,
   colorways, MOQ, price, and status (active/draft/discontinued).
@@ -83,29 +97,33 @@ policies in the schema), there's nothing else to deploy or configure.
 
 ## Notes on security (read this)
 
-This version has **no authentication**. `admin.html` isn't gated by a
-login — anyone who has the URL can open it and edit products, inquiries,
-and design settings. Row Level Security is left fully open on every table
-because, without a login, there's no way for the database to tell "the
-admin" apart from a regular visitor using the same public anon key.
+`admin.html` now has a login screen, checked against the `admin_credentials`
+table via a database function — the browser never sees the password list
+itself, only a true/false answer.
 
-This is a reasonable trade-off for:
-- an internal tool only your team can reach,
-- a quick prototype or demo,
-- a setup where you're the only one touching `admin.html`.
+That said, this is a **UI-level gate, not full API-level security**:
+- Row Level Security on `products`, `categories`, `inquiries`, and
+  `site_settings` is still fully open. Anyone who has your project's anon
+  key (which is meant to be public, and is visible in `config.js`) can
+  read and write those tables directly through Supabase's API — whether or
+  not they've seen the login screen — because without real session tokens
+  (Supabase Auth), Postgres has no way to know a given API request came
+  from someone who logged in.
+- The login mainly stops casual visitors from finding and using the admin
+  UI. It does not stop someone who deliberately inspects network requests
+  and calls the API directly.
 
-It's **not** appropriate to link `admin.html` publicly on a site where
-strangers could stumble onto it. If you need it properly locked down
-later, the simplest options, roughly in order of effort:
+This is a reasonable trade-off for an internal tool, a client demo, or a
+setup where you trust everyone who has the site's URL. It is **not**
+appropriate for a fully public admin panel that needs to resist a
+motivated attacker. If you need that level of protection later, the more
+robust options, roughly in order of effort:
 1. **Hosting-level password protection** on `admin.html` — Vercel, Netlify,
    and most static hosts offer this on paid tiers (or via a small
    middleware/Edge Function).
 2. **Put `admin.html` behind a VPN or IP allowlist** if your team already
    has one.
-3. **Re-add Supabase Auth** with an `admins` allow-list table and RLS
-   policies scoped to `is_admin()` — this is exactly what the previous
-   version of this project did, and can be re-introduced later without
-   changing the rest of the app.
-
-The anon key in `config.js` is meant to be public in all cases — Supabase's
-security model relies on RLS policies, not on hiding that key.
+3. **Re-introduce Supabase Auth** with real session tokens and RLS policies
+   scoped to the logged-in user's role — this is what an earlier version
+   of this project used, and it can be added back without changing the
+   rest of the app.
