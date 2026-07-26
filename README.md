@@ -90,10 +90,11 @@ policies in the schema), there's nothing else to deploy or configure.
   (new → reviewed → quoted → closed).
 - **Categories**: add/remove product categories.
 - **Design**: pick one of five preset visual themes (Indigo Mill, Bone & Rust,
-  Ink & Selvage, Raw Fiber, Denim Ledger), edit the brand name/tagline/logo
-  and hero headline/subtext, and preview it live before saving. The catalog
-  reads these settings from `site_settings` on every page load, so changes
-  show up for visitors without touching any code.
+  Ink & Selvage, Raw Fiber, Denim Ledger), edit the brand name/tagline/logo,
+  hero headline/subtext, and the scrolling announcement ticker text, and
+  preview it live before saving. The catalog reads these settings from
+  `site_settings` on every page load, so changes show up for visitors
+  without touching any code.
 
 ## Notes on security (read this)
 
