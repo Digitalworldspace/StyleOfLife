@@ -621,6 +621,10 @@ function renderDesignTab() {
       </div>
       <div class="field"><label>Hero headline</label><textarea id="ds_heroTitle">${escapeHtml(s.hero_title || '')}</textarea></div>
       <div class="field"><label>Hero subtext</label><textarea id="ds_heroLede">${escapeHtml(s.hero_lede || '')}</textarea></div>
+      <div class="field">
+        <label>Scrolling ticker text (separate items with · )</label>
+        <input id="ds_tickerText" value="${escapeHtml(s.ticker_text || '')}" placeholder="New arrivals weekly · Sample yardage available · Trade accounts ship net 30">
+      </div>
     </div>
 
     <h3 class="display" style="font-size:16px; margin-bottom:12px;">Live Preview</h3>
@@ -714,6 +718,7 @@ function renderDesignTab() {
       logo_url: pendingLogoUrl,
       hero_title: document.getElementById('ds_heroTitle').value.trim(),
       hero_lede: document.getElementById('ds_heroLede').value.trim(),
+      ticker_text: document.getElementById('ds_tickerText').value.trim(),
       updated_at: new Date().toISOString(),
     };
     const { error } = await supabaseClient.from('site_settings').update(payload).eq('id', 1);
