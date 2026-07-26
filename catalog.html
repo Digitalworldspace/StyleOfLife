@@ -27,18 +27,6 @@
 
   /* ---- catalog-only styles ---- */
   .brand-logo-img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-  .hero {
-    padding: 56px 28px 40px; border-bottom: 1px solid var(--line);
-    background:
-      radial-gradient(circle at 85% 20%, rgba(51,69,107,0.08), transparent 45%),
-      var(--muslin);
-  }
-  .hero .eyebrow {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--indigo); margin-bottom: 10px;
-  }
-  .hero h1 { font-size: clamp(30px, 4vw, 44px); max-width: 640px; }
-  .hero p.lede { max-width: 520px; color: var(--ink-soft); margin-top: 12px; font-size: 15.5px; }
 
   .toolbar {
     position: sticky; top: 65px; z-index: 30; background: var(--muslin);
@@ -73,7 +61,7 @@
   .p-swatch {
     aspect-ratio: 1; background: var(--indigo-tint); position: relative; overflow: hidden;
   }
-  .p-swatch img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .p-swatch img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
   .p-swatch .no-img {
     width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
     color: var(--indigo); font-family: var(--font-mono); font-size: 11px; text-transform: uppercase;
@@ -88,7 +76,7 @@
   .ticket { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(460px, auto); }
   @media (max-width: 720px) { .ticket { grid-template-columns: 1fr; grid-auto-rows: auto; } }
   .ticket-gallery { background: var(--indigo-tint); height: 100%; display: flex; flex-direction: column; }
-  .ticket-gallery img { width: 100%; flex: 1; min-height: 0; display: block; object-fit: cover; }
+  .ticket-gallery img { width: 100%; flex: 1; min-height: 0; display: block; object-fit: cover; object-position: top center; }
   @media (max-width: 720px) { .ticket-gallery { height: auto; } .ticket-gallery img { flex: none; aspect-ratio: 1; } }
   .ticket-thumbs { display: flex; gap: 6px; padding: 8px; }
   .ticket-thumbs img { width: 48px; height: 48px; object-fit: cover; border-radius: 3px; cursor: pointer; border: 1px solid var(--line); }
@@ -121,6 +109,25 @@
     font-family: var(--font-mono); font-size: 10px; min-width: 18px; height: 18px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center; padding: 0 3px;
   }
+
+  /* ---- mobile ---- */
+  @media (max-width: 640px) {
+    .container, .toolbar, .grid { padding-left: 16px; padding-right: 16px; }
+    .topbar { padding: 12px 16px; gap: 8px; }
+    .brand-name { font-size: 16px; }
+    .brand-sub { font-size: 9px; }
+    #cartBtn { padding: 8px 12px; font-size: 12.5px; }
+    .toolbar { top: 57px; padding-top: 10px; padding-bottom: 10px; gap: 8px; }
+    .search-box { min-width: 100%; order: 1; }
+    .chips { order: 2; width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding-top: 20px; padding-bottom: 60px; }
+    .p-body { padding: 10px 12px 12px; }
+    .p-name { font-size: 14.5px; }
+    .drawer { width: 100vw; }
+    .modal { width: 96vw; }
+    .field-row { grid-template-columns: 1fr; gap: 0; }
+    .ticker-item { font-size: 10.5px; padding: 0 14px; }
+  }
 </style>
 </head>
 <body>
@@ -145,15 +152,7 @@
   <div class="ticker-track" id="tickerTrack"></div>
 </div>
 
-<section class="hero">
-  <div class="container">
-    <div class="eyebrow">Wholesale · MOQ per SKU · Trade accounts welcome</div>
-    <h1 class="display" id="heroTitle">Fabric and finished goods, sold by the roll and the lot.</h1>
-    <p class="lede" id="heroLede">Browse the current mill run. Add items to a quote list and send us your requirements — a rep will reply with pricing, lead time, and sample availability within one business day.</p>
-  </div>
-</section>
-
-<div class="toolbar">
+<div class="toolbar" style="margin-top:0;">
   <div class="search-box">
     <span class="text-soft">⌕</span>
     <input type="text" id="searchInput" placeholder="Search by name, SKU, or composition…">
@@ -240,8 +239,6 @@ async function loadSiteSettings() {
   document.title = `${data.brand_name} — Wholesale Textile Catalog`;
   document.getElementById('brandName').textContent = data.brand_name;
   document.getElementById('brandSub').textContent = data.brand_sub;
-  document.getElementById('heroTitle').textContent = data.hero_title;
-  document.getElementById('heroLede').textContent = data.hero_lede;
   renderTicker(data.ticker_text);
 
   if (data.logo_url) {
@@ -435,12 +432,19 @@ function renderCart() {
     wrap.innerHTML = `<div class="empty-state"><div class="display" style="font-size:16px;">Your list is empty</div><p class="text-sm">Add pieces from the catalog to build a quote request.</p></div>`;
     return;
   }
-  wrap.innerHTML = CART.map(c => `
+  wrap.innerHTML = CART.map(c => {
+    const img = primaryImage(c.product);
+    return `
     <div class="cart-item" data-id="${c.product.id}">
       <div class="row">
-        <div>
-          <div class="p-sku mono">${escapeHtml(c.product.sku)}</div>
-          <div style="font-family:var(--font-display); font-weight:600;">${escapeHtml(c.product.name)}</div>
+        <div style="display:flex; gap:10px; align-items:flex-start; min-width:0;">
+          ${img
+            ? `<img src="${img}" alt="${escapeHtml(c.product.name)}" style="width:44px; height:44px; border-radius:4px; object-fit:cover; object-position:top; flex-shrink:0;">`
+            : `<div style="width:44px; height:44px; border-radius:4px; background:var(--indigo-tint); flex-shrink:0;"></div>`}
+          <div style="min-width:0;">
+            <div class="p-sku mono">${escapeHtml(c.product.sku)}</div>
+            <div style="font-family:var(--font-display); font-weight:600;">${escapeHtml(c.product.name)}</div>
+          </div>
         </div>
         <button class="btn-ghost btn btn-sm" data-remove="${c.product.id}">✕</button>
       </div>
@@ -451,7 +455,8 @@ function renderCart() {
         <span class="text-sm text-soft">${escapeHtml(c.product.unit)}(s)</span>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
   wrap.querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeFromCart(b.dataset.remove)));
   wrap.querySelectorAll('[data-inc]').forEach(b => b.addEventListener('click', () => stepQty(b.dataset.inc, 1)));
   wrap.querySelectorAll('[data-dec]').forEach(b => b.addEventListener('click', () => stepQty(b.dataset.dec, -1)));
