@@ -69,10 +69,11 @@
   .p-price { font-family: var(--font-mono); font-size: 13px; color: var(--indigo-deep); font-weight: 500; }
 
   /* spec ticket detail */
-  .ticket { display: grid; grid-template-columns: 1fr 1fr; }
-  @media (max-width: 720px) { .ticket { grid-template-columns: 1fr; } }
-  .ticket-gallery { background: var(--indigo-tint); }
-  .ticket-gallery img { width: 100%; display: block; aspect-ratio: 1; object-fit: cover; }
+  .ticket { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(460px, auto); }
+  @media (max-width: 720px) { .ticket { grid-template-columns: 1fr; grid-auto-rows: auto; } }
+  .ticket-gallery { background: var(--indigo-tint); height: 100%; display: flex; flex-direction: column; }
+  .ticket-gallery img { width: 100%; flex: 1; min-height: 0; display: block; object-fit: cover; }
+  @media (max-width: 720px) { .ticket-gallery { height: auto; } .ticket-gallery img { flex: none; aspect-ratio: 1; } }
   .ticket-thumbs { display: flex; gap: 6px; padding: 8px; }
   .ticket-thumbs img { width: 48px; height: 48px; object-fit: cover; border-radius: 3px; cursor: pointer; border: 1px solid var(--line); }
   .ticket-info { padding: 26px; position: relative; }
@@ -332,7 +333,7 @@ function openDetail(id) {
     <div class="ticket">
       <div class="ticket-gallery">
         ${mainImg ? `<img id="ticketMainImg" src="${mainImg}" alt="${escapeHtml(p.name)}">`
-                  : `<div class="no-img" style="aspect-ratio:1;">No Swatch Available</div>`}
+                  : `<div class="no-img" style="flex:1; min-height:0; display:flex; align-items:center; justify-content:center;">No Swatch Available</div>`}
         ${imgs.length > 1 ? `<div class="ticket-thumbs">
           ${imgs.map(i => `<img src="${i.url}" data-src="${i.url}">`).join('')}
         </div>` : ''}
