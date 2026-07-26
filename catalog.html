@@ -9,6 +9,22 @@
 <script src="assets/config.js"></script>
 <script src="assets/themes.js"></script>
 <style>
+  /* ---- ticker banner ---- */
+  .ticker { overflow: hidden; background: var(--indigo); border-bottom: 1px solid var(--indigo-deep); }
+  .ticker-track {
+    display: flex; width: max-content; white-space: nowrap;
+    animation: ticker-scroll 28s linear infinite;
+  }
+  .ticker:hover .ticker-track { animation-play-state: paused; }
+  .ticker-seg { display: flex; align-items: center; padding: 9px 0; }
+  .ticker-item {
+    color: var(--muslin); font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: 0.03em; padding: 0 22px; white-space: nowrap;
+  }
+  .ticker-item::after { content: '✺'; margin-left: 22px; opacity: 0.5; }
+  @keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .ticker-track { animation: none; } }
+
   /* ---- catalog-only styles ---- */
   .brand-logo-img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
   .hero {
@@ -125,6 +141,10 @@
   </div>
 </header>
 
+<div class="ticker">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
 <section class="hero">
   <div class="container">
     <div class="eyebrow">Wholesale · MOQ per SKU · Trade accounts welcome</div>
@@ -222,6 +242,7 @@ async function loadSiteSettings() {
   document.getElementById('brandSub').textContent = data.brand_sub;
   document.getElementById('heroTitle').textContent = data.hero_title;
   document.getElementById('heroLede').textContent = data.hero_lede;
+  renderTicker(data.ticker_text);
 
   if (data.logo_url) {
     const wrap = document.getElementById('brandMarkWrap');
@@ -232,6 +253,14 @@ async function loadSiteSettings() {
     img.className = 'brand-logo-img';
     initials.replaceWith(img);
   }
+}
+
+function renderTicker(text) {
+  const items = (text || '').split('·').map(s => s.trim()).filter(Boolean);
+  if (!items.length) { document.querySelector('.ticker').style.display = 'none'; return; }
+  const seg = `<div class="ticker-seg">${items.map(t => `<span class="ticker-item">${escapeHtml(t)}</span>`).join('')}</div>`;
+  // duplicated twice back-to-back so the -50% translateX loop is seamless
+  document.getElementById('tickerTrack').innerHTML = seg + seg;
 }
 
 /* ============================================================================
