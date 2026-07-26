@@ -117,7 +117,6 @@
     </div>
   </div>
   <div class="flex gap-12" style="align-items:center;">
-    <button class="btn btn-ghost text-sm" id="accountBtn">Account</button>
     <button class="btn btn-outline fab-cart" id="cartBtn">
       Quote List <span id="cartCount">0</span>
       <span class="fab-badge" id="cartBadge" style="display:none;">0</span>
@@ -186,18 +185,6 @@
   </div>
 </div>
 
-<!-- ACCOUNT MODAL -->
-<div class="overlay" id="acctOverlay"></div>
-<div class="modal" id="acctModal" style="max-width:420px;">
-  <div style="padding:26px;">
-    <div class="flex-between" style="margin-bottom:14px;">
-      <h3 class="display" style="font-size:19px;" id="acctTitle">Trade Account</h3>
-      <button class="btn-ghost btn" id="acctCloseBtn" style="padding:4px 8px;">✕</button>
-    </div>
-    <div id="acctBody"></div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -209,8 +196,6 @@ let CATEGORIES = [];
 let ACTIVE_CATEGORY = 'all';
 let SEARCH_TERM = '';
 let CART = [];               // [{product, quantity}]
-let CURRENT_USER = null;     // supabase auth user
-let CURRENT_COMPANY = null;  // companies row
 
 /* ============================================================================
    TOAST
@@ -459,12 +444,6 @@ function stepQty(id, delta) {
 document.getElementById('requestQuoteBtn').addEventListener('click', () => {
   document.getElementById('quoteItemSummary').textContent =
     `${CART.length} item${CART.length > 1 ? 's' : ''}: ` + CART.map(c => `${c.product.name} (${c.quantity})`).join(', ');
-  if (CURRENT_COMPANY) {
-    document.getElementById('qf_name').value = CURRENT_COMPANY.contact_name || '';
-    document.getElementById('qf_company').value = CURRENT_COMPANY.company_name || '';
-    document.getElementById('qf_email').value = CURRENT_COMPANY.email || '';
-    document.getElementById('qf_phone').value = CURRENT_COMPANY.phone || '';
-  }
   hideOverlayModal('cartOverlay', 'cartDrawer', true);
   showOverlayModal('quoteOverlay', 'quoteModal');
 });
@@ -475,7 +454,6 @@ document.getElementById('quoteForm').addEventListener('submit', async (e) => {
   btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Sending…';
 
   const payload = {
-    company_id: CURRENT_USER ? CURRENT_USER.id : null,
     guest_name: document.getElementById('qf_name').value.trim(),
     guest_company: document.getElementById('qf_company').value.trim(),
     guest_email: document.getElementById('qf_email').value.trim(),
@@ -505,116 +483,6 @@ document.getElementById('quoteForm').addEventListener('submit', async (e) => {
 });
 
 /* ============================================================================
-   ACCOUNT (sign up / log in)
-   ============================================================================ */
-function renderAccountLoggedOut() {
-  document.getElementById('acctTitle').textContent = 'Trade Account';
-  document.getElementById('acctBody').innerHTML = `
-    <div class="flex gap-8" style="margin-bottom:16px;">
-      <button class="btn btn-outline btn-sm" id="tabLogin">Log In</button>
-      <button class="btn btn-outline btn-sm" id="tabSignup">Register Company</button>
-    </div>
-    <div id="acctForm"></div>
-  `;
-  document.getElementById('tabLogin').addEventListener('click', renderLoginForm);
-  document.getElementById('tabSignup').addEventListener('click', renderSignupForm);
-  renderLoginForm();
-}
-function renderLoginForm() {
-  document.getElementById('acctForm').innerHTML = `
-    <form id="loginForm">
-      <div class="field"><label>Email</label><input type="email" required id="li_email"></div>
-      <div class="field"><label>Password</label><input type="password" required id="li_password"></div>
-      <button class="btn btn-primary btn-block" type="submit">Log In</button>
-    </form>`;
-  document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('li_email').value.trim();
-    const password = document.getElementById('li_password').value;
-    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    if (error) { toast(error.message, 'error'); return; }
-    toast('Logged in', 'success');
-    await refreshSession();
-    hideOverlayModal('acctOverlay', 'acctModal');
-  });
-}
-function renderSignupForm() {
-  document.getElementById('acctForm').innerHTML = `
-    <form id="signupForm">
-      <div class="field"><label>Company name *</label><input required id="su_company"></div>
-      <div class="field-row">
-        <div class="field"><label>Contact name *</label><input required id="su_contact"></div>
-        <div class="field"><label>Business type</label>
-          <select id="su_type"><option>Retailer</option><option>Manufacturer</option><option>Distributor</option><option>Other</option></select>
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label>Email *</label><input type="email" required id="su_email"></div>
-        <div class="field"><label>Phone</label><input id="su_phone"></div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label>Country</label><input id="su_country"></div>
-        <div class="field"><label>Password *</label><input type="password" required minlength="6" id="su_password"></div>
-      </div>
-      <button class="btn btn-primary btn-block" type="submit">Register</button>
-      <p class="text-sm text-soft" style="margin-top:10px;">New accounts are reviewed by our team before trade pricing is enabled. You can still submit quote requests immediately.</p>
-    </form>`;
-  document.getElementById('signupForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('su_email').value.trim();
-    const password = document.getElementById('su_password').value;
-    const { data, error } = await supabaseClient.auth.signUp({ email, password });
-    if (error) { toast(error.message, 'error'); return; }
-    if (data.user) {
-      const { error: companyErr } = await supabaseClient.from('companies').insert({
-        id: data.user.id,
-        company_name: document.getElementById('su_company').value.trim(),
-        contact_name: document.getElementById('su_contact').value.trim(),
-        business_type: document.getElementById('su_type').value,
-        email, phone: document.getElementById('su_phone').value.trim(),
-        country: document.getElementById('su_country').value.trim(),
-      });
-      if (companyErr) console.error(companyErr);
-    }
-    toast('Account created — check your email to confirm', 'success');
-    hideOverlayModal('acctOverlay', 'acctModal');
-  });
-}
-function renderAccountLoggedIn() {
-  document.getElementById('acctTitle').textContent = 'My Account';
-  document.getElementById('acctBody').innerHTML = `
-    <div class="spec-row"><span class="k">Company</span><span class="v">${escapeHtml(CURRENT_COMPANY?.company_name || '—')}</span></div>
-    <div class="spec-row"><span class="k">Contact</span><span class="v">${escapeHtml(CURRENT_COMPANY?.contact_name || '—')}</span></div>
-    <div class="spec-row"><span class="k">Email</span><span class="v">${escapeHtml(CURRENT_COMPANY?.email || '—')}</span></div>
-    <div class="spec-row"><span class="k">Status</span><span class="v">${CURRENT_COMPANY?.approved ? '<span class="tag tag-green">Approved</span>' : '<span class="tag tag-ochre">Pending Review</span>'}</span></div>
-    <button class="btn btn-outline btn-block" style="margin-top:20px;" id="logoutBtn">Log Out</button>
-  `;
-  document.getElementById('logoutBtn').addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    await refreshSession();
-    toast('Logged out');
-    hideOverlayModal('acctOverlay', 'acctModal');
-  });
-}
-document.getElementById('accountBtn').addEventListener('click', () => {
-  if (CURRENT_USER) renderAccountLoggedIn(); else renderAccountLoggedOut();
-  showOverlayModal('acctOverlay', 'acctModal');
-});
-
-async function refreshSession() {
-  const { data: { user } } = await supabaseClient.auth.getUser();
-  CURRENT_USER = user || null;
-  if (CURRENT_USER) {
-    const { data } = await supabaseClient.from('companies').select('*').eq('id', CURRENT_USER.id).maybeSingle();
-    CURRENT_COMPANY = data || null;
-    document.getElementById('accountBtn').textContent = CURRENT_COMPANY?.company_name || 'Account';
-  } else {
-    CURRENT_COMPANY = null;
-    document.getElementById('accountBtn').textContent = 'Account';
-  }
-}
-
-/* ============================================================================
    MODAL / DRAWER HELPERS
    ============================================================================ */
 function showOverlayModal(overlayId, panelId) {
@@ -625,7 +493,7 @@ function hideOverlayModal(overlayId, panelId) {
   document.getElementById(overlayId).classList.remove('show');
   document.getElementById(panelId).classList.remove('show');
 }
-['detailOverlay', 'quoteOverlay', 'acctOverlay'].forEach(id => {
+['detailOverlay', 'quoteOverlay'].forEach(id => {
   document.getElementById(id).addEventListener('click', () => {
     if (id === 'detailOverlay') closeDetail();
     else document.getElementById(id).classList.remove('show'),
@@ -633,7 +501,6 @@ function hideOverlayModal(overlayId, panelId) {
   });
 });
 document.getElementById('quoteCloseBtn').addEventListener('click', () => hideOverlayModal('quoteOverlay', 'quoteModal'));
-document.getElementById('acctCloseBtn').addEventListener('click', () => hideOverlayModal('acctOverlay', 'acctModal'));
 
 document.getElementById('cartBtn').addEventListener('click', () => showOverlayModal('cartOverlay', 'cartDrawer'));
 document.getElementById('cartCloseBtn').addEventListener('click', () => hideOverlayModal('cartOverlay', 'cartDrawer'));
@@ -656,7 +523,6 @@ function escapeHtml(str) {
    ============================================================================ */
 (async function init() {
   await loadSiteSettings();
-  await refreshSession();
   await Promise.all([loadCategories(), loadProducts()]);
   renderCart();
 })();
