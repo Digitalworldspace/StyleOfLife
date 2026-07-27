@@ -1,4 +1,4 @@
-# Bolt & Ledger — Wholesale Textile Catalog
+# Style Of Life — Wholesale Textile Catalog
 
 A B2B wholesale catalog for textiles and finished garments, with a public
 front panel and an admin panel, backed entirely by Supabase (Postgres +
@@ -98,6 +98,30 @@ policies in the schema), there's nothing else to deploy or configure.
 Both `catalog.html` and `admin.html` are responsive down to phone-sized
 screens (product grid, quote drawer, and forms all reflow on mobile; the
 admin sidebar becomes a horizontal tab bar).
+
+## Live sync
+
+Both panels stay in sync with each other automatically, no refresh needed:
+- Edit a product, category, or the Design settings in `admin.html` → it
+  updates in `catalog.html` for anyone browsing, within a fraction of a
+  second.
+- A customer submits a quote request in `catalog.html` → it appears in the
+  admin's **Inquiries** tab immediately, including the item count badge.
+
+This runs on Supabase Realtime, enabled by the `alter publication
+supabase_realtime add table ...` line near the end of `supabase-schema.sql`.
+If you ever create these tables outside that script, make sure they're
+added to the `supabase_realtime` publication or live updates won't fire
+(everything will still work on refresh, just not instantly).
+
+## Bulk actions
+
+Both the **Products** and **Inquiries** tabs in `admin.html` support
+selecting multiple rows (checkboxes + "select all") and acting on all of
+them at once:
+- **Products**: set status (active/draft/discontinued), move to a
+  category, or delete.
+- **Inquiries**: set status (new/reviewed/quoted/closed), or delete.
 
 ## Notes on security (read this)
 
