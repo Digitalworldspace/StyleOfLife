@@ -434,7 +434,15 @@ function renderProductsTab() {
   if (deleteBtn) deleteBtn.addEventListener('click', async () => {
     if (!confirm(`Delete ${SELECTED_PRODUCT_IDS.size} product(s)? This can't be undone.`)) return;
     deleteBtn.disabled = true; deleteBtn.innerHTML = '<span class="spinner"></span>';
-    const { error } = await supabaseClient.from('products').delete().in('id', [...SELECTED_PRODUCT_IDS]);
+
+    // the DB cascade removes product_images rows automatically, but not the
+    // actual files sitting in Storage — clean those up first
+    const idsToDelete = [...SELECTED_PRODUCT_IDS];
+    const { data: imgs } = await supabaseClient.from('product_images').select('url').in('product_id', idsToDelete);
+    const paths = (imgs || []).map(i => storagePathFromUrl(i.url, 'product-images')).filter(Boolean);
+    if (paths.length) await supabaseClient.storage.from('product-images').remove(paths);
+
+    const { error } = await supabaseClient.from('products').delete().in('id', idsToDelete);
     deleteBtn.disabled = false; deleteBtn.textContent = 'Delete';
     if (error) { toast(error.message, 'error'); return; }
     toast('Products deleted', 'success');
@@ -469,6 +477,19 @@ function openProductForm(id) {
   showOverlayModal('productOverlay', 'productModal');
 }
 
+function storagePathFromUrl(url, bucket) {
+  if (!url) return null;
+  const marker = `/object/public/${bucket}/`;
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  return decodeURIComponent(url.slice(idx + marker.length));
+}
+
+function skuFolder() {
+  const raw = (document.getElementById('pf_sku')?.value || '').trim() || 'unassigned';
+  return raw.toUpperCase().replace(/[^A-Z0-9-_]+/g, '-').replace(/(^-+|-+$)/g, '') || 'unassigned';
+}
+
 function renderImageSlots() {
   const wrap = document.getElementById('pf_images');
   const addSlot = `<label class="img-add">+<input type="file" id="pf_imageInput" accept="image/*" multiple style="display:none;"></label>`;
@@ -477,16 +498,28 @@ function renderImageSlots() {
       <img src="${img.url}">
       <button type="button" class="rm" data-rm="${idx}">✕</button>
     </div>`).join('') + addSlot;
-  wrap.querySelectorAll('[data-rm]').forEach(b => b.addEventListener('click', () => {
-    PENDING_IMAGES.splice(Number(b.dataset.rm), 1); renderImageSlots();
+  wrap.querySelectorAll('[data-rm]').forEach(b => b.addEventListener('click', async () => {
+    const idx = Number(b.dataset.rm);
+    const img = PENDING_IMAGES[idx];
+    // brand-new uploads (no DB row yet) are nothing else's responsibility —
+    // safe to delete from storage immediately. Already-saved images are
+    // only soft-removed here; their storage file is cleaned up on Save,
+    // together with the DB row, so a cancelled edit never breaks a live image.
+    if (img && !img.id) {
+      const path = storagePathFromUrl(img.url, 'product-images');
+      if (path) await supabaseClient.storage.from('product-images').remove([path]);
+    }
+    PENDING_IMAGES.splice(idx, 1);
+    renderImageSlots();
   }));
   document.getElementById('pf_imageInput').addEventListener('change', handleImageUpload);
 }
 
 async function handleImageUpload(e) {
   const files = Array.from(e.target.files || []);
+  const folder = skuFolder();
   for (const file of files) {
-    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
+    const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
     const { error } = await supabaseClient.storage.from('product-images').upload(path, file);
     if (error) { toast(error.message, 'error'); continue; }
     const { data: pub } = supabaseClient.storage.from('product-images').getPublicUrl(path);
@@ -528,11 +561,15 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
     productId = data.id;
   }
 
-  // sync images: delete removed rows, insert new ones
-  const { data: existingImgs } = await supabaseClient.from('product_images').select('id').eq('product_id', productId);
+  // sync images: delete removed rows (+ their storage files), insert new ones
+  const { data: existingImgs } = await supabaseClient.from('product_images').select('id, url').eq('product_id', productId);
   const keepIds = PENDING_IMAGES.filter(i => i.id).map(i => i.id);
-  const toDelete = (existingImgs || []).filter(i => !keepIds.includes(i.id)).map(i => i.id);
-  if (toDelete.length) await supabaseClient.from('product_images').delete().in('id', toDelete);
+  const removedRows = (existingImgs || []).filter(i => !keepIds.includes(i.id));
+  if (removedRows.length) {
+    await supabaseClient.from('product_images').delete().in('id', removedRows.map(r => r.id));
+    const removedPaths = removedRows.map(r => storagePathFromUrl(r.url, 'product-images')).filter(Boolean);
+    if (removedPaths.length) await supabaseClient.storage.from('product-images').remove(removedPaths);
+  }
 
   const newImgs = PENDING_IMAGES.filter(i => !i.id).map((i, idx) => ({
     product_id: productId, url: i.url, is_primary: i.is_primary, sort_order: idx,
@@ -760,11 +797,15 @@ function renderDesignTab() {
     if (input) input.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
+      const oldUrl = pendingLogoUrl;
       const path = `logo-${Date.now()}-${file.name}`;
       const { error } = await supabaseClient.storage.from('site-assets').upload(path, file);
       if (error) { toast(error.message, 'error'); return; }
       const { data: pub } = supabaseClient.storage.from('site-assets').getPublicUrl(path);
       pendingLogoUrl = pub.publicUrl;
+      // replacing an existing logo — clean up the file it's replacing
+      const oldPath = storagePathFromUrl(oldUrl, 'site-assets');
+      if (oldPath) await supabaseClient.storage.from('site-assets').remove([oldPath]);
       document.getElementById('ds_logoWrap').innerHTML = `
         <div class="img-slot"><img src="${pendingLogoUrl}"><button type="button" class="rm" id="ds_logoRemove">✕</button></div>
         <label class="img-add" id="ds_logoAddLabel" style="display:none;">+<input type="file" id="ds_logoInput" accept="image/*" style="display:none;"></label>
@@ -773,7 +814,9 @@ function renderDesignTab() {
       renderDesignPreview();
     });
     const rm = document.getElementById('ds_logoRemove');
-    if (rm) rm.addEventListener('click', () => {
+    if (rm) rm.addEventListener('click', async () => {
+      const oldPath = storagePathFromUrl(pendingLogoUrl, 'site-assets');
+      if (oldPath) await supabaseClient.storage.from('site-assets').remove([oldPath]);
       pendingLogoUrl = null;
       document.getElementById('ds_logoWrap').innerHTML = `<label class="img-add" id="ds_logoAddLabel">+<input type="file" id="ds_logoInput" accept="image/*" style="display:none;"></label>`;
       wireLogoControls();
