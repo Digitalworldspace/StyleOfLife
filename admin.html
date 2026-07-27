@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bolt & Ledger — Admin</title>
+<title>Style Of Life — Admin</title>
 <link rel="stylesheet" href="assets/style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/config.js"></script>
@@ -111,8 +111,8 @@
 <div id="loginScreen" class="login-wrap">
   <div class="card login-card">
     <div class="brand" style="margin-bottom:22px;">
-      <span class="brand-mark">B&amp;L</span>
-      <div><div class="brand-name">Bolt &amp; Ledger</div><div class="brand-sub">Admin Panel</div></div>
+      <span class="brand-mark">SL</span>
+      <div><div class="brand-name">Style Of Life</div><div class="brand-sub">Admin Panel</div></div>
     </div>
     <form id="loginForm">
       <div class="field"><label>Username</label><input required id="li_username" autocomplete="username"></div>
@@ -126,8 +126,8 @@
 <div class="app" id="app" style="display:none;">
   <aside class="sidebar">
     <div class="brand">
-      <span class="brand-mark">B&amp;L</span>
-      <div><div class="brand-name">Bolt &amp; Ledger</div><div class="brand-sub">Admin Panel</div></div>
+      <span class="brand-mark">SL</span>
+      <div><div class="brand-name">Style Of Life</div><div class="brand-sub">Admin Panel</div></div>
     </div>
     <nav style="padding-top:10px;">
       <div class="nav-item active" data-tab="products">Products</div>
@@ -223,6 +223,12 @@ function toast(msg, type = '') {
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
   return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function getInitials(name) {
+  const words = (name || '').trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return '';
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
 }
 function showOverlayModal(o, m) { document.getElementById(o).classList.add('show'); document.getElementById(m).classList.add('show'); }
 function hideOverlayModal(o, m) { document.getElementById(o).classList.remove('show'); document.getElementById(m).classList.remove('show'); }
@@ -331,31 +337,110 @@ async function loadSiteSettings() {
 /* ============================================================================
    PRODUCTS TAB
    ============================================================================ */
+let SELECTED_PRODUCT_IDS = new Set();
+
 function renderProductsTab() {
   const body = document.getElementById('pageBody');
+  SELECTED_PRODUCT_IDS = new Set([...SELECTED_PRODUCT_IDS].filter(id => PRODUCTS.some(p => p.id === id)));
+
   if (!PRODUCTS.length) {
     body.innerHTML = `<div class="card empty-state"><div class="display">No products yet</div><p>Click "New Product" to add your first SKU.</p></div>`;
     return;
   }
-  body.innerHTML = `<div class="card" style="overflow-x:auto;"><table>
-    <thead><tr><th></th><th>SKU</th><th>Name</th><th>Category</th><th>Price</th><th>MOQ</th><th>Status</th><th></th></tr></thead>
-    <tbody>${PRODUCTS.map(p => {
-      const img = (p.product_images || []).sort((a,b)=>(b.is_primary-a.is_primary))[0]?.url;
-      const cat = CATEGORIES.find(c => c.id === p.category_id)?.name || '—';
-      const statusTag = { active: 'tag-green', draft: 'tag-ochre', discontinued: 'tag-red' }[p.status];
-      return `<tr>
-        <td>${img ? `<img class="thumb" src="${img}">` : `<div class="thumb"></div>`}</td>
-        <td class="mono">${escapeHtml(p.sku)}</td>
-        <td>${escapeHtml(p.name)}</td>
-        <td>${escapeHtml(cat)}</td>
-        <td class="mono">${p.base_price ? '$' + Number(p.base_price).toFixed(2) : 'Quote'}</td>
-        <td>${p.moq}</td>
-        <td><span class="tag ${statusTag}">${p.status}</span></td>
-        <td><button class="btn btn-ghost btn-sm" data-edit="${p.id}">Edit</button></td>
-      </tr>`;
-    }).join('')}</tbody>
-  </table></div>`;
+  const allChecked = SELECTED_PRODUCT_IDS.size > 0 && SELECTED_PRODUCT_IDS.size === PRODUCTS.length;
+
+  body.innerHTML = `
+    <div class="toolrow" id="bulkBarProducts" style="${SELECTED_PRODUCT_IDS.size ? '' : 'display:none;'}">
+      <span class="text-sm"><strong id="bulkCountProducts">0</strong> selected</span>
+      <div class="flex gap-8" style="flex-wrap:wrap;">
+        <select id="bulkProductStatus" style="width:auto;">
+          <option value="active">Set status: Active</option>
+          <option value="draft">Set status: Draft</option>
+          <option value="discontinued">Set status: Discontinued</option>
+        </select>
+        <button class="btn btn-outline btn-sm" id="bulkProductStatusBtn">Apply</button>
+        <select id="bulkProductCategory" style="width:auto;">
+          <option value="">Move to category…</option>
+          ${CATEGORIES.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('')}
+        </select>
+        <button class="btn btn-outline btn-sm" id="bulkProductCategoryBtn">Apply</button>
+        <button class="btn btn-danger btn-sm" id="bulkProductDeleteBtn">Delete</button>
+      </div>
+    </div>
+    <div class="card" style="overflow-x:auto;"><table>
+      <thead><tr>
+        <th style="width:32px;"><input type="checkbox" id="selectAllProducts" ${allChecked ? 'checked' : ''}></th>
+        <th></th><th>SKU</th><th>Name</th><th>Category</th><th>Price</th><th>MOQ</th><th>Status</th><th></th>
+      </tr></thead>
+      <tbody>${PRODUCTS.map(p => {
+        const img = (p.product_images || []).sort((a,b)=>(b.is_primary-a.is_primary))[0]?.url;
+        const cat = CATEGORIES.find(c => c.id === p.category_id)?.name || '—';
+        const statusTag = { active: 'tag-green', draft: 'tag-ochre', discontinued: 'tag-red' }[p.status];
+        return `<tr>
+          <td><input type="checkbox" class="prod-check" data-id="${p.id}" ${SELECTED_PRODUCT_IDS.has(p.id) ? 'checked' : ''}></td>
+          <td>${img ? `<img class="thumb" src="${img}">` : `<div class="thumb"></div>`}</td>
+          <td class="mono">${escapeHtml(p.sku)}</td>
+          <td>${escapeHtml(p.name)}</td>
+          <td>${escapeHtml(cat)}</td>
+          <td class="mono">${p.base_price ? '$' + Number(p.base_price).toFixed(2) : 'Quote'}</td>
+          <td>${p.moq}</td>
+          <td><span class="tag ${statusTag}">${p.status}</span></td>
+          <td><button class="btn btn-ghost btn-sm" data-edit="${p.id}">Edit</button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+
   body.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openProductForm(b.dataset.edit)));
+
+  document.getElementById('selectAllProducts').addEventListener('change', (e) => {
+    SELECTED_PRODUCT_IDS = e.target.checked ? new Set(PRODUCTS.map(p => p.id)) : new Set();
+    renderProductsTab();
+  });
+  body.querySelectorAll('.prod-check').forEach(cb => cb.addEventListener('change', (e) => {
+    if (e.target.checked) SELECTED_PRODUCT_IDS.add(cb.dataset.id);
+    else SELECTED_PRODUCT_IDS.delete(cb.dataset.id);
+    renderProductsTab();
+  }));
+
+  const bulkCount = document.getElementById('bulkCountProducts');
+  if (bulkCount) bulkCount.textContent = SELECTED_PRODUCT_IDS.size;
+
+  const statusBtn = document.getElementById('bulkProductStatusBtn');
+  if (statusBtn) statusBtn.addEventListener('click', async () => {
+    const status = document.getElementById('bulkProductStatus').value;
+    statusBtn.disabled = true; statusBtn.innerHTML = '<span class="spinner"></span>';
+    const { error } = await supabaseClient.from('products').update({ status }).in('id', [...SELECTED_PRODUCT_IDS]);
+    statusBtn.disabled = false; statusBtn.textContent = 'Apply';
+    if (error) { toast(error.message, 'error'); return; }
+    toast(`${SELECTED_PRODUCT_IDS.size} product(s) set to ${status}`, 'success');
+    SELECTED_PRODUCT_IDS = new Set();
+    await loadProducts(); renderTab();
+  });
+
+  const catBtn = document.getElementById('bulkProductCategoryBtn');
+  if (catBtn) catBtn.addEventListener('click', async () => {
+    const category_id = document.getElementById('bulkProductCategory').value;
+    if (!category_id) { toast('Pick a category first', 'error'); return; }
+    catBtn.disabled = true; catBtn.innerHTML = '<span class="spinner"></span>';
+    const { error } = await supabaseClient.from('products').update({ category_id }).in('id', [...SELECTED_PRODUCT_IDS]);
+    catBtn.disabled = false; catBtn.textContent = 'Apply';
+    if (error) { toast(error.message, 'error'); return; }
+    toast(`${SELECTED_PRODUCT_IDS.size} product(s) moved`, 'success');
+    SELECTED_PRODUCT_IDS = new Set();
+    await loadProducts(); renderTab();
+  });
+
+  const deleteBtn = document.getElementById('bulkProductDeleteBtn');
+  if (deleteBtn) deleteBtn.addEventListener('click', async () => {
+    if (!confirm(`Delete ${SELECTED_PRODUCT_IDS.size} product(s)? This can't be undone.`)) return;
+    deleteBtn.disabled = true; deleteBtn.innerHTML = '<span class="spinner"></span>';
+    const { error } = await supabaseClient.from('products').delete().in('id', [...SELECTED_PRODUCT_IDS]);
+    deleteBtn.disabled = false; deleteBtn.textContent = 'Delete';
+    if (error) { toast(error.message, 'error'); return; }
+    toast('Products deleted', 'success');
+    SELECTED_PRODUCT_IDS = new Set();
+    await loadProducts(); renderTab();
+  });
 }
 
 function openProductForm(id) {
@@ -627,7 +712,7 @@ function renderDesignTab() {
     <div class="card" style="padding:22px; margin-bottom:22px;">
       <h3 class="display" style="font-size:16px; margin-bottom:16px;">Branding &amp; Copy</h3>
       <div class="field-row">
-        <div class="field"><label>Brand name</label><input id="ds_brandName" value="${escapeHtml(s.brand_name || 'Bolt & Ledger')}"></div>
+        <div class="field"><label>Brand name</label><input id="ds_brandName" value="${escapeHtml(s.brand_name || 'Style Of Life')}"></div>
         <div class="field"><label>Brand tagline</label><input id="ds_brandSub" value="${escapeHtml(s.brand_sub || 'Wholesale Textile Trading Co.')}"></div>
       </div>
       <div class="field">
@@ -704,14 +789,14 @@ function renderDesignTab() {
   function renderDesignPreview() {
     const theme = getTheme(PENDING_THEME_ID);
     const varStyle = Object.entries(theme.vars).map(([k, v]) => `--${k}:${v}`).join(';');
-    const brandName = document.getElementById('ds_brandName').value || 'Bolt & Ledger';
+    const brandName = document.getElementById('ds_brandName').value || 'Style Of Life';
     const tickerItems = (document.getElementById('ds_tickerText').value || '')
       .split('·').map(s => s.trim()).filter(Boolean);
     document.getElementById('designPreview').innerHTML = `
       <div class="preview-hero" style="${varStyle}">
         <div class="preview-brand">
           ${pendingLogoUrl ? `<img src="${pendingLogoUrl}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">`
-                            : `<span class="brand-mark">${escapeHtml(brandName.split(' ').map(w=>w[0]).slice(0,2).join(''))}</span>`}
+                            : `<span class="brand-mark">${escapeHtml(getInitials(brandName))}</span>`}
           <strong style="font-family:var(--font-display); font-size:16px;">${escapeHtml(brandName)}</strong>
         </div>
         ${tickerItems.length ? `
@@ -734,7 +819,7 @@ function renderDesignTab() {
     btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Saving…';
     const payload = {
       theme_id: PENDING_THEME_ID,
-      brand_name: document.getElementById('ds_brandName').value.trim() || 'Bolt & Ledger',
+      brand_name: document.getElementById('ds_brandName').value.trim() || 'Style Of Life',
       brand_sub: document.getElementById('ds_brandSub').value.trim(),
       logo_url: pendingLogoUrl,
       ticker_text: document.getElementById('ds_tickerText').value.trim(),
@@ -755,11 +840,54 @@ function renderDesignTab() {
 });
 
 /* ============================================================================
+   LIVE SYNC — reflect catalog-side changes (new inquiries) and any changes
+   from another admin session, instantly, no refresh needed
+   ============================================================================ */
+let LIVE_DEBOUNCE = {};
+function liveRefresh(key, fn, delay = 250) {
+  clearTimeout(LIVE_DEBOUNCE[key]);
+  LIVE_DEBOUNCE[key] = setTimeout(fn, delay);
+}
+let LIVE_SYNC_STARTED = false;
+function initLiveSync() {
+  if (LIVE_SYNC_STARTED) return;
+  LIVE_SYNC_STARTED = true;
+  supabaseClient
+    .channel('admin-live')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'inquiries' }, () => {
+      liveRefresh('inquiries', async () => {
+        await loadInquiries();
+        if (ACTIVE_TAB === 'inquiries') renderTab();
+      });
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'inquiry_items' }, () => {
+      liveRefresh('inquiries', async () => {
+        await loadInquiries();
+        if (ACTIVE_TAB === 'inquiries') renderTab();
+      });
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+      liveRefresh('products', async () => {
+        await loadProducts();
+        if (ACTIVE_TAB === 'products') renderTab();
+      });
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
+      liveRefresh('categories', async () => {
+        await loadCategories();
+        if (ACTIVE_TAB === 'products' || ACTIVE_TAB === 'categories') renderTab();
+      });
+    })
+    .subscribe();
+}
+
+/* ============================================================================
    BOOT
    ============================================================================ */
 async function boot() {
   await Promise.all([loadCategories(), loadProducts(), loadInquiries(), loadSiteSettings()]);
   renderTab();
+  initLiveSync();
 }
 
 if (localStorage.getItem(SESSION_KEY) === '1') showApp();
