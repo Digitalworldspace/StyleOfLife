@@ -123,6 +123,22 @@ them at once:
   category, or delete.
 - **Inquiries**: set status (new/reviewed/quoted/closed), or delete.
 
+## Image storage
+
+Product photos upload straight to the `product-images` Storage bucket,
+organized into a folder per SKU (e.g. `COT-450-RUST/162839...-photo.jpg`),
+so it's easy to find every photo for a given product directly in the
+Supabase Storage browser.
+
+Deleting an image — whether you remove it from a product's edit form,
+delete a product entirely (including via bulk delete), or replace/remove
+the site logo in Design — also deletes the actual file from Storage, not
+just the database reference. The one exception: removing an *already-saved*
+image from a product's edit form only deletes its file once you hit
+**Save Product** (so closing the form without saving doesn't silently
+delete a live photo); newly-uploaded images you remove before ever saving
+are cleaned up immediately since nothing depends on them yet.
+
 ## Notes on security (read this)
 
 `admin.html` now has a login screen, checked against the `admin_credentials`
