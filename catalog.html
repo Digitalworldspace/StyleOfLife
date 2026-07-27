@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bolt & Ledger — Wholesale Textile Catalog</title>
+<title>Style Of Life — Wholesale Textile Catalog</title>
 <link rel="stylesheet" href="assets/style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/config.js"></script>
@@ -134,9 +134,9 @@
 
 <header class="topbar">
   <div class="brand" id="brandMarkWrap">
-    <span class="brand-mark" id="brandMark">B&amp;L</span>
+    <span class="brand-mark" id="brandMark">SL</span>
     <div>
-      <div class="brand-name" id="brandName">Bolt &amp; Ledger</div>
+      <div class="brand-name" id="brandName">Style Of Life</div>
       <div class="brand-sub" id="brandSub">Wholesale Textile Trading Co.</div>
     </div>
   </div>
@@ -249,6 +249,9 @@ async function loadSiteSettings() {
     img.alt = data.brand_name;
     img.className = 'brand-logo-img';
     initials.replaceWith(img);
+  } else {
+    const mark = document.getElementById('brandMark');
+    if (mark) mark.textContent = getInitials(data.brand_name);
   }
 }
 
@@ -552,6 +555,41 @@ function escapeHtml(str) {
   if (str === null || str === undefined) return '';
   return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
+function getInitials(name) {
+  const words = (name || '').trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return '';
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+}
+
+/* ============================================================================
+   LIVE SYNC — reflect admin panel changes here instantly, no refresh needed
+   ============================================================================ */
+let LIVE_DEBOUNCE = {};
+function liveRefresh(key, fn, delay = 250) {
+  // small debounce so a burst of related writes (e.g. product + its images)
+  // doesn't trigger a pile of redundant refetches
+  clearTimeout(LIVE_DEBOUNCE[key]);
+  LIVE_DEBOUNCE[key] = setTimeout(fn, delay);
+}
+
+function initLiveSync() {
+  supabaseClient
+    .channel('catalog-live')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+      liveRefresh('products', async () => { await loadProducts(); renderGrid(); });
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'product_images' }, () => {
+      liveRefresh('products', async () => { await loadProducts(); renderGrid(); });
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
+      liveRefresh('categories', async () => { await loadCategories(); renderChips(); renderGrid(); });
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'site_settings' }, () => {
+      liveRefresh('settings', loadSiteSettings);
+    })
+    .subscribe();
+}
 
 /* ============================================================================
    INIT
@@ -560,6 +598,7 @@ function escapeHtml(str) {
   await loadSiteSettings();
   await Promise.all([loadCategories(), loadProducts()]);
   renderCart();
+  initLiveSync();
 })();
 </script>
 </body>
