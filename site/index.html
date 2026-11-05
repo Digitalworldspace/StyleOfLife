@@ -11,6 +11,58 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Bodoni+Moda:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+
+<style>
+/* Home page reviews: one continuous horizontal line moving right-to-left */
+#reviews #reviewList {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 20px !important;
+  width: max-content;
+  max-width: none !important;
+  margin: 28px 0 0 !important;
+  overflow: visible !important;
+}
+#reviews .review-marquee-viewport {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+}
+#reviews .review-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 20px;
+  animation: homeReviewsReverse 48s linear infinite;
+  will-change: transform;
+}
+#reviews .review-marquee-track:hover {
+  animation-play-state: paused;
+}
+#reviews .review-marquee-track .rev-card {
+  flex: 0 0 320px !important;
+  width: 320px !important;
+  min-width: 280px;
+  max-width: 320px;
+}
+@keyframes homeReviewsReverse {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+@media (max-width: 600px) {
+  #reviews .review-marquee-track .rev-card {
+    flex-basis: 270px !important;
+    width: 270px !important;
+    min-width: 270px;
+  }
+  #reviews .review-marquee-track { animation-duration: 38s; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #reviews .review-marquee-track { animation: none; }
+}
+</style>
+
 </head>
 <body>
 <div class="promo-bar">
@@ -29,7 +81,6 @@
     <div class="navlinks">
       <a href="index.html" class="active">Home</a>
       <a href="jewelry.html">Jewelry</a>
-      <a href="#reviews">Reviews</a>
       <a href="#faq">FAQ</a>
       <a href="about.html">Our Story</a>
       <a href="#contact">Contact</a>
@@ -276,5 +327,48 @@
 <script src="js/config.js"></script>
 <script src="js/main.js"></script>
 <script src="js/render.js"></script>
+
+<script>
+(function () {
+  function setupHomeReviewMarquee() {
+    var list = document.getElementById('reviewList');
+    if (!list || list.dataset.marqueeReady === '1') return;
+    var cards = Array.from(list.querySelectorAll('.rev-card'));
+    if (!cards.length) return;
+
+    list.dataset.marqueeReady = '1';
+
+    var viewport = document.createElement('div');
+    viewport.className = 'review-marquee-viewport';
+    var track = document.createElement('div');
+    track.className = 'review-marquee-track';
+
+    var originalSet = document.createElement('div');
+    originalSet.style.display = 'flex';
+    originalSet.style.gap = '20px';
+    originalSet.append.apply(originalSet, cards);
+
+    var cloneSet = originalSet.cloneNode(true);
+    cloneSet.setAttribute('aria-hidden', 'true');
+    cloneSet.querySelectorAll('a, button, input, textarea, select').forEach(function (el) {
+      el.setAttribute('tabindex', '-1');
+    });
+
+    track.append(originalSet, cloneSet);
+    viewport.appendChild(track);
+    list.replaceWith(viewport);
+  }
+
+  var tries = 0;
+  var timer = setInterval(function () {
+    setupHomeReviewMarquee();
+    tries += 1;
+    if (document.querySelector('#reviews .review-marquee-viewport') || tries > 40) {
+      clearInterval(timer);
+    }
+  }, 250);
+})();
+</script>
+
 </body>
 </html>
