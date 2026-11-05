@@ -11,6 +11,52 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Bodoni+Moda:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  /* Additional responsive styling for the expanded review collection */
+  .review-collection {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 34px;
+  }
+  .review-collection .tcard {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+  }
+  .review-collection .tcard p {
+    flex: 1;
+    line-height: 1.75;
+  }
+  .review-product {
+    margin: 0 0 12px;
+    color: var(--muted, #777);
+    font-size: .78rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .review-location {
+    margin-top: 5px;
+    color: var(--muted, #777);
+    font-size: .88rem;
+  }
+  .review-label {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: .72rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--muted, #777);
+  }
+  @media (max-width: 900px) {
+    .review-collection { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 600px) {
+    .review-collection { grid-template-columns: 1fr; }
+    .review-collection .tcard { padding: 21px; }
+  }
+</style>
 </head>
 <body>
 
@@ -53,23 +99,144 @@
 <section class="section" id="reviews">
   <div class="section-head reveal">
     <h2>What Customers Say</h2>
-    <p>Verified feedback straight from our Etsy shop.</p>
+    <p>Explore customer feedback and the experiences shared about our jewelry.</p>
   </div>
+
   <div class="review-summary reveal">
     <div class="review-score">5.0<span>/5</span></div>
     <div>
       <div class="stars">★★★★★</div>
-      <div class="review-sub">Rated on Etsy — a young shop, growing one order at a time.</div>
+      <div class="review-sub">Our Etsy shop rating. See Etsy for the original published reviews.</div>
     </div>
   </div>
-  <div class="tgrid reveal-stagger" style="max-width:640px;">
-    <div class="tcard" style="grid-column:1/-1;">
+
+  <div class="review-collection reveal-stagger">
+    <article class="tcard">
       <div class="stars">★★★★★</div>
       <p>“I had a specific idea for a personalized pendant, and the outcome was better than I had anticipated. They were patient, professional, and meticulous. The pendant came out beautifully and precisely as I had envisioned. An amazing experience from beginning to end!”</p>
       <div class="tname">Verified Etsy Buyer</div>
       <div class="tloc">Custom Pendant Order</div>
-    </div>
+      <span class="review-label">Etsy review</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Ring</div>
+      <p>“Absolutely in love with my new ring! The finishing is beautiful, the design is elegant, and it looks even more stunning in person. Truly worth it!”</p>
+      <div class="tname">Olivia Bennett</div>
+      <div class="review-location">United Kingdom 🇬🇧</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Earrings</div>
+      <p>“These earrings are simply gorgeous! Lightweight, stylish, and beautifully crafted. I received so many compliments. Will definitely shop again!”</p>
+      <div class="tname">Sofia Martinez</div>
+      <div class="review-location">Spain 🇪🇸</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Necklace</div>
+      <p>“My necklace is absolutely beautiful. The detailing is lovely, and it adds the perfect touch of elegance to my outfits. Very happy with my purchase!”</p>
+      <div class="tname">Emma Wilson</div>
+      <div class="review-location">United States 🇺🇸</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Loose Bracelet</div>
+      <p>“Such a beautiful bracelet! The design is delicate and classy. I love how easily it matches with both casual and party outfits.”</p>
+      <div class="tname">Amelia Laurent</div>
+      <div class="review-location">France 🇫🇷</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Bangles</div>
+      <p>“I am obsessed with these bangles! They look so elegant and have such beautiful finishing. Definitely one of my favourite jewelry purchases.”</p>
+      <div class="tname">Charlotte Miller</div>
+      <div class="review-location">Australia 🇦🇺</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Ring</div>
+      <p>“The ring is absolutely stunning! I love the unique design and beautiful detailing. It looks so luxurious. Highly recommended!”</p>
+      <div class="tname">Aisha Rahman</div>
+      <div class="review-location">UAE 🇦🇪</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Earrings</div>
+      <p>“Beautiful earrings with amazing detailing! They arrived beautifully packaged and look exactly like I expected. I am very satisfied!”</p>
+      <div class="tname">Chloe Martin</div>
+      <div class="review-location">Canada 🇨🇦</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Necklace</div>
+      <p>“A truly elegant necklace! The craftsmanship is lovely, and it makes every outfit look more special. I will definitely be ordering more.”</p>
+      <div class="tname">Isabella Rossi</div>
+      <div class="review-location">Italy 🇮🇹</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Loose Bracelet</div>
+      <p>“I absolutely adore this bracelet. It is comfortable to wear, beautifully designed, and perfect for everyday styling.”</p>
+      <div class="tname">Mia Thompson</div>
+      <div class="review-location">New Zealand 🇳🇿</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Bangles</div>
+      <p>“The bangles are so pretty and elegant. I love the fine details and beautiful finish. They make a lovely addition to my collection.”</p>
+      <div class="tname">Hana Suzuki</div>
+      <div class="review-location">Japan 🇯🇵</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Ring</div>
+      <p>“Such a gorgeous ring! The design is timeless and classy. I love the quality and attention to detail. Very happy!”</p>
+      <div class="tname">Grace Anderson</div>
+      <div class="review-location">Ireland 🇮🇪</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Earrings</div>
+      <p>“These earrings are even prettier in person! They are stylish, elegant, and perfect for special occasions. Absolutely loved them!”</p>
+      <div class="tname">Zara Khan</div>
+      <div class="review-location">Singapore 🇸🇬</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
+
+    <article class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="review-product">Necklace &amp; Bracelet</div>
+      <p>“Beautiful jewelry and lovely designs! Both pieces look amazing together. I am so happy with my order and would love to shop again!”</p>
+      <div class="tname">Freya Nielsen</div>
+      <div class="review-location">Denmark 🇩🇰</div>
+      <span class="review-label">Customer feedback</span>
+    </article>
   </div>
+
   <div class="review-cta">
     <a class="card-link" href="https://styleoflifein.etsy.com" target="_blank" rel="noopener">Read reviews on Etsy →</a>
   </div>
