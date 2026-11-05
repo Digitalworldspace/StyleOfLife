@@ -12,28 +12,38 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Bodoni+Moda:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
-/* Show exactly one review at a time, moving from left to right */
+/* Reviews use the same continuous reverse marquee animation as index.html */
 #reviews { overflow: hidden; }
-#reviewViewport {
-  width: min(100% - 32px, 900px);
-  margin: 28px auto 0;
-  overflow: hidden;
-}
-#reviewList {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 0;
+#reviews #reviewList {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 20px !important;
   width: max-content;
-  max-width: none;
-  margin: 0;
-  animation: reviewsOneByOneReverse 42s linear infinite;
+  max-width: none !important;
+  margin: 28px 0 0 !important;
+  overflow: visible !important;
+}
+#reviews .review-marquee-viewport {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+}
+#reviews .review-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 20px;
+  animation: homeReviewsReverse 48s linear infinite;
   will-change: transform;
 }
-#reviewList .rev-card {
+#reviews .review-marquee-track:hover { animation-play-state: paused; }
+#reviews .review-marquee-track .rev-card {
   box-sizing: border-box;
-  flex: 0 0 min(100vw - 32px, 900px);
-  width: min(100vw - 32px, 900px);
-  min-width: min(100vw - 32px, 900px);
+  flex: 0 0 320px !important;
+  width: 320px !important;
+  min-width: 280px;
+  max-width: 320px;
   min-height: 145px;
   display: flex;
   flex-direction: column;
@@ -43,21 +53,28 @@
   gap: 12px;
   padding: 24px;
 }
-#reviewList .rev-stars { letter-spacing: .12em; }
-#reviewList .rev-customer { margin: 0; }
-#reviewList .rev-source {
+#reviews .rev-stars { letter-spacing: .12em; }
+#reviews .rev-customer { margin: 0; }
+#reviews .rev-source {
   font-size: .72rem;
   letter-spacing: .1em;
   text-transform: uppercase;
   opacity: .7;
 }
-#reviews:hover #reviewList { animation-play-state: paused; }
-@keyframes reviewsOneByOneReverse {
+@keyframes homeReviewsReverse {
   from { transform: translateX(-50%); }
   to { transform: translateX(0); }
 }
+@media (max-width: 600px) {
+  #reviews .review-marquee-track .rev-card {
+    flex-basis: 270px !important;
+    width: 270px !important;
+    min-width: 270px;
+  }
+  #reviews .review-marquee-track { animation-duration: 38s; }
+}
 @media (prefers-reduced-motion: reduce) {
-  #reviewList { animation: none; }
+  #reviews .review-marquee-track { animation: none; }
 }
 </style>
 </head>
@@ -266,27 +283,48 @@
 <script src="js/main.js"></script>
 <script src="js/render.js"></script>
 <script>
+// Randomly label non-Etsy reviews as Offline or Website; keep Etsy reviews as Etsy.
 document.querySelectorAll('#reviewList .rev-source[data-source="random"]').forEach(function(label) {
   label.textContent = Math.random() < 0.5 ? 'Offline' : 'Website';
 });
 
 (function () {
-  const list = document.getElementById('reviewList');
-  if (!list || list.dataset.marqueeReady === 'true') return;
+  function setupReviewMarquee() {
+    var list = document.getElementById('reviewList');
+    if (!list || list.dataset.marqueeReady === '1') return;
+    var cards = Array.from(list.querySelectorAll('.rev-card'));
+    if (!cards.length) return;
 
-  // Add a clipping window so only one full review card is visible.
-  const viewport = document.createElement('div');
-  viewport.id = 'reviewViewport';
-  list.parentNode.insertBefore(viewport, list);
-  viewport.appendChild(list);
+    list.dataset.marqueeReady = '1';
+    var viewport = document.createElement('div');
+    viewport.className = 'review-marquee-viewport';
+    var track = document.createElement('div');
+    track.className = 'review-marquee-track';
 
-  // Duplicate the sequence for a seamless right-moving loop.
-  Array.from(list.children).forEach(function(card) {
-    const clone = card.cloneNode(true);
-    clone.setAttribute('aria-hidden', 'true');
-    list.appendChild(clone);
-  });
-  list.dataset.marqueeReady = 'true';
+    var originalSet = document.createElement('div');
+    originalSet.style.display = 'flex';
+    originalSet.style.gap = '20px';
+    originalSet.append.apply(originalSet, cards);
+
+    var cloneSet = originalSet.cloneNode(true);
+    cloneSet.setAttribute('aria-hidden', 'true');
+    cloneSet.querySelectorAll('a, button, input, textarea, select').forEach(function(el) {
+      el.setAttribute('tabindex', '-1');
+    });
+
+    track.append(originalSet, cloneSet);
+    viewport.appendChild(track);
+    list.replaceWith(viewport);
+  }
+
+  var tries = 0;
+  var timer = setInterval(function() {
+    setupReviewMarquee();
+    tries += 1;
+    if (document.querySelector('#reviews .review-marquee-viewport') || tries > 40) {
+      clearInterval(timer);
+    }
+  }, 250);
 })();
 </script>
 </body>
