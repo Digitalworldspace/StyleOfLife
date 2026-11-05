@@ -12,22 +12,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Bodoni+Moda:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
-/* Compact review cards in a continuous reverse-direction marquee */
+/* Show exactly one review at a time, moving from left to right */
 #reviews { overflow: hidden; }
+#reviewViewport {
+  width: min(100% - 32px, 900px);
+  margin: 28px auto 0;
+  overflow: hidden;
+}
 #reviewList {
   display: flex;
   flex-wrap: nowrap;
-  gap: 20px;
+  gap: 0;
   width: max-content;
   max-width: none;
-  margin: 28px 0 0;
-  animation: reviewsReverse 42s linear infinite;
+  margin: 0;
+  animation: reviewsOneByOneReverse 42s linear infinite;
   will-change: transform;
 }
 #reviewList .rev-card {
-  flex: 0 0 260px;
-  width: 260px;
-  min-width: 260px;
+  box-sizing: border-box;
+  flex: 0 0 min(100vw - 32px, 900px);
+  width: min(100vw - 32px, 900px);
+  min-width: min(100vw - 32px, 900px);
   min-height: 145px;
   display: flex;
   flex-direction: column;
@@ -46,13 +52,9 @@
   opacity: .7;
 }
 #reviews:hover #reviewList { animation-play-state: paused; }
-@keyframes reviewsReverse {
+@keyframes reviewsOneByOneReverse {
   from { transform: translateX(-50%); }
   to { transform: translateX(0); }
-}
-@media (max-width: 600px) {
-  #reviewList { gap: 14px; animation-duration: 34s; }
-  #reviewList .rev-card { flex-basis: 235px; width: 235px; min-width: 235px; padding: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
   #reviewList { animation: none; }
@@ -268,13 +270,18 @@ document.querySelectorAll('#reviewList .rev-source[data-source="random"]').forEa
   label.textContent = Math.random() < 0.5 ? 'Offline' : 'Website';
 });
 
-// Duplicate the cards once for a seamless right-moving (reverse) marquee.
 (function () {
   const list = document.getElementById('reviewList');
   if (!list || list.dataset.marqueeReady === 'true') return;
-  const originals = Array.from(list.children);
-  if (!originals.length) return;
-  originals.forEach(function (card) {
+
+  // Add a clipping window so only one full review card is visible.
+  const viewport = document.createElement('div');
+  viewport.id = 'reviewViewport';
+  list.parentNode.insertBefore(viewport, list);
+  viewport.appendChild(list);
+
+  // Duplicate the sequence for a seamless right-moving loop.
+  Array.from(list.children).forEach(function(card) {
     const clone = card.cloneNode(true);
     clone.setAttribute('aria-hidden', 'true');
     list.appendChild(clone);
