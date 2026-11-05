@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Bodoni+Moda:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
-/* Review cards: responsive layout that follows the existing site theme */
+/* Compact customer review cards */
 #reviewList {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -22,34 +22,22 @@
 }
 #reviewList .rev-card {
   min-width: 0;
-  height: 100%;
+  min-height: 145px;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
   padding: 24px;
 }
-#reviewList .rev-card p {
-  flex: 1;
-  line-height: 1.75;
-}
-#reviewList .rev-product {
-  margin: 0 0 10px;
-  font-size: .76rem;
-  letter-spacing: .09em;
+#reviewList .rev-stars { letter-spacing: .12em; }
+#reviewList .rev-customer { margin: 0; }
+#reviewList .rev-source {
+  font-size: .72rem;
+  letter-spacing: .1em;
   text-transform: uppercase;
-  opacity: .72;
-}
-#reviewList .rev-location {
-  margin-top: 5px;
-  font-size: .88rem;
-  opacity: .72;
-}
-#reviewList .rev-label {
-  display: inline-block;
-  margin-top: 12px;
-  font-size: .7rem;
-  letter-spacing: .07em;
-  text-transform: uppercase;
-  opacity: .65;
+  opacity: .7;
 }
 @media (max-width: 900px) {
   #reviewList { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -114,87 +102,86 @@
   <div class="rev-grid" id="reviewList">
     <article class="rev-card">
       <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-      <h4>Custom pendant</h4>
-      <p>&ldquo;I had a specific idea for a personalized pendant, and the outcome was better than I had anticipated. They were patient, professional, and meticulous. The pendant came out beautifully and precisely as I had envisioned. An amazing experience from beginning to end!&rdquo;</p>
-      <div class="rev-who"><span><strong>Verified Etsy buyer</strong></span></div>
+      <h4 class="rev-customer">Verified Etsy buyer</h4>
+      <span class="rev-source" data-source="Etsy">Etsy</span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Ring</div>
-      <p>&ldquo;Absolutely in love with my new ring! The finishing is beautiful, the design is elegant, and it looks even more stunning in person. Truly worth it!&rdquo;</p>
-      <div class="rev-who"><span><strong>Olivia Bennett</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Olivia Bennett</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Earrings</div>
-      <p>&ldquo;These earrings are simply gorgeous! Lightweight, stylish, and beautifully crafted. I received so many compliments. Will definitely shop again!&rdquo;</p>
-      <div class="rev-who"><span><strong>Sofia Martinez</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Sofia Martinez</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Necklace</div>
-      <p>&ldquo;My necklace is absolutely beautiful. The detailing is lovely, and it adds the perfect touch of elegance to my outfits. Very happy with my purchase!&rdquo;</p>
-      <div class="rev-who"><span><strong>Emma Wilson</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Emma Wilson</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Loose Bracelet</div>
-      <p>&ldquo;Such a beautiful bracelet! The design is delicate and classy. I love how easily it matches with both casual and party outfits.&rdquo;</p>
-      <div class="rev-who"><span><strong>Amelia Laurent</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Amelia Laurent</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Bangles</div>
-      <p>&ldquo;I am obsessed with these bangles! They look so elegant and have such beautiful finishing. Definitely one of my favourite jewelry purchases.&rdquo;</p>
-      <div class="rev-who"><span><strong>Charlotte Miller</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Charlotte Miller</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Ring</div>
-      <p>&ldquo;The ring is absolutely stunning! I love the unique design and beautiful detailing. It looks so luxurious. Highly recommended!&rdquo;</p>
-      <div class="rev-who"><span><strong>Aisha Rahman</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Aisha Rahman</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Earrings</div>
-      <p>&ldquo;Beautiful earrings with amazing detailing! They arrived beautifully packaged and look exactly like I expected. I am very satisfied!&rdquo;</p>
-      <div class="rev-who"><span><strong>Chloe Martin</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Chloe Martin</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Necklace</div>
-      <p>&ldquo;A truly elegant necklace! The craftsmanship is lovely, and it makes every outfit look more special. I will definitely be ordering more.&rdquo;</p>
-      <div class="rev-who"><span><strong>Isabella Rossi</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Isabella Rossi</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Loose Bracelet</div>
-      <p>&ldquo;I absolutely adore this bracelet. It is comfortable to wear, beautifully designed, and perfect for everyday styling.&rdquo;</p>
-      <div class="rev-who"><span><strong>Mia Thompson</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Mia Thompson</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Bangles</div>
-      <p>&ldquo;The bangles are so pretty and elegant. I love the fine details and beautiful finish. They make a lovely addition to my collection.&rdquo;</p>
-      <div class="rev-who"><span><strong>Hana Suzuki</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Hana Suzuki</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Ring</div>
-      <p>&ldquo;Such a gorgeous ring! The design is timeless and classy. I love the quality and attention to detail. Very happy!&rdquo;</p>
-      <div class="rev-who"><span><strong>Grace Anderson</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Grace Anderson</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Earrings</div>
-      <p>&ldquo;These earrings are even prettier in person! They are stylish, elegant, and perfect for special occasions. Absolutely loved them!&rdquo;</p>
-      <div class="rev-who"><span><strong>Zara Khan</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Zara Khan</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
 
     <article class="rev-card">
-      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="rev-product">Necklace &amp; Bracelet</div>
-      <p>&ldquo;Beautiful jewelry and lovely designs! Both pieces look amazing together. I am so happy with my order and would love to shop again!&rdquo;</p>
-      <div class="rev-who"><span><strong>Freya Nielsen</strong></span></div>
+      <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <h4 class="rev-customer">Freya Nielsen</h4>
+      <span class="rev-source" data-source="random"></span>
     </article>
   </div>
 
@@ -265,5 +252,10 @@
 <script src="js/config.js"></script>
 <script src="js/main.js"></script>
 <script src="js/render.js"></script>
+<script>
+document.querySelectorAll('#reviewList .rev-source[data-source="random"]').forEach(function(label) {
+  label.textContent = Math.random() < 0.5 ? 'Offline' : 'Website';
+});
+</script>
 </body>
 </html>
