@@ -7,6 +7,6 @@
 //  NEVER paste the "service_role" key here.
 // ---------------------------------------------------------------
 window.SOL_CONFIG = {
-  SUPABASE_URL: "",       // e.g. "https://abcdxyz.supabase.co"
-  SUPABASE_ANON_KEY: ""   // e.g. "eyJhbGciOi..."
+  SUPABASE_URL: "https://swxpigyeadtggjoocnfi.supabase.co",       // e.g. "https://abcdxyz.supabase.co"
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3eHBpZ3llYWR0Z2dqb29jbmZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NjM3MzYsImV4cCI6MjEwOTQzOTczNn0.k49xipszz1Cf9yw_ZYpycDX8ucNCEqphQXcivAqiNs0"   // e.g. "eyJhbGciOi..."
 };
