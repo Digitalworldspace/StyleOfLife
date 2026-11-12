@@ -8,5 +8,5 @@
 // ---------------------------------------------------------------
 window.SOL_CONFIG = {
   SUPABASE_URL: "https://ewxflvksxrwizgawjmxj.supabase.co",       // e.g. "https://abcdxyz.supabase.co"
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3eGZsdmtzeHJ3aXpnYXdqbXhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyNzE3NDUsImV4cCI6MjEwODg0Nzc0NX0.IxqWTU_n9eu0bt1Gw0UvaZXd851qcylY19gY7fM1mT8"   // e.g. "eyJhbGciOi..."
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3eHBpZ3llYWR0Z2dqb29jbmZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NjM3MzYsImV4cCI6MjEwOTQzOTczNn0.k49xipszz1Cf9yw_ZYpycDX8ucNCEqphQXcivAqiNs0"
 };
