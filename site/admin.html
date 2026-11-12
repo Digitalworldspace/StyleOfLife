@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — Style Of Life</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,600;0,700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ivory-2:#F7F6F2; --charcoal:#15130F; --soft:#5C564A; --gold:#B8935A; --gold-deep:#96723C; --line:#E9E4D8; --green:#3D8A5B; --red:#C41E2A;}
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:'Jost',sans-serif; background:var(--ivory-2); color:var(--charcoal); line-height:1.5;}
+  h1,h2,h3{font-family:'Bodoni Moda',serif; font-weight:600; margin:0 0 8px;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 18px 90px;}
+  header.top{background:var(--charcoal); color:#F5F1E6; padding:18px 18px; margin-bottom:24px;}
+  header.top .in{max-width:1080px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  header.top h1{color:#F5F1E6; font-size:1.2rem; margin:0;}
+  header.top a, header.top button.linkish{color:var(--gold); background:none; border:none; font:inherit; font-size:0.9rem; cursor:pointer; text-decoration:none; border-bottom:1px solid var(--gold); padding:0 0 1px;}
+  .who{font-size:0.85rem; color:#CBC2AE; display:flex; gap:16px; align-items:center; flex-wrap:wrap;}
+  .card{background:#fff; border:1px solid var(--line); border-radius:4px; padding:20px; margin-bottom:20px;}
+  .card h2{font-size:1.15rem;}
+  .notice{border-radius:4px; padding:14px 16px; margin-bottom:20px; font-size:0.9rem;}
+  .notice.warn{background:#FFF7E6; border:1px solid #E9D7A8; color:#5C4A1E;}
+  .notice.err{background:#FCEBEC; border:1px solid #F0BDC1; color:#7A1219;}
+  label{display:block; font-size:0.82rem; color:var(--soft); margin:12px 0 4px;}
+  input[type=text],input[type=email],input[type=password],select,textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:3px; font:inherit; font-size:0.93rem; background:#fff; color:var(--charcoal);}
+  textarea{resize:vertical; min-height:70px;}
+  .row{display:flex; gap:14px; flex-wrap:wrap;} .row>div{flex:1; min-width:170px;}
+  .check{display:flex; align-items:center; gap:8px; margin:14px 0 0; color:var(--charcoal); font-size:0.9rem;} .check input{width:auto;}
+  .btn{display:inline-flex; align-items:center; gap:6px; padding:10px 18px; border-radius:3px; border:1px solid transparent; cursor:pointer; font:inherit; font-size:0.88rem; font-weight:500;}
+  .btn-dark{background:var(--charcoal); color:#fff;} .btn-green{background:var(--green); color:#fff;}
+  .btn-line{background:#fff; border-color:var(--charcoal); color:var(--charcoal);}
+  .btn-sm{padding:6px 11px; font-size:0.78rem;}
+  .btn-del{background:#fff; border-color:var(--red); color:var(--red);}
+  .btn:disabled{opacity:.5; cursor:wait;}
+  .btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;}
+  .tabs{display:flex; gap:6px; border-bottom:1px solid var(--line); margin-bottom:20px; overflow-x:auto;}
+  .tab{background:none; border:none; padding:11px 16px; font:inherit; font-weight:500; color:var(--soft); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; white-space:nowrap;}
+  .tab.on{color:var(--charcoal); border-bottom-color:var(--gold);}
+  .panel{display:none;} .panel.on{display:block;}
+  .toolbar{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; align-items:center;}
+  .toolbar input,.toolbar select{width:auto; flex:1; min-width:150px;}
+  .prow{display:grid; grid-template-columns:64px 1fr auto; gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid var(--line);}
+  .prow:last-child{border-bottom:none;}
+  .thumb{width:64px; height:64px; object-fit:cover; border-radius:3px; border:1px solid var(--line); background:var(--ivory-2); display:flex; align-items:center; justify-content:center; font-size:0.65rem; color:#fff; background:#111;}
+  img.thumb{background:var(--ivory-2);}
+  .pname{font-weight:500;} .pmeta{font-size:0.8rem; color:var(--soft);}
+  .pmeta s{opacity:.7;}
+  .badge{display:inline-block; font-size:0.68rem; padding:1px 7px; border-radius:999px; margin-left:6px; vertical-align:middle;}
+  .b-on{background:#E8F3EC; color:#1E5C35;} .b-off{background:#EEE; color:#666;}
+  .acts{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;}
+  .grouphead{font-family:'Bodoni Moda',serif; font-weight:600; background:var(--ivory-2); padding:8px 12px; margin:14px 0 0; border-radius:3px; font-size:0.95rem;}
+  .toast{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:var(--charcoal); color:#fff; padding:11px 20px; border-radius:4px; font-size:0.88rem; opacity:0; pointer-events:none; transition:opacity .25s; z-index:99; max-width:90vw;}
+  .toast.show{opacity:1;} .toast.bad{background:var(--red);}
+  .imgprev{width:110px; height:110px; object-fit:cover; border-radius:3px; border:1px solid var(--line); margin-top:8px; display:none;}
+  .hint{font-size:0.76rem; color:var(--soft); margin-top:4px;}
+  .preview{border:1px solid var(--line); border-radius:4px; overflow:hidden; margin-top:16px;}
+  .pv-bar{background:var(--red); color:#fff; padding:9px 14px; font-family:'Bodoni Moda',serif; font-weight:600; font-size:0.8rem; text-align:center;}
+  .pv-wrap{background:var(--ivory-2); padding:26px; display:flex; justify-content:center;}
+  .pv-badge{background:var(--red); color:#fff; border:3px solid #fff; border-radius:999px; padding:10px 16px; display:inline-flex; flex-direction:column; align-items:center; font-family:'Bodoni Moda',serif; box-shadow:0 8px 20px -6px rgba(196,30,42,.6);}
+  .pv-badge span{font-weight:700; font-size:1rem;} .pv-badge small{font-size:.62rem; letter-spacing:.14em;}
+  .login{max-width:380px; margin:50px auto;}
+  .hidden{display:none !important;}
+  @media(max-width:640px){ .prow{grid-template-columns:56px 1fr;} .prow .acts{grid-column:1 / -1; justify-content:flex-start;} .thumb{width:56px;height:56px;} }
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <h1>Style Of Life — Admin</h1>
+  <div class="who"><span id="who"></span><button class="linkish hidden" id="logout">Log out</button><a href="jewelry.html" target="_blank">View live site ↗</a></div>
+</div></header>
+
+<div class="wrap">
+
+  <!-- Setup needed -->
+  <div id="setup" class="hidden">
+    <div class="notice warn"><b>Supabase is not connected yet.</b> Open <code>js/config.js</code>, paste your Project URL and anon key, and upload it. Full steps are in <b>SETUP.md</b>.</div>
+  </div>
+
+  <!-- Login -->
+  <div id="loginBox" class="card login hidden">
+    <h2>Admin login</h2>
+    <label for="lg-email">Username</label><input type="text" id="lg-email" autocomplete="username" autocapitalize="none" spellcheck="false">
+    <label for="lg-pass">Password</label><input type="password" id="lg-pass" autocomplete="current-password">
+    <div class="btns"><button class="btn btn-dark" id="lg-btn">Log in</button></div>
+    <div class="notice err hidden" id="lg-err" style="margin-top:14px;"></div>
+  </div>
+
+  <!-- App -->
+  <div id="app" class="hidden">
+    <div class="tabs">
+      <button class="tab on" data-p="products">Products</button>
+      <button class="tab" data-p="hero">Header Videos</button>
+      <button class="tab" data-p="images">Site Images</button>
+      <button class="tab" data-p="reviews">Reviews</button>
+      <button class="tab" data-p="banner">Banner &amp; Discount</button>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="panel on" id="p-products">
+      <div class="card hidden" id="editor">
+        <h2 id="ed-title">Add a product</h2>
+        <div class="row">
+          <div>
+            <label for="e-cat">Category</label>
+            <select id="e-cat"></select>
+            <input type="text" id="e-cat-new" class="hidden" placeholder="New category name, e.g. Anklets" style="margin-top:8px;">
+          </div>
+          <div>
+            <label>Type</label>
+            <div style="display:flex; gap:18px; margin-top:8px;">
+              <label class="check" style="margin:0;"><input type="radio" name="e-type" value="photo" checked> Photo</label>
+              <label class="check" style="margin:0;"><input type="radio" name="e-type" value="video"> YouTube video</label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div style="flex:2;"><label for="e-name">Product name *</label><input type="text" id="e-name" placeholder="e.g. Oval Diamond Pendant"></div>
+          <div><label for="e-sku">SKU / code</label><input type="text" id="e-sku" placeholder="e.g. SOL-RNG-014"></div>
+        </div>
+        <div class="row">
+          <div><label for="e-price">Price (shown to customers)</label><input type="text" id="e-price" placeholder="From $3,900"></div>
+          <div><label for="e-old">Old price (crossed out, optional)</label><input type="text" id="e-old" placeholder="$5,200"></div>
+        </div>
+        <label for="e-desc">Short description</label>
+        <textarea id="e-desc" placeholder="One or two lines shown under the name."></textarea>
+        <div class="row">
+          <div><label for="e-metal">Metal</label><input type="text" id="e-metal" placeholder="e.g. 18k white gold"></div>
+          <div><label for="e-stone">Stone</label><input type="text" id="e-stone" placeholder="e.g. Lab-grown diamond, 2.0 ct"></div>
+        </div>
+        <label for="e-etsy">Etsy listing link (optional, used by "View on Etsy")</label><input type="text" id="e-etsy" placeholder="https://www.etsy.com/listing/...">
+        <label for="e-variants">Variations (optional, one per line: Name | Price)</label><textarea id="e-variants" placeholder="925 Silver | $280.81 - $298.97&#10;14K Gold | $1,346.57 - $1,496.65"></textarea>
+        <label for="e-details">More details (one bullet per line)</label>
+        <textarea id="e-details" placeholder="Made to order in 10-14 days&#10;Free resizing within 30 days&#10;Comes with a certificate"></textarea>
+
+        <div id="e-photo-box">
+          <label for="e-file">Photo</label>
+          <input type="file" id="e-file" accept="image/*">
+          <div class="hint">Or paste an image address below. Uploaded photos are shrunk automatically and stored in Supabase.</div>
+          <input type="text" id="e-img-url" placeholder="Image address (optional if you upload a file)" style="margin-top:8px;">
+          <img id="e-prev" class="imgprev" alt="">
+        </div>
+        <div id="e-video-box" class="hidden">
+          <label for="e-yt">YouTube link *</label>
+          <input type="text" id="e-yt" placeholder="Paste any YouTube link (Shorts, youtu.be or watch link)">
+          <div class="hint" id="e-yt-hint"></div>
+        </div>
+
+        <label class="check"><input type="checkbox" id="e-active" checked> Visible on the website</label>
+        <div class="btns">
+          <button class="btn btn-dark" id="e-save">Save product</button>
+          <button class="btn btn-line" id="e-cancel">Cancel</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <input type="text" id="q" placeholder="Search name, SKU or category…">
+          <select id="f-cat"><option value="">All categories</option></select>
+          <button class="btn btn-dark" id="add-btn">+ Add product</button>
+        </div>
+        <div id="plist"></div>
+      </div>
+    </div>
+
+    <!-- HERO VIDEOS -->
+    <div class="panel" id="p-hero">
+      <div class="card">
+        <h2 id="h-title">Header videos (home page)</h2>
+        <div class="hint" style="margin:0 0 6px;">These play one after another, 7 seconds each, in the big video on the home page.</div>
+        <input type="hidden" id="h-id">
+        <div class="row">
+          <div style="flex:2;"><label for="h-yt">YouTube link *</label><input type="text" id="h-yt" placeholder="Paste any YouTube link"></div>
+          <div><label for="h-label">Label shown on the video</label><input type="text" id="h-label" placeholder="Diamond Jewelry"></div>
+        </div>
+        <label class="check"><input type="checkbox" id="h-active" checked> Active</label>
+        <div class="btns">
+          <button class="btn btn-dark" id="h-save">Add video</button>
+          <button class="btn btn-line hidden" id="h-cancel">Cancel edit</button>
+        </div>
+      </div>
+      <div class="card"><div id="hlist"></div></div>
+    </div>
+
+    <!-- BANNER -->
+    <div class="panel" id="p-images">
+      <div class="card">
+        <h2>Site images</h2>
+        <div class="hint">The logo and the big photos on the website live in Supabase, not in GitHub. Upload a photo for each place below. Until you do, a soft placeholder is shown.</div>
+        <div id="imglist"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-reviews">
+      <div class="card">
+        <h2 id="r-title">Add a review</h2>
+        <div class="hint">Only add real feedback from real customers (copy it from Etsy, WhatsApp or Instagram). Website submissions arrive here as "Pending" - tick Approve to show them.</div>
+        <input type="hidden" id="r-id">
+        <div class="row">
+          <div><label for="r-name">Customer name *</label><input type="text" id="r-name" placeholder="e.g. Sarah M."></div>
+          <div><label for="r-loc">Location</label><input type="text" id="r-loc" placeholder="e.g. Texas, USA"></div>
+          <div><label for="r-rating">Stars</label><select id="r-rating"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></div>
+        </div>
+        <div class="row">
+          <div><label for="r-source">Where it was written</label><select id="r-source"><option>Etsy</option><option>WhatsApp</option><option>Instagram</option><option>Facebook</option><option>Website</option><option>Offline</option></select></div>
+          <div><label for="r-title2">Short title (optional)</label><input type="text" id="r-title2" placeholder="Custom pendant"></div>
+          <div><label for="r-proof">Proof link (optional)</label><input type="text" id="r-proof" placeholder="https://..."></div>
+        </div>
+        <label for="r-body">Review text *</label><textarea id="r-body"></textarea>
+        <label class="check"><input type="checkbox" id="r-ok" checked> Approved (visible on the website)</label>
+        <div class="btns"><button class="btn btn-dark" id="r-save">Add review</button><button class="btn btn-line hidden" id="r-cancel">Cancel edit</button></div>
+      </div>
+      <div class="card">
+        <h2>Ask a customer for a review</h2>
+        <div class="hint">Type the customer's name and WhatsApp number, then tap the button - a ready message opens in WhatsApp.</div>
+        <div class="row"><div><label for="q-name">Customer name</label><input type="text" id="q-name"></div><div><label for="q-num">WhatsApp number (with country code)</label><input type="text" id="q-num" placeholder="14155550123"></div></div>
+        <div class="btns"><button class="btn btn-green" id="q-go">Open WhatsApp message</button></div>
+      </div>
+      <div class="card"><div id="rlist"></div></div>
+    </div>
+
+    <div class="panel" id="p-banner">
+      <div class="card">
+        <h2>Scrolling promo bar</h2>
+        <label class="check" style="margin-top:0;"><input type="checkbox" id="b-pe" checked> Show the promo bar</label>
+        <label for="b-pt">Main offer text</label><input type="text" id="b-pt">
+        <div class="row">
+          <div><label for="b-s1">Sub-line 1</label><input type="text" id="b-s1"></div>
+          <div><label for="b-s2">Sub-line 2</label><input type="text" id="b-s2"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Home page discount badge</h2>
+        <label class="check" style="margin-top:0;"><input type="checkbox" id="b-be" checked> Show the badge on the home page video</label>
+        <div class="row">
+          <div><label for="b-bt">Badge main line</label><input type="text" id="b-bt"></div>
+          <div><label for="b-bs">Badge small line</label><input type="text" id="b-bs"></div>
+        </div>
+        <div class="preview">
+          <div class="pv-bar" id="pv-bar"></div>
+          <div class="pv-wrap"><div class="pv-badge"><span id="pv-bt"></span><small id="pv-bs"></small></div></div>
+        </div>
+        <div class="btns"><button class="btn btn-green" id="b-save">Save banner</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/config.js"></script>
+<script>
+(function(){
+  "use strict";
+  var CFG = window.SOL_CONFIG || {};
+  var $ = function(id){ return document.getElementById(id); };
+  var DEFAULT_CATS = ['necklaces','custom-design','loose-diamonds','bracelets','rings','earrings','signature-pieces'];
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function label(cat){
+    var k = {'custom-design':'Custom Design','loose-diamonds':'Loose Diamonds','necklaces':'Necklaces','bracelets':'Bracelets','rings':'Rings','earrings':'Earrings','signature-pieces':'Signature Pieces'};
+    return k[cat] || String(cat).replace(/[-_]/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+  }
+  var toastT;
+  function toast(msg, bad){
+    var t = $('toast'); t.textContent = msg; t.className = 'toast show' + (bad ? ' bad' : '');
+    clearTimeout(toastT); toastT = setTimeout(function(){ t.className = 'toast' + (bad ? ' bad' : ''); }, 3400);
+  }
+  function fail(e){ console.error(e); if(e && /Session expired/i.test(e.message)) return; toast((e && e.message) ? e.message : 'Something went wrong', true); }
+
+  function ytId(input){
+    input = String(input||'').trim();
+    if(/^[A-Za-z0-9_-]{11}$/.test(input)) return input;
+    var m = input.match(/(?:youtube(?:-nocookie)?\.com\/(?:shorts\/|embed\/|live\/|watch\?(?:[^#]*&)?v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  // ---------- connection ----------
+  if(!CFG.SUPABASE_URL || !CFG.SUPABASE_ANON_KEY){ $('setup').classList.remove('hidden'); return; }
+  var BASE = CFG.SUPABASE_URL.replace(/\/+$/, ''), KEY = CFG.SUPABASE_ANON_KEY;
+  var LS = 'sol_admin_session';
+  var session = null;
+
+  function hdr(extra){
+    var h = { apikey: KEY, Authorization: 'Bearer ' + KEY };
+    Object.keys(extra || {}).forEach(function(k){ h[k] = extra[k]; });
+    return h;
+  }
+  function parse(r){
+    return r.text().then(function(t){
+      var j = null; try{ j = t ? JSON.parse(t) : null; }catch(e){}
+      if(!r.ok){
+        var err = new Error((j && (j.message || j.error_description || j.error)) || ('Request failed (' + r.status + ')'));
+        err.status = r.status; throw err;
+      }
+      return j;
+    });
+  }
+  function rpc(name, params){
+    return fetch(BASE + '/rest/v1/rpc/' + name, { method:'POST', headers: hdr({'Content-Type':'application/json'}), body: JSON.stringify(params || {}) }).then(parse);
+  }
+  // an admin action: sends the session token, and returns to the login screen if it has expired
+  function arpc(name, params){
+    params = params || {}; params.p_token = session && session.token;
+    return rpc(name, params).catch(function(e){
+      if(/Session expired/i.test(e.message)) endSession('Your session expired. Please log in again.');
+      throw e;
+    });
+  }
+
+  // ---------- login ----------
+  function showLogin(msg){
+    $('loginBox').classList.remove('hidden'); $('app').classList.add('hidden'); $('logout').classList.add('hidden'); $('who').textContent = '';
+    if(msg){ $('lg-err').textContent = msg; $('lg-err').classList.remove('hidden'); } else { $('lg-err').classList.add('hidden'); }
+  }
+  function showApp(){
+    $('loginBox').classList.add('hidden'); $('app').classList.remove('hidden'); $('logout').classList.remove('hidden');
+    $('who').textContent = 'Logged in as ' + session.username;
+    loadProducts(); loadHero(); loadReviews(); loadImages(); loadBanner();
+  }
+  function endSession(msg){
+    session = null; localStorage.removeItem(LS); showLogin(msg);
+  }
+  $('lg-btn').addEventListener('click', function(){
+    var btn = $('lg-btn'); btn.disabled = true; $('lg-err').classList.add('hidden');
+    rpc('admin_login', { p_username: $('lg-email').value, p_password: $('lg-pass').value }).then(function(r){
+      btn.disabled = false;
+      if(!r || r.error){ showLogin((r && r.error) || 'Login failed.'); return; }
+      session = { token: r.token, username: r.username };
+      localStorage.setItem(LS, JSON.stringify(session));
+      $('lg-pass').value = '';
+      showApp();
+    }).catch(function(e){ btn.disabled = false; showLogin(e.message); });
+  });
+  $('lg-pass').addEventListener('keydown', function(e){ if(e.key === 'Enter') $('lg-btn').click(); });
+  $('lg-email').addEventListener('keydown', function(e){ if(e.key === 'Enter') $('lg-pass').focus(); });
+  $('logout').addEventListener('click', function(){
+    var t = session && session.token; endSession();
+    if(t) rpc('admin_logout', { p_token: t }).catch(function(){});
+  });
+  try{ session = JSON.parse(localStorage.getItem(LS) || 'null'); }catch(e){ session = null; }
+  if(session && session.token){
+    arpc('admin_check').then(function(r){ session.username = r.username; showApp(); }).catch(function(){ endSession(); });
+  } else { showLogin(); }
+
+  // ---------- tabs ----------
+  document.querySelectorAll('.tab').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('on'); });
+      document.querySelectorAll('.panel').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on'); $('p-'+b.dataset.p).classList.add('on');
+    });
+  });
+
+  // =====================================================
+  //  PRODUCTS
+  // =====================================================
+  var products = [];
+  function sortList(a, b){ return (a.sort_order - b.sort_order) || String(a.created_at).localeCompare(String(b.created_at)); }
+
+  function loadProducts(){
+    return arpc('admin_list_products').then(function(rows){
+      products = rows || []; refreshCats(); renderProducts();
+    }).catch(fail);
+  }
+  function allCats(){
+    var set = DEFAULT_CATS.slice();
+    products.forEach(function(p){ if(set.indexOf(p.category) === -1) set.push(p.category); });
+    return set;
+  }
+  function refreshCats(){
+    var cats = allCats();
+    var cur = $('f-cat').value;
+    $('f-cat').innerHTML = '<option value="">All categories</option>' + cats.map(function(c){ return '<option value="'+esc(c)+'">'+esc(label(c))+'</option>'; }).join('');
+    $('f-cat').value = cur;
+    var ecur = $('e-cat').value;
+    $('e-cat').innerHTML = cats.map(function(c){ return '<option value="'+esc(c)+'">'+esc(label(c))+'</option>'; }).join('') + '<option value="__new__">+ New category…</option>';
+    if(ecur) $('e-cat').value = ecur;
+  }
+  function renderProducts(){
+    var q = $('q').value.trim().toLowerCase(), fc = $('f-cat').value;
+    var list = products.filter(function(p){
+      if(fc && p.category !== fc) return false;
+      if(!q) return true;
+      return [p.name, p.sku, p.category].join(' ').toLowerCase().indexOf(q) !== -1;
+    });
+    if(!list.length){ $('plist').innerHTML = '<p class="pmeta" style="padding:14px 0;">No products found.</p>'; return; }
+    var cats = allCats().filter(function(c){ return list.some(function(p){ return p.category === c; }); });
+    var html = '';
+    cats.forEach(function(c){
+      var items = list.filter(function(p){ return p.category === c; }).sort(sortList);
+      html += '<div class="grouphead">'+esc(label(c))+' ('+items.length+')</div>';
+      items.forEach(function(p){
+        var thumb = p.type === 'video'
+          ? '<div class="thumb">▶ Video</div>'
+          : '<img class="thumb" src="'+esc(p.image_url||'')+'" alt="" onerror="this.style.opacity=.25">';
+        html += '<div class="prow" data-id="'+p.id+'">'+thumb+
+          '<div><div class="pname">'+esc(p.name)+'<span class="badge '+(p.is_active?'b-on':'b-off')+'">'+(p.is_active?'Visible':'Hidden')+'</span></div>'+
+          '<div class="pmeta">'+(p.sku?esc(p.sku)+' · ':'')+(p.old_price?'<s>'+esc(p.old_price)+'</s> ':'')+esc(p.price||'No price')+(p.type==='video'?' · YouTube '+esc(p.video_id):'')+'</div></div>'+
+          '<div class="acts">'+
+            '<button class="btn btn-line btn-sm" data-a="up" title="Move up">↑</button>'+
+            '<button class="btn btn-line btn-sm" data-a="down" title="Move down">↓</button>'+
+            '<button class="btn btn-line btn-sm" data-a="edit">Edit</button>'+
+            '<button class="btn btn-line btn-sm" data-a="toggle">'+(p.is_active?'Hide':'Show')+'</button>'+
+            '<button class="btn btn-del btn-sm" data-a="del">Delete</button>'+
+          '</div></div>';
+      });
+    });
+    $('plist').innerHTML = html;
+  }
+  $('q').addEventListener('input', renderProducts);
+  $('f-cat').addEventListener('change', renderProducts);
+
+  $('plist').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-a]'); if(!btn) return;
+    var id = btn.closest('.prow').dataset.id;
+    var p = products.filter(function(x){ return x.id === id; })[0]; if(!p) return;
+    var a = btn.dataset.a;
+    if(a === 'edit') openEditor(p);
+    else if(a === 'del') deleteProduct(p);
+    else if(a === 'toggle') arpc('admin_save_product', { p: { id: id, is_active: !p.is_active } }).then(function(){ toast(p.is_active ? 'Hidden from the website' : 'Now visible'); loadProducts(); }).catch(fail);
+    else if(a === 'up' || a === 'down') moveProduct(p, a === 'up' ? -1 : 1);
+  });
+
+  function deleteProduct(p){
+    if(!confirm('Delete "' + p.name + '" permanently? This cannot be undone.')) return;
+    arpc('admin_delete_product', { p_id: p.id }).then(function(){ toast('Product deleted'); loadProducts(); }).catch(fail);
+  }
+  function moveProduct(p, dir){
+    var list = products.filter(function(x){ return x.category === p.category; }).sort(sortList);
+    var i = list.indexOf(p), j = i + dir;
+    if(j < 0 || j >= list.length) return;
+    var t = list[i]; list[i] = list[j]; list[j] = t;
+    var jobs = [];
+    list.forEach(function(x, k){
+      var n = (k + 1) * 10;
+      if(x.sort_order !== n) jobs.push(arpc('admin_save_product', { p: { id: x.id, sort_order: n } }));
+    });
+    Promise.all(jobs).then(loadProducts).catch(fail);
+  }
+
+  // ----- editor -----
+  var editingId = null, pendingBlob = null;
+  function typeVal(){ return document.querySelector('input[name="e-type"]:checked').value; }
+  function syncType(){
+    var v = typeVal() === 'video';
+    $('e-photo-box').classList.toggle('hidden', v); $('e-video-box').classList.toggle('hidden', !v);
+  }
+  document.querySelectorAll('input[name="e-type"]').forEach(function(r){ r.addEventListener('change', syncType); });
+  $('e-cat').addEventListener('change', function(){ $('e-cat-new').classList.toggle('hidden', $('e-cat').value !== '__new__'); });
+  $('e-yt').addEventListener('input', function(){
+    var v = $('e-yt').value.trim(); var id = ytId(v);
+    $('e-yt-hint').textContent = !v ? '' : (id ? 'Video ID: ' + id : 'That does not look like a YouTube link.');
+  });
+  function showPrev(src){ var im = $('e-prev'); if(src){ im.src = src; im.style.display = 'block'; } else { im.style.display = 'none'; } }
+  $('e-file').addEventListener('change', function(e){
+    var f = e.target.files[0]; if(!f) return;
+    shrink(f).then(function(blob){ pendingBlob = blob; showPrev(URL.createObjectURL(blob)); }).catch(fail);
+  });
+  $('e-img-url').addEventListener('input', function(){ if(!pendingBlob) showPrev($('e-img-url').value.trim()); });
+
+  function shrink(file, maxPx){
+    return new Promise(function(resolve, reject){
+      var fr = new FileReader();
+      fr.onerror = function(){ reject(new Error('Could not read that image')); };
+      fr.onload = function(){
+        var img = new Image();
+        img.onerror = function(){ reject(new Error('That file is not a usable image')); };
+        img.onload = function(){
+          var max = maxPx || 1000, w = img.width, h = img.height;
+          if(w > max){ h = Math.round(h * max / w); w = max; }
+          var c = document.createElement('canvas'); c.width = w; c.height = h;
+          c.getContext('2d').drawImage(img, 0, 0, w, h);
+          c.toBlob(function(b){ b ? resolve(b) : reject(new Error('Could not process the image')); }, 'image/jpeg', 0.82);
+        };
+        img.src = fr.result;
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+  // photos go to Supabase Storage using a one-time upload ticket that only a logged-in admin can get
+  function uploadPhoto(blob){
+    return arpc('admin_new_upload').then(function(t){
+      var path = t.code + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
+      return fetch(BASE + '/storage/v1/object/product-images/' + path, {
+        method: 'POST', headers: hdr({'Content-Type':'image/jpeg', 'x-upsert':'false', 'cache-control':'max-age=31536000'}), body: blob
+      }).then(parse).then(function(){ return BASE + '/storage/v1/object/public/product-images/' + path; });
+    });
+  }
+
+  function openEditor(p){
+    editingId = p ? p.id : null; pendingBlob = null;
+    $('ed-title').textContent = p ? 'Edit product' : 'Add a product';
+    refreshCats();
+    var cats = allCats();
+    $('e-cat').value = p ? p.category : (cats.indexOf($('f-cat').value) !== -1 ? $('f-cat').value : 'necklaces');
+    $('e-cat-new').value = ''; $('e-cat-new').classList.add('hidden');
+    document.querySelector('input[name="e-type"][value="'+(p ? p.type : 'photo')+'"]').checked = true;
+    $('e-name').value = p ? p.name : ''; $('e-sku').value = p && p.sku ? p.sku : '';
+    $('e-price').value = p && p.price ? p.price : ''; $('e-old').value = p && p.old_price ? p.old_price : '';
+    $('e-desc').value = p && p.description ? p.description : '';
+    $('e-etsy').value = p && p.etsy_url ? p.etsy_url : ''; $('e-variants').value = (p && Array.isArray(p.variants) ? p.variants : []).map(function(v){ return v.label + ' | ' + v.price; }).join('\n'); $('e-metal').value = p && p.metal ? p.metal : ''; $('e-stone').value = p && p.stone ? p.stone : '';
+    $('e-details').value = p && p.details ? p.details : '';
+    $('e-img-url').value = p && p.image_url ? p.image_url : ''; $('e-file').value = '';
+    showPrev(p && p.image_url ? p.image_url : '');
+    $('e-yt').value = p && p.video_id ? 'https://youtube.com/shorts/' + p.video_id : ''; $('e-yt-hint').textContent = '';
+    $('e-active').checked = p ? !!p.is_active : true;
+    syncType();
+    $('editor').classList.remove('hidden');
+    $('editor').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  function closeEditor(){ $('editor').classList.add('hidden'); editingId = null; pendingBlob = null; }
+  $('add-btn').addEventListener('click', function(){ openEditor(null); });
+  $('e-cancel').addEventListener('click', closeEditor);
+
+  $('e-save').addEventListener('click', function(){
+    var btn = $('e-save');
+    var type = typeVal(), name = $('e-name').value.trim();
+    var category = $('e-cat').value === '__new__'
+      ? $('e-cat-new').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+      : $('e-cat').value;
+    if(!name) return toast('Please enter the product name', true);
+    if(!category) return toast('Please choose or name a category', true);
+
+    var payload = {
+      category: category, type: type, name: name,
+      sku: $('e-sku').value.trim(), price: $('e-price').value.trim(), old_price: $('e-old').value.trim(),
+      description: $('e-desc').value.trim(), details: $('e-details').value.trim(),
+      etsy_url: $('e-etsy').value.trim(), variants: $('e-variants').value.split(/\r?\n/).map(function(l){ var i = l.indexOf('|'); return i < 0 ? null : { label: l.slice(0, i).trim(), price: l.slice(i + 1).trim() }; }).filter(function(v){ return v && v.label && v.price; }), metal: $('e-metal').value.trim(), stone: $('e-stone').value.trim(),
+      is_active: $('e-active').checked, image_url: '', video_id: ''
+    };
+    var existing = editingId ? products.filter(function(x){ return x.id === editingId; })[0] : null;
+
+    if(type === 'video'){
+      var id = ytId($('e-yt').value);
+      if(!id) return toast('Please paste a valid YouTube link', true);
+      payload.video_id = id;
+    } else {
+      payload.image_url = $('e-img-url').value.trim();
+    }
+
+    btn.disabled = true;
+    var upload = (type === 'photo' && pendingBlob) ? uploadPhoto(pendingBlob) : Promise.resolve(null);
+    upload.then(function(url){
+      if(url) payload.image_url = url;
+      var peers = products.filter(function(x){ return x.category === category; });
+      if(existing){
+        payload.id = existing.id;
+        if(existing.category !== category) payload.sort_order = peers.reduce(function(m, x){ return Math.max(m, x.sort_order); }, 0) + 10;
+      } else {
+        payload.sort_order = peers.reduce(function(m, x){ return Math.max(m, x.sort_order); }, 0) + 10;
+      }
+      return arpc('admin_save_product', { p: payload });
+    }).then(function(){
+      toast(existing ? 'Product updated' : 'Product added');
+      btn.disabled = false; closeEditor(); loadProducts();
+    }).catch(function(e){ btn.disabled = false; fail(e); });
+  });
+
+  // =====================================================
+  //  HEADER VIDEOS
+  // =====================================================
+  var heroes = [];
+  function loadHero(){
+    return arpc('admin_list_hero').then(function(rows){ heroes = rows || []; renderHero(); }).catch(fail);
+  }
+  function renderHero(){
+    if(!heroes.length){ $('hlist').innerHTML = '<p class="pmeta">No header videos yet — the site will use its built-in list.</p>'; return; }
+    $('hlist').innerHTML = heroes.map(function(h){
+      return '<div class="prow" data-id="'+h.id+'"><div class="thumb">▶ Video</div>'+
+        '<div><div class="pname">'+esc(h.label)+'<span class="badge '+(h.is_active?'b-on':'b-off')+'">'+(h.is_active?'Active':'Hidden')+'</span></div>'+
+        '<div class="pmeta">youtube.com/shorts/'+esc(h.video_id)+'</div></div>'+
+        '<div class="acts"><button class="btn btn-line btn-sm" data-a="up">↑</button><button class="btn btn-line btn-sm" data-a="down">↓</button>'+
+        '<button class="btn btn-line btn-sm" data-a="edit">Edit</button><button class="btn btn-line btn-sm" data-a="toggle">'+(h.is_active?'Hide':'Show')+'</button>'+
+        '<button class="btn btn-del btn-sm" data-a="del">Delete</button></div></div>';
+    }).join('');
+  }
+  function resetHeroForm(){
+    $('h-id').value = ''; $('h-yt').value = ''; $('h-label').value = ''; $('h-active').checked = true;
+    $('h-save').textContent = 'Add video'; $('h-cancel').classList.add('hidden'); $('h-title').textContent = 'Header videos (home page)';
+  }
+  $('h-cancel').addEventListener('click', resetHeroForm);
+  $('h-save').addEventListener('click', function(){
+    var id = ytId($('h-yt').value);
+    if(!id) return toast('Please paste a valid YouTube link', true);
+    var payload = { video_id: id, label: $('h-label').value.trim() || 'Diamond Jewelry', is_active: $('h-active').checked };
+    var editId = $('h-id').value;
+    if(editId) payload.id = editId;
+    else payload.sort_order = heroes.reduce(function(m, x){ return Math.max(m, x.sort_order); }, 0) + 10;
+    arpc('admin_save_hero', { p: payload }).then(function(){
+      toast(editId ? 'Video updated' : 'Video added'); resetHeroForm(); loadHero();
+    }).catch(fail);
+  });
+  $('hlist').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-a]'); if(!btn) return;
+    var id = btn.closest('.prow').dataset.id;
+    var h = heroes.filter(function(x){ return x.id === id; })[0]; if(!h) return;
+    var a = btn.dataset.a;
+    if(a === 'edit'){
+      $('h-id').value = h.id; $('h-yt').value = 'https://youtube.com/shorts/' + h.video_id; $('h-label').value = h.label; $('h-active').checked = !!h.is_active;
+      $('h-save').textContent = 'Save changes'; $('h-cancel').classList.remove('hidden'); $('h-title').textContent = 'Edit header video';
+      window.scrollTo({top:0, behavior:'smooth'});
+    } else if(a === 'del'){
+      if(!confirm('Delete this header video?')) return;
+      arpc('admin_delete_hero', { p_id: id }).then(function(){ toast('Video deleted'); loadHero(); }).catch(fail);
+    } else if(a === 'toggle'){
+      arpc('admin_save_hero', { p: { id: id, is_active: !h.is_active } }).then(loadHero).catch(fail);
+    } else {
+      var list = heroes.slice().sort(sortList), i = list.indexOf(h), j = i + (a === 'up' ? -1 : 1);
+      if(j < 0 || j >= list.length) return;
+      var t = list[i]; list[i] = list[j]; list[j] = t;
+      var jobs = [];
+      list.forEach(function(x, k){ var n = (k + 1) * 10; if(x.sort_order !== n) jobs.push(arpc('admin_save_hero', { p: { id: x.id, sort_order: n } })); });
+      Promise.all(jobs).then(loadHero).catch(fail);
+    }
+  });
+
+  // =====================================================
+  //  SITE IMAGES
+  // =====================================================
+  var SLOTS = [
+    { key:'logo',        name:'Logo',                       hint:'Square PNG or JPG. Also used as the browser tab icon.', max:512 },
+    { key:'split-1',     name:'Home: "Where Beauty Meets Brilliance" photo', hint:'Tall or square photo, at least 1000 px wide.', max:1600 },
+    { key:'split-2',     name:'Home: "Made Around Your Idea" photo',        hint:'Tall or square photo, at least 1000 px wide.', max:1600 },
+    { key:'about-photo', name:'About page photo',           hint:'Square or portrait photo.', max:1400 }
+  ];
+  var siteImgs = {};
+  function loadImages(){
+    return fetch(BASE + '/rest/v1/site_images?select=*', { headers: hdr() }).then(parse).then(function(rows){
+      siteImgs = {}; (rows || []).forEach(function(r){ siteImgs[r.key] = r; }); renderImages();
+    }).catch(fail);
+  }
+  function renderImages(){
+    $('imglist').innerHTML = SLOTS.map(function(s){
+      var cur = siteImgs[s.key];
+      return '<div class="prow" data-key="'+s.key+'">' +
+        (cur ? '<img class="thumb" src="'+esc(cur.url)+'" alt="">' : '<div class="thumb" style="color:#999;background:#f3f3f3;">None</div>') +
+        '<div><div class="pname">'+esc(s.name)+'</div><div class="pmeta">'+esc(s.hint)+'</div></div>' +
+        '<div class="acts"><label class="btn btn-dark btn-sm" style="margin:0;cursor:pointer;">'+(cur?'Replace':'Upload')+'<input type="file" accept="image/*" class="img-file" style="display:none;"></label>' +
+        (cur ? '<button class="btn btn-del btn-sm" data-a="rm">Remove</button>' : '') + '</div></div>';
+    }).join('');
+  }
+  $('imglist').addEventListener('change', function(e){
+    var inp = e.target.closest('.img-file'); if(!inp || !inp.files[0]) return;
+    var key = inp.closest('.prow').dataset.key, slot = SLOTS.filter(function(s){ return s.key === key; })[0];
+    toast('Uploading...');
+    shrink(inp.files[0], slot.max).then(uploadPhoto).then(function(url){
+      return arpc('admin_save_image', { p_key: key, p_url: url, p_alt: slot.name });
+    }).then(function(){ toast('Photo saved - live on the site now'); loadImages(); }).catch(fail);
+    inp.value = '';
+  });
+  $('imglist').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-a="rm"]'); if(!btn) return;
+    var key = btn.closest('.prow').dataset.key;
+    if(!confirm('Remove this photo?')) return;
+    arpc('admin_delete_image', { p_key: key }).then(function(){ toast('Photo removed'); loadImages(); }).catch(fail);
+  });
+
+  // =====================================================
+  //  REVIEWS
+  // =====================================================
+  var reviews = [];
+  function loadReviews(){
+    return arpc('admin_list_reviews').then(function(rows){ reviews = rows || []; renderReviews(); }).catch(fail);
+  }
+  function stars(n){ return '\u2605'.repeat(n) + '\u2606'.repeat(5 - n); }
+  function renderReviews(){
+    if(!reviews.length){ $('rlist').innerHTML = '<p class="pmeta">No reviews yet.</p>'; return; }
+    $('rlist').innerHTML = reviews.map(function(r){
+      return '<div class="prow" data-id="'+r.id+'" style="grid-template-columns:1fr auto;">'+
+        '<div><div class="pname">'+esc(r.name)+' <span class="pmeta">'+stars(r.rating)+' \u00b7 '+esc(r.source)+(r.location?' \u00b7 '+esc(r.location):'')+'</span>'+
+        '<span class="badge '+(r.is_approved?'b-on':'b-off')+'">'+(r.is_approved?'Visible':'Pending / hidden')+'</span></div>'+
+        '<div class="pmeta">'+esc(r.body)+'</div></div>'+
+        '<div class="acts">'+
+        '<button class="btn btn-line btn-sm" data-a="edit">Edit</button>'+
+        '<button class="btn btn-line btn-sm" data-a="toggle">'+(r.is_approved?'Hide':'Approve')+'</button>'+
+        '<button class="btn btn-del btn-sm" data-a="del">Delete</button></div></div>';
+    }).join('');
+  }
+  function resetReviewForm(){
+    ['r-id','r-name','r-loc','r-title2','r-proof','r-body'].forEach(function(k){ $(k).value = ''; });
+    $('r-rating').value = '5'; $('r-source').value = 'Etsy'; $('r-ok').checked = true;
+    $('r-save').textContent = 'Add review'; $('r-cancel').classList.add('hidden'); $('r-title').textContent = 'Add a review';
+  }
+  $('r-cancel').addEventListener('click', resetReviewForm);
+  $('r-save').addEventListener('click', function(){
+    var name = $('r-name').value.trim(), body = $('r-body').value.trim();
+    if(!name || !body) return toast('Name and review text are required', true);
+    var payload = { name: name, location: $('r-loc').value.trim(), rating: parseInt($('r-rating').value, 10), source: $('r-source').value,
+                    title: $('r-title2').value.trim(), proof_url: $('r-proof').value.trim(), body: body, is_approved: $('r-ok').checked };
+    var editId = $('r-id').value;
+    if(editId) payload.id = editId; else payload.sort_order = reviews.reduce(function(m, x){ return Math.max(m, x.sort_order); }, 0) + 10;
+    arpc('admin_save_review', { p: payload }).then(function(){ toast(editId ? 'Review updated' : 'Review added'); resetReviewForm(); loadReviews(); }).catch(fail);
+  });
+  $('rlist').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-a]'); if(!btn) return;
+    var id = btn.closest('.prow').dataset.id;
+    var r = reviews.filter(function(x){ return x.id === id; })[0]; if(!r) return;
+    var a = btn.dataset.a;
+    if(a === 'edit'){
+      $('r-id').value = r.id; $('r-name').value = r.name; $('r-loc').value = r.location || ''; $('r-rating').value = String(r.rating);
+      $('r-source').value = r.source; $('r-title2').value = r.title || ''; $('r-proof').value = r.proof_url || ''; $('r-body').value = r.body; $('r-ok').checked = !!r.is_approved;
+      $('r-save').textContent = 'Save changes'; $('r-cancel').classList.remove('hidden'); $('r-title').textContent = 'Edit review';
+      window.scrollTo({top:0, behavior:'smooth'});
+    } else if(a === 'del'){
+      if(!confirm('Delete this review?')) return;
+      arpc('admin_delete_review', { p_id: id }).then(function(){ toast('Review deleted'); loadReviews(); }).catch(fail);
+    } else {
+      arpc('admin_save_review', { p: { id: id, is_approved: !r.is_approved } }).then(loadReviews).catch(fail);
+    }
+  });
+
+  $('q-go').addEventListener('click', function(){
+    var n = $('q-num').value.replace(/\D/g, ''), nm = $('q-name').value.trim() || 'there';
+    if(n.length < 8) return toast('Enter the customer WhatsApp number with country code', true);
+    var link = location.origin + location.pathname.replace(/admin\.html$/, '') + 'index.html#reviews';
+    var msg = 'Hi ' + nm + ', thank you for your order with Style Of Life! If you loved your piece, we would be grateful for a short review: ' + link;
+    window.open('https://wa.me/' + n + '?text=' + encodeURIComponent(msg), '_blank');
+  });
+
+  // =====================================================
+  //  BANNER
+  // =====================================================
+  var B = { pe:$('b-pe'), pt:$('b-pt'), s1:$('b-s1'), s2:$('b-s2'), be:$('b-be'), bt:$('b-bt'), bs:$('b-bs') };
+  function bpreview(){
+    $('pv-bar').textContent = '✦ ' + B.pt.value + ' ✦   ' + B.s1.value + '   ·   ' + B.s2.value;
+    $('pv-bt').textContent = B.bt.value; $('pv-bs').textContent = B.bs.value;
+  }
+  Object.keys(B).forEach(function(k){ B[k].addEventListener('input', bpreview); });
+  function loadBanner(){
+    fetch(BASE + '/rest/v1/site_settings?select=value&key=eq.promo', { headers: hdr() }).then(parse).then(function(rows){
+      var v = (rows && rows[0] && rows[0].value) || {};
+      B.pe.checked = v.promoEnabled !== false; B.pt.value = v.promoText || ''; B.s1.value = v.promoSubText1 || ''; B.s2.value = v.promoSubText2 || '';
+      B.be.checked = v.badgeEnabled !== false; B.bt.value = v.badgeText || ''; B.bs.value = v.badgeSubText || '';
+      bpreview();
+    }).catch(fail);
+  }
+  $('b-save').addEventListener('click', function(){
+    var value = { promoEnabled: B.pe.checked, promoText: B.pt.value, promoSubText1: B.s1.value, promoSubText2: B.s2.value,
+                  badgeEnabled: B.be.checked, badgeText: B.bt.value, badgeSubText: B.bs.value };
+    arpc('admin_save_setting', { p_key: 'promo', p_value: value }).then(function(){ toast('Banner saved — live on the site now'); }).catch(fail);
+  });
+})();
+</script>
+</body>
+</html>
