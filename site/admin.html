@@ -129,6 +129,8 @@
           <div><label for="e-metal">Metal</label><input type="text" id="e-metal" placeholder="e.g. 18k white gold"></div>
           <div><label for="e-stone">Stone</label><input type="text" id="e-stone" placeholder="e.g. Lab-grown diamond, 2.0 ct"></div>
         </div>
+        <label for="e-etsy">Etsy listing link (optional, used by "View on Etsy")</label><input type="text" id="e-etsy" placeholder="https://www.etsy.com/listing/...">
+        <label for="e-variants">Variations (optional, one per line: Name | Price)</label><textarea id="e-variants" placeholder="925 Silver | $280.81 - $298.97&#10;14K Gold | $1,346.57 - $1,496.65"></textarea>
         <label for="e-details">More details (one bullet per line)</label>
         <textarea id="e-details" placeholder="Made to order in 10-14 days&#10;Free resizing within 30 days&#10;Comes with a certificate"></textarea>
 
@@ -253,11 +255,11 @@
   "use strict";
   var CFG = window.SOL_CONFIG || {};
   var $ = function(id){ return document.getElementById(id); };
-  var DEFAULT_CATS = ['necklaces','bracelets','rings','earrings','signature-pieces'];
+  var DEFAULT_CATS = ['necklaces','custom-design','loose-diamonds','bracelets','rings','earrings','signature-pieces'];
 
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function label(cat){
-    var k = {'necklaces':'Necklaces','bracelets':'Bracelets','rings':'Rings','earrings':'Earrings','signature-pieces':'Signature Pieces'};
+    var k = {'custom-design':'Custom Design','loose-diamonds':'Loose Diamonds','necklaces':'Necklaces','bracelets':'Bracelets','rings':'Rings','earrings':'Earrings','signature-pieces':'Signature Pieces'};
     return k[cat] || String(cat).replace(/[-_]/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
   }
   var toastT;
@@ -498,7 +500,7 @@
     $('e-name').value = p ? p.name : ''; $('e-sku').value = p && p.sku ? p.sku : '';
     $('e-price').value = p && p.price ? p.price : ''; $('e-old').value = p && p.old_price ? p.old_price : '';
     $('e-desc').value = p && p.description ? p.description : '';
-    $('e-metal').value = p && p.metal ? p.metal : ''; $('e-stone').value = p && p.stone ? p.stone : '';
+    $('e-etsy').value = p && p.etsy_url ? p.etsy_url : ''; $('e-variants').value = (p && Array.isArray(p.variants) ? p.variants : []).map(function(v){ return v.label + ' | ' + v.price; }).join('\n'); $('e-metal').value = p && p.metal ? p.metal : ''; $('e-stone').value = p && p.stone ? p.stone : '';
     $('e-details').value = p && p.details ? p.details : '';
     $('e-img-url').value = p && p.image_url ? p.image_url : ''; $('e-file').value = '';
     showPrev(p && p.image_url ? p.image_url : '');
@@ -525,7 +527,7 @@
       category: category, type: type, name: name,
       sku: $('e-sku').value.trim(), price: $('e-price').value.trim(), old_price: $('e-old').value.trim(),
       description: $('e-desc').value.trim(), details: $('e-details').value.trim(),
-      metal: $('e-metal').value.trim(), stone: $('e-stone').value.trim(),
+      etsy_url: $('e-etsy').value.trim(), variants: $('e-variants').value.split(/\r?\n/).map(function(l){ var i = l.indexOf('|'); return i < 0 ? null : { label: l.slice(0, i).trim(), price: l.slice(i + 1).trim() }; }).filter(function(v){ return v && v.label && v.price; }), metal: $('e-metal').value.trim(), stone: $('e-stone').value.trim(),
       is_active: $('e-active').checked, image_url: '', video_id: ''
     };
     var existing = editingId ? products.filter(function(x){ return x.id === editingId; })[0] : null;
