@@ -114,7 +114,7 @@
       return '<div class="card-body"><h3>'+esc(p.name)+'</h3>'+(p.sku ? '<div class="sku-line">SKU: '+esc(p.sku)+'</div>' : '')+
         '<p class="card-chat">Love this piece? Tell us what you like, and we will share the price, sizing and options with you personally on WhatsApp.</p>'+ctasHtml(p)+'</div>';
     }
-    var more = (p.description ? '<p class="card-blurb">'+esc(p.description)+'</p>' : '') + specsHtml(p) +
+    var more = (p.description ? '<p class="card-blurb">'+esc(p.description)+'</p>' : '') + specsHtml(p) + pageLink(p) +
       '<a class="card-link more-etsy" href="'+esc(p.etsy || ETSY_URL)+'" target="_blank" rel="noopener">View on Etsy \u2192</a>';
     return '<div class="card-body"><h3>'+esc(p.name)+'</h3>'+
       (p.sku ? '<div class="sku-line">SKU: '+esc(p.sku)+'</div>' : '')+
@@ -131,7 +131,26 @@
     return '<div class="card"><div class="vwrap"><iframe data-yt="'+esc(p.video)+'" title="'+esc(p.name)+'" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'+bodyHtml(p)+'</div>';
   }
 
+  var SLUGS = null;
+  function slugOf(p){
+    var s = String(p.name||'').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,70).replace(/-+$/,'');
+    var k = String(p.sku||'').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+    return s + (p.sku ? '-' + k : '');
+  }
+  function pageLink(p){
+    if(!SLUGS) return '';
+    var s = slugOf(p);
+    return SLUGS.indexOf(s) > -1 ? '<a class="card-link" href="/products/'+s+'.html">Full details page \u2192</a>' : '';
+  }
   function renderCatalog(products){
+    if(SLUGS === null && window.fetch){
+      fetch('/products/slugs.json').then(function(r){ return r.ok ? r.json() : []; }).catch(function(){ return []; })
+        .then(function(a){ SLUGS = Array.isArray(a) ? a : []; renderCatalog2(products); });
+      return;
+    }
+    renderCatalog2(products);
+  }
+  function renderCatalog2(products){
     var container = document.getElementById('product-catalog');
     if(!container) return;
     if(!products || !products.length){
