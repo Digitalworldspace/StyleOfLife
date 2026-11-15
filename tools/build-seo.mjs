@@ -198,6 +198,23 @@ function card(p) {
 </article>`;
 }
 
+
+// Product questions and answers, built only from facts already in the product data and on the site (for search engines and AI assistants)
+function productFaq(p, lo, hi) {
+  const faq = [];
+  const made = [p.metal ? 'Metal: ' + p.metal + '.' : '', p.stone ? 'Stone: ' + p.stone + '.' : ''].filter(Boolean).join(' ');
+  if (made) faq.push([`What is the ${p.name} made of?`, made + ' Each option is described by its actual metal.']);
+  const vs = (p.variants || []).filter((v) => v.label && v.price).map((v) => `${v.label}: ${v.price}`).join('; ');
+  faq.push([`How much does the ${p.name} cost?`, `It starts from ${money(lo)}${hi > lo ? ` and goes up to ${money(hi)} depending on the metal you choose` : ''}.${vs ? ' Price by metal: ' + vs + '.' : ''} Prices are in US dollars.`]);
+  if (/SGL/i.test([p.stone, p.details, p.description].join(' '))) faq.push(['Is this piece certified?', 'Yes. This piece is SGL certified, as described in the details on this page. You can verify SGL reports at sgl-labs.com.']);
+  faq.push(['How long does it take to make and deliver?', 'It is made to order in Surat, India, and is ready to ship in about 5–8 business days. Delivery is free worldwide with tracking.']);
+  if (p.category === 'rings') faq.push(['Can I return, exchange or resize this ring?', 'No. Rings are made to order in your size, so there are no returns, exchanges or resizing. Please message us your ring size before ordering; custom sizes are welcome.']);
+  faq.push(['How do I order?', `Message Style Of Life on WhatsApp at +91 63529 25472${p.etsy ? ', or use the Buy on Etsy button on this page; checkout and payment are handled securely by Etsy' : ''}. You can also ask for sizing help or a custom request before ordering.`]);
+  return faq;
+}
+const SHIPPING_LD = { '@type': 'OfferShippingDetails', shippingRate: { '@type': 'MonetaryAmount', value: '0', currency: 'USD' }, shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'US' },
+  deliveryTime: { '@type': 'ShippingDeliveryTime', handlingTime: { '@type': 'QuantitativeValue', minValue: 5, maxValue: 8, unitCode: 'DAY' } } };
+
 // ---------- 5. main ----------
 const { products: all, images: siteImages } = await loadData();
 const ch = chrome();
@@ -248,6 +265,7 @@ for (const p of items) {
   const title = trim(`${p.name} | ${catLabel} | Style Of Life`, 70);
   const related = items.filter((q) => q.category === p.category && q !== p).slice(0, 4);
   const waText = encodeURIComponent(`Hi Style Of Life, I'm interested in ${p.name}${p.sku ? ' (SKU ' + p.sku + ')' : ''}.`);
+  const pfaq = productFaq(p, lo, hi);
   const rows = (p.variants || []).map((v) => `<tr><th scope="row">${esc(v.label)}</th><td>${esc(v.price)}</td></tr>`).join('');
   const body = `<section class="section prod-page">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/jewelry.html">Jewelry</a> › <a href="${catUrl}">${esc(catLabel)}</a> › <span>${esc(p.name)}</span></nav>
@@ -268,12 +286,15 @@ for (const p of items) {
       <p class="prod-note">Made to order in Surat, India, and ready to ship in about 5–8 business days. Free delivery worldwide with tracking. Message us for sizing, custom requests or a private quote.</p>
     </div>
   </div>
+  <div class="cat-faq prod-faq"><h2>Questions about this piece, answered</h2>${pfaq.map((q) => `<details><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`).join('')}</div>
   ${related.length ? `<div class="prod-related"><h2>More ${esc(catLabel.toLowerCase())}</h2><div class="sgrid">${related.map(card).join('\n')}</div></div>` : ''}
 </section>`;
-  const offer = { '@type': 'AggregateOffer', priceCurrency: 'USD', lowPrice: lo.toFixed(2), highPrice: hi.toFixed(2), offerCount: Math.max(1, (p.variants || []).length), availability: 'https://schema.org/InStock', ...(p.etsy ? { url: p.etsy } : {}), seller: { '@id': DOMAIN + '/#store' } };
+  const offer = { '@type': 'AggregateOffer', priceCurrency: 'USD', lowPrice: lo.toFixed(2), highPrice: hi.toFixed(2), offerCount: Math.max(1, (p.variants || []).length), availability: 'https://schema.org/InStock', ...(p.etsy ? { url: p.etsy } : {}), seller: { '@id': DOMAIN + '/#store' }, shippingDetails: SHIPPING_LD };
   const schema = [breadcrumbLd([['Home', '/'], ['Jewelry', '/jewelry.html'], [catLabel, catUrl], [p.name, '/products/' + p.slug + '.html']]),
     { '@context': 'https://schema.org', '@type': 'Product', '@id': DOMAIN + '/products/' + p.slug + '.html#product', name: p.name, ...(p.sku ? { sku: p.sku } : {}), description: p.description || desc, brand: { '@type': 'Brand', name: 'Style Of Life' }, category: catLabel,
-      ...(p.metal ? { material: p.metal } : {}), ...(p.image ? { image: [p.image] } : {}), url: DOMAIN + '/products/' + p.slug + '.html', offers: offer }];
+      ...(p.metal ? { material: p.metal } : {}), ...(p.image ? { image: [p.image] } : {}), url: DOMAIN + '/products/' + p.slug + '.html', countryOfOrigin: { '@type': 'Country', name: 'India' },
+      ...(p.stone ? { additionalProperty: [{ '@type': 'PropertyValue', name: 'Stone', value: p.stone }] } : {}), offers: offer },
+    faqLd(pfaq)];
   write('products/' + p.slug + '.html', page({ title, desc, urlPath: '/products/' + p.slug + '.html', image: p.image || siteOg, ogType: 'product', schema, body, ch }));
   urls.push(['/products/' + p.slug + '.html', 0.7, 'weekly']);
   if (p.image) imgMap['/products/' + p.slug + '.html'] = { img: p.image, title: p.name };
@@ -292,4 +313,39 @@ for (const f of ['index.html', 'jewelry.html', 'about.html']) {
 // ---------- 7. sitemap ----------
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
   urls.map(([u, pr, f]) => `  <url><loc>${DOMAIN}${u}</loc><lastmod>${TODAY}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority>${imgMap[u] ? `<image:image><image:loc>${esc(imgMap[u].img)}</image:loc><image:title>${esc(imgMap[u].title)}</image:title></image:image>` : ''}</url>`).join('\n') + '\n</urlset>\n');
+
+// ---------- 8. llms.txt (plain-text guide to the shop for AI assistants) ----------
+const catLine = (c) => `- [${c.cfg.label}](${DOMAIN}/${c.cfg.slug}.html): ${c.list.length} designs, from ${money(Math.min(...c.list.map(lowPrice)))}`;
+const prodLine = (p) => `- [${p.name}](${DOMAIN}/products/${p.slug}.html): from ${money(lowPrice(p))}${p.sku ? ', SKU ' + p.sku : ''}${p.stone && p.stone.length < 90 ? ', ' + p.stone : ''}`;
+const groups = {};
+items.forEach((p) => { const k = (CATS[p.category] ? CATS[p.category].label : (CAT_LABEL[p.category] || 'Jewelry')); (groups[k] = groups[k] || []).push(p); });
+write('llms.txt', `# Style Of Life
+
+> Style Of Life is a jewelry brand from Surat, India, founded by Prince Akbari. It makes lab grown diamond, moissanite and colorstone jewelry to order in 925 sterling silver, 9K, 14K and 18K gold, and ships worldwide with tracking.
+
+## Key facts
+- What it sells: engagement rings, wedding bands, initial necklaces (letters A to Z), necklaces and pendants, earrings, tennis and colorstone bracelets, and a custom CAD design service.
+- Stones: lab grown diamonds, moissanite and colorstones. The stone used in each piece is stated on its product page. Lab grown diamond pieces are SGL certified.
+- Metals: 925 sterling silver, 9K gold, 14K gold and 18K gold. Many designs are offered in yellow, white or rose tone.
+- Production: every piece is made to order in Surat, India, and is usually ready to ship in about 5–8 business days.
+- Shipping: free worldwide delivery with tracking.
+- Rings: made to order in the buyer's size, so there are no returns, exchanges or resizing. Buyers should send their ring size before ordering.
+- How to order: by WhatsApp (+91 63529 25472) or through the Etsy shop (${ETSY_SHOP}), where checkout and payment are handled by Etsy.
+- Prices: shown in US dollars. The price depends on the metal; each product page lists the price for every metal.
+- Website: ${DOMAIN}/ (updated ${TODAY})
+
+## Main pages
+- [Home](${DOMAIN}/): overview, how ordering works, customer questions
+- [All jewelry](${DOMAIN}/jewelry.html): the full collection
+- [Our story](${DOMAIN}/about.html): about the founder and how orders are handled
+${catPages.map(catLine).join('\n')}
+
+## Products
+${Object.entries(groups).map(([k, list]) => `### ${k}\n${list.map(prodLine).join('\n')}`).join('\n\n')}
+
+## Contact
+- WhatsApp: +91 63529 25472 (${WA})
+- Etsy shop: ${ETSY_SHOP}
+`);
+console.log('Wrote llms.txt');
 console.log(`Built ${catPages.length} category pages, ${items.length} product pages, ${urls.length} sitemap URLs`);
