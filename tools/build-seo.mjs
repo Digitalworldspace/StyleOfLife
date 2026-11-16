@@ -409,3 +409,22 @@ ${Object.entries(groups).map(([k, list]) => `### ${k}\n${list.map(prodLine).join
 `);
 console.log('Wrote llms.txt');
 console.log(`Built ${catPages.length} category pages, ${items.length} product pages, ${urls.length} sitemap URLs`);
+
+// ---------- 9. Google Analytics (GA4) tag on every public page (not admin) ----------
+{
+  const GA_ID = 'G-HG35DX3D4J';
+  const tag = `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');</script>\n`;
+  const walk = (d) => fs.readdirSync(path.join(ROOT, d), { withFileTypes: true }).flatMap((e) => {
+    const rel = d ? d + '/' + e.name : e.name;
+    if (e.isDirectory()) return ['.git', '.github', 'tools', 'node_modules', 'data'].includes(e.name) ? [] : walk(rel);
+    return rel.endsWith('.html') && rel !== 'admin.html' ? [rel] : [];
+  });
+  let n = 0;
+  for (const f of walk('')) {
+    const s = read(f);
+    if (s.includes('googletagmanager.com/gtag') || !s.includes('</head>')) continue;
+    write(f, s.replace('</head>', tag + '</head>'));
+    n++;
+  }
+  console.log(`Added Google Analytics tag to ${n} pages`);
+}
