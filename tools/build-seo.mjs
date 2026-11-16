@@ -337,6 +337,9 @@ const feedXml = '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmln
 <g:brand>Style Of Life</g:brand>
 <g:condition>new</g:condition>
 <g:identifier_exists>no</g:identifier_exists>
+<g:age_group>adult</g:age_group>
+<g:gender>${/CAD|Loose/i.test(p.name) ? 'unisex' : 'female'}</g:gender>
+<g:color>Yellow/White/Rose</g:color>
 <g:google_product_category>${esc(GCAT[p.category] || GCAT_DEFAULT)}</g:google_product_category>
 <g:product_type>${esc(CAT_LABEL[p.category] || 'Jewelry')}</g:product_type>${p.metal ? `\n<g:material>${esc(trim(p.metal, 200))}</g:material>` : ''}
 </item>`;
