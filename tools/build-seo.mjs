@@ -310,6 +310,32 @@ for (const f of ['index.html', 'jewelry.html', 'about.html']) {
   write(f, s);
 }
 
+// ---------- 6b. Shipping & returns page (needed for Google Merchant Center; facts confirmed by the owner) ----------
+{
+  const faq = [
+    ['How long does it take to receive my order?', 'Every piece is made to order in Surat, India, and is usually ready to ship in about 5–8 business days. Delivery is free worldwide and every parcel ships with tracking.'],
+    ['Do you accept returns or exchanges?', 'Because each piece is made to order just for you, we do not accept returns or exchanges on rings, necklaces, earrings or bracelets. Every detail is shown on the product page, and you are always welcome to message us before ordering with any question or change request.'],
+    ['Can a ring be resized?', 'Rings are made to order in your size and cannot be resized later, so please send us your ring size before you order. Custom sizes are welcome.'],
+    ['Can I cancel my order?', 'Yes. Cancellation is free within 5 hours of placing your order.'],
+    ['How do I order or ask a question?', 'Message Style Of Life on WhatsApp at +91 63529 25472, or order through our Etsy shop, where checkout and payment are handled securely by Etsy.']
+  ];
+  const body = `<section class="section cat-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <span>Shipping &amp; Returns</span></nav>
+  <div class="section-head"><h1>Shipping &amp; Returns</h1></div>
+  <div class="cat-intro">
+    <p>Every Style Of Life piece is made to order in Surat, India. That is why we take a little time to make it right, and why we ask you to check the details before you order.</p>
+    <p><b>Shipping.</b> Your order is usually ready to ship in about 5–8 business days. Delivery is free worldwide and every parcel ships with tracking.</p>
+    <p><b>Returns and exchanges.</b> Because each piece is made to order for you, we do not accept returns or exchanges on rings, necklaces, earrings or bracelets. All details are shown on each product page, and you can message us before ordering with any question or change request.</p>
+    <p><b>Ring sizes.</b> Rings are made in your size and cannot be resized, so please send us your ring size before you order.</p>
+    <p><b>Cancellations.</b> You can cancel free within 5 hours of placing your order.</p>
+  </div>
+  <div class="cat-faq"><h2>Shipping and returns questions, answered</h2>${faq.map((q) => `<details><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`).join('')}</div>
+</section>`;
+  const desc = 'Shipping and returns at Style Of Life: made to order in Surat, India, ready to ship in about 5–8 business days, free worldwide delivery with tracking, and no returns or exchanges on made-to-order pieces.';
+  write('shipping-returns.html', page({ title: 'Shipping & Returns | Style Of Life', desc, urlPath: '/shipping-returns.html', image: siteOg, schema: [breadcrumbLd([['Home', '/'], ['Shipping & Returns', '/shipping-returns.html']]), faqLd(faq)], body, ch }));
+  urls.push(['/shipping-returns.html', 0.5, 'monthly']);
+}
+
 // ---------- 7. sitemap ----------
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
   urls.map(([u, pr, f]) => `  <url><loc>${DOMAIN}${u}</loc><lastmod>${TODAY}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority>${imgMap[u] ? `<image:image><image:loc>${esc(imgMap[u].img)}</image:loc><image:title>${esc(imgMap[u].title)}</image:title></image:image>` : ''}</url>`).join('\n') + '\n</urlset>\n');
@@ -371,6 +397,7 @@ write('llms.txt', `# Style Of Life
 - [Home](${DOMAIN}/): overview, how ordering works, customer questions
 - [All jewelry](${DOMAIN}/jewelry.html): the full collection
 - [Our story](${DOMAIN}/about.html): about the founder and how orders are handled
+- [Shipping & Returns](${DOMAIN}/shipping-returns.html): delivery time, returns and cancellation policy
 ${catPages.map(catLine).join('\n')}
 
 ## Products
