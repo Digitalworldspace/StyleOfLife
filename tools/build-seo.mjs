@@ -314,6 +314,35 @@ for (const f of ['index.html', 'jewelry.html', 'about.html']) {
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
   urls.map(([u, pr, f]) => `  <url><loc>${DOMAIN}${u}</loc><lastmod>${TODAY}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority>${imgMap[u] ? `<image:image><image:loc>${esc(imgMap[u].img)}</image:loc><image:title>${esc(imgMap[u].title)}</image:title></image:image>` : ''}</url>`).join('\n') + '\n</urlset>\n');
 
+// ---------- 7b. Google Merchant Center product feed (google-feed.xml) ----------
+//  Prices come straight from the product data (lowest price across metals, same as the "From $" on each page); nothing is changed here.
+//  Excluded: the custom CAD design service and loose diamonds (not suitable as Shopping products), and anything without a photo.
+const GCAT = { rings: 'Apparel & Accessories > Jewelry > Rings', 'initial-necklaces': 'Apparel & Accessories > Jewelry > Necklaces', necklaces: 'Apparel & Accessories > Jewelry > Necklaces',
+  earrings: 'Apparel & Accessories > Jewelry > Earrings', bracelets: 'Apparel & Accessories > Jewelry > Bracelets', 'signature-pieces': 'Apparel & Accessories > Jewelry' };
+const feedWords = (s) => String(s || '').replace(/hand-?made/gi, 'made to order');
+const feedItems = items.filter((p) => GCAT[p.category] && p.image && /^https?:\/\//.test(p.image));
+const feedXml = '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n<channel>\n<title>Style Of Life</title>\n<link>' + DOMAIN + '/</link>\n<description>Lab grown diamond, moissanite and colorstone jewelry, made to order in Surat, India.</description>\n' +
+  feedItems.map((p) => {
+    const lo = lowPrice(p);
+    const desc = trim(feedWords([p.description, p.metal ? 'Metal: ' + p.metal + '.' : '', p.stone ? 'Stone: ' + p.stone + '.' : '', 'Made to order in Surat, India.'].filter(Boolean).join(' ')), 4900);
+    return `<item>
+<g:id>${esc(p.sku || p.slug)}</g:id>
+<g:title>${esc(trim(feedWords(p.name), 150))}</g:title>
+<g:description>${esc(desc)}</g:description>
+<g:link>${DOMAIN}/products/${p.slug}.html</g:link>
+<g:image_link>${esc(p.image)}</g:image_link>
+<g:availability>in_stock</g:availability>
+<g:price>${lo.toFixed(2)} USD</g:price>
+<g:brand>Style Of Life</g:brand>
+<g:condition>new</g:condition>
+<g:identifier_exists>no</g:identifier_exists>
+<g:google_product_category>${esc(GCAT[p.category])}</g:google_product_category>
+<g:product_type>${esc(CAT_LABEL[p.category] || 'Jewelry')}</g:product_type>${p.metal ? `\n<g:material>${esc(trim(p.metal, 200))}</g:material>` : ''}
+</item>`;
+  }).join('\n') + '\n</channel>\n</rss>\n';
+write('google-feed.xml', feedXml);
+console.log('Wrote google-feed.xml with', feedItems.length, 'products');
+
 // ---------- 8. llms.txt (plain-text guide to the shop for AI assistants) ----------
 const catLine = (c) => `- [${c.cfg.label}](${DOMAIN}/${c.cfg.slug}.html): ${c.list.length} designs, from ${money(Math.min(...c.list.map(lowPrice)))}`;
 const prodLine = (p) => `- [${p.name}](${DOMAIN}/products/${p.slug}.html): from ${money(lowPrice(p))}${p.sku ? ', SKU ' + p.sku : ''}${p.stone && p.stone.length < 90 ? ', ' + p.stone : ''}`;
