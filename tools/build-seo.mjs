@@ -316,11 +316,12 @@ write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="htt
 
 // ---------- 7b. Google Merchant Center product feed (google-feed.xml) ----------
 //  Prices come straight from the product data (lowest price across metals, same as the "From $" on each page); nothing is changed here.
-//  Excluded: the custom CAD design service and loose diamonds (not suitable as Shopping products), and anything without a photo.
+//  Every active product with a name, a price and a photo is included automatically (new products appear on the next nightly build). Unknown categories fall back to the general Jewelry category.
 const GCAT = { rings: 'Apparel & Accessories > Jewelry > Rings', 'initial-necklaces': 'Apparel & Accessories > Jewelry > Necklaces', necklaces: 'Apparel & Accessories > Jewelry > Necklaces',
   earrings: 'Apparel & Accessories > Jewelry > Earrings', bracelets: 'Apparel & Accessories > Jewelry > Bracelets', 'signature-pieces': 'Apparel & Accessories > Jewelry' };
+const GCAT_DEFAULT = 'Apparel & Accessories > Jewelry';
 const feedWords = (s) => String(s || '').replace(/hand-?made/gi, 'made to order');
-const feedItems = items.filter((p) => GCAT[p.category] && p.image && /^https?:\/\//.test(p.image));
+const feedItems = items.filter((p) => p.image && /^https?:\/\//.test(p.image));
 const feedXml = '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n<channel>\n<title>Style Of Life</title>\n<link>' + DOMAIN + '/</link>\n<description>Lab grown diamond, moissanite and colorstone jewelry, made to order in Surat, India.</description>\n' +
   feedItems.map((p) => {
     const lo = lowPrice(p);
@@ -336,7 +337,7 @@ const feedXml = '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmln
 <g:brand>Style Of Life</g:brand>
 <g:condition>new</g:condition>
 <g:identifier_exists>no</g:identifier_exists>
-<g:google_product_category>${esc(GCAT[p.category])}</g:google_product_category>
+<g:google_product_category>${esc(GCAT[p.category] || GCAT_DEFAULT)}</g:google_product_category>
 <g:product_type>${esc(CAT_LABEL[p.category] || 'Jewelry')}</g:product_type>${p.metal ? `\n<g:material>${esc(trim(p.metal, 200))}</g:material>` : ''}
 </item>`;
   }).join('\n') + '\n</channel>\n</rss>\n';
