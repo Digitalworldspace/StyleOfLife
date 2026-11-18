@@ -57,7 +57,7 @@ const CATS = {
   rings: {
     slug: 'lab-grown-diamond-rings', label: 'Lab Grown Diamond Rings', short: 'Rings',
     title: 'Lab Grown Diamond Rings, SGL Certified | Style Of Life',
-    desc: 'Shop SGL certified lab grown diamond engagement rings: halo, solitaire, pavé, three row and toi et moi designs in 925 silver, 9K, 14K and 18K gold. Made to order in Surat, India, free worldwide delivery.',
+    desc: 'SGL certified lab grown diamond engagement rings: halo, solitaire, pavé, toi et moi in 925 silver, 9K-18K gold. Made to order in Surat. Free worldwide delivery.',
     intro: [
       'Every ring in this collection is made to order in Surat, India, in your choice of 925 sterling silver, 9K, 14K or 18K gold, with yellow, white or rose tones. Our diamond rings are set with SGL certified lab grown diamonds, most in DEF color and VVS–VS clarity, and each order comes with its own SGL certificate. Selected designs use moissanite, clearly labeled on the ring page.',
       'Browse classic solitaires, halo engagement rings, pavé and split shank bands, three row rings, bow rings and toi et moi designs. Prices shown are starting prices (925 silver); open a ring to see the exact price for every metal.',
@@ -73,7 +73,7 @@ const CATS = {
   'initial-necklaces': {
     slug: 'diamond-initial-necklaces', label: 'Diamond Initial Necklaces', short: 'Initial Necklaces',
     title: 'Diamond Initial Necklace, Letter Pendants A–Z | Style Of Life',
-    desc: 'Diamond initial necklace with a solid gold or 925 silver letter pendant, A to Z, in 9K, 14K and 18K gold. Made to order in Surat, India, free worldwide delivery. A gift for her.',
+    desc: 'Diamond initial necklace with a solid gold or 925 silver letter pendant, A to Z, in 9K, 14K, 18K gold. Made to order in Surat, India. Free worldwide delivery.',
     intro: [
       'A diamond initial necklace is a personal piece: one letter for you, a partner, a child or someone you love. Choose any letter from A to Z, made to order in 925 sterling silver, 9K, 14K or 18K gold.',
       'Each pendant is available on a 16 inch close-fit chain or an 18 inch classic-fit chain. Prices shown are starting prices; open a letter to see the price for every metal.',
@@ -91,7 +91,7 @@ const CATS = {
   necklaces: {
     slug: 'diamond-necklaces', label: 'Diamond Necklaces & Pendants', short: 'Necklaces',
     title: 'Diamond & Moissanite Necklaces, Pendants | Style Of Life',
-    desc: 'Lab grown diamond and moissanite bar, heart, bow and tennis necklaces in 925 silver, 9K, 14K and 18K gold. SGL certified, made to order in Surat, India, free worldwide delivery.',
+    desc: 'Lab grown diamond and moissanite bar, heart and tennis necklaces in 925 silver, 9K-18K gold. SGL certified, made to order in Surat. Free worldwide delivery.',
     intro: [
       'Delicate bar necklaces, heart charm pendants, bow pendants and more, set with lab grown diamonds or moissanite and made to order in 925 sterling silver, 9K, 14K or 18K gold.',
       'Each piece shows its stone details on its own page. Prices shown are starting prices; open a necklace to see the price for every metal. For your preferred chain length, message us before you order.'
@@ -106,7 +106,7 @@ const CATS = {
   earrings: {
     slug: 'diamond-earrings', label: 'Diamond & Moissanite Earrings', short: 'Earrings',
     title: 'Lab Grown Diamond & Moissanite Earrings | Style Of Life',
-    desc: 'Lab grown diamond and moissanite stud, cluster and drop earrings in 925 silver, 9K, 14K and 18K gold. SGL certified, made to order in Surat, India, free worldwide delivery.',
+    desc: 'Lab grown diamond and moissanite stud, cluster and drop earrings in 925 silver, 9K-18K gold. SGL certified, made to order in Surat. Free worldwide delivery.',
     intro: [
       'From butterfly and flower studs to star clusters and drop earrings, every pair is made to order in 925 sterling silver, 9K, 14K or 18K gold, set with lab grown diamonds or moissanite.',
       'Prices shown are starting prices; open a pair to see the price for every metal and the stone details. Every order ships with tracking, free to most destinations worldwide.'
@@ -120,7 +120,7 @@ const CATS = {
   bracelets: {
     slug: 'diamond-bracelets', label: 'Diamond Tennis & Colorstone Bracelets', short: 'Bracelets',
     title: 'Diamond Tennis & Colorstone Bracelets | Style Of Life',
-    desc: 'Lab grown diamond tennis bracelets and colorstone bracelets in 925 silver, 9K, 14K and 18K gold. SGL certified, made to order in Surat, India, free worldwide delivery.',
+    desc: 'Lab grown diamond tennis bracelets and colorstone bracelets in 925 silver, 9K-18K gold. SGL certified, made to order in Surat. Free worldwide delivery.',
     intro: [
       'Lab grown diamond tennis bracelets, blue and multicolor colorstone bracelets and diamond-accented designs, all made to order in 925 sterling silver, 9K, 14K or 18K gold.',
       'Prices shown are starting prices; open a bracelet to see the price for every metal and the stone details. Please message us your wrist size before ordering so the fit is right.'
@@ -334,7 +334,7 @@ for (const f of ['index.html', 'jewelry.html', 'about.html']) {
   </div>
   <div class="cat-faq"><h2>Shipping and returns questions, answered</h2>${faq.map((q) => `<details><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`).join('')}</div>
 </section>`;
-  const desc = 'Shipping and returns at Style Of Life: made to order in Surat, India, ready to ship in about 5–8 business days, free worldwide delivery with tracking, and no returns or exchanges on made-to-order pieces.';
+  const desc = 'Made to order in Surat, India. Ships in about 5–8 business days with free tracked worldwide delivery. No returns or exchanges on made-to-order pieces.';
   write('shipping-returns.html', page({ title: 'Shipping & Returns | Style Of Life', desc, urlPath: '/shipping-returns.html', image: siteOg, schema: [breadcrumbLd([['Home', '/'], ['Shipping & Returns', '/shipping-returns.html']]), faqLd(faq)], body, ch }));
   urls.push(['/shipping-returns.html', 0.5, 'monthly']);
 }
