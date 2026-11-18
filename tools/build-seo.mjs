@@ -468,3 +468,22 @@ console.log(`Built ${catPages.length} category pages, ${items.length} product pa
   }
   console.log(`Added Google Analytics tag to ${n} pages`);
 }
+
+// ---------- 10. Meta Pixel on every public page (not admin) ----------
+{
+  const PIXEL_ID = '29106574775667628';
+  const tag = `<!-- Meta Pixel Code -->\n<script>\n!function(f,b,e,v,n,t,s)\n{if(f.fbq)return;n=f.fbq=function(){n.callMethod?\nn.callMethod.apply(n,arguments):n.queue.push(arguments)};\nif(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';\nn.queue=[];t=b.createElement(e);t.async=!0;\nt.src=v;s=b.getElementsByTagName(e)[0];\ns.parentNode.insertBefore(t,s)}(window, document,'script',\n'https://connect.facebook.net/en_US/fbevents.js');\nfbq('init', '${PIXEL_ID}');\nfbq('track', 'PageView');\n</script>\n<noscript><img height="1" width="1" style="display:none"\nsrc="https://www.facebook.com/tr?id=${PIXEL_ID}&ev=PageView&noscript=1"\n/></noscript>\n<!-- End Meta Pixel Code -->\n`;
+  const walk = (d) => fs.readdirSync(path.join(ROOT, d), { withFileTypes: true }).flatMap((e) => {
+    const rel = d ? d + '/' + e.name : e.name;
+    if (e.isDirectory()) return ['.git', '.github', 'tools', 'node_modules', 'data'].includes(e.name) ? [] : walk(rel);
+    return rel.endsWith('.html') && rel !== 'admin.html' ? [rel] : [];
+  });
+  let n = 0;
+  for (const f of walk('')) {
+    const s = read(f);
+    if (s.includes('connect.facebook.net/en_US/fbevents.js') || !s.includes('</head>')) continue;
+    write(f, s.replace('</head>', tag + '</head>'));
+    n++;
+  }
+  console.log(`Added Meta Pixel to ${n} pages`);
+}
