@@ -59,7 +59,7 @@ const CATS = {
     title: 'Lab Grown Diamond Rings, SGL Certified | Style Of Life',
     desc: 'Shop SGL certified lab grown diamond engagement rings: halo, solitaire, pavé, three row and toi et moi designs in 925 silver, 9K, 14K and 18K gold. Made to order in Surat, India, free worldwide delivery.',
     intro: [
-      'Every ring in this collection is made to order in Surat, India, in your choice of 925 sterling silver, 9K, 14K or 18K gold, with yellow, white or rose tones. Our diamond rings are set with SGL certified lab grown diamonds, most in DEF colour and VVS–VS clarity, and each order comes with its own SGL certificate. Selected designs use moissanite, clearly labelled on the ring page.',
+      'Every ring in this collection is made to order in Surat, India, in your choice of 925 sterling silver, 9K, 14K or 18K gold, with yellow, white or rose tones. Our diamond rings are set with SGL certified lab grown diamonds, most in DEF color and VVS–VS clarity, and each order comes with its own SGL certificate. Selected designs use moissanite, clearly labeled on the ring page.',
       'Browse classic solitaires, halo engagement rings, pavé and split shank bands, three row rings, bow rings and toi et moi designs. Prices shown are starting prices (925 silver); open a ring to see the exact price for every metal.',
       'Please message us your ring size before ordering. Rings are made to order, so there are no returns, exchanges or resizing; you can also send a custom size request when you order.'
     ],
@@ -211,6 +211,7 @@ function productFaq(p, lo, hi) {
   if (/SGL/i.test([p.stone, p.details, p.description].join(' '))) faq.push(['Is this piece certified?', 'Yes. This piece is SGL certified, as described in the details on this page. You can verify SGL reports at sgl-labs.com.']);
   faq.push(['How long does it take to make and deliver?', 'It is made to order in Surat, India, and is ready to ship in about 5–8 business days. Delivery is free worldwide with tracking.']);
   if (p.category === 'rings') faq.push(['Can I return, exchange or resize this ring?', 'No. Rings are made to order in your size, so there are no returns, exchanges or resizing. Please message us your ring size before ordering; custom sizes are welcome.']);
+  if (['necklaces', 'initial-necklaces', 'earrings', 'bracelets'].includes(p.category)) faq.push([`Can I return or exchange the ${p.name}?`, 'Because each piece is made to order just for you, we do not accept returns or exchanges on necklaces, earrings or bracelets. Every detail is shown on this page, and you are always welcome to message us before ordering with any question or change request.']);
   faq.push(['How do I order?', `Message Style Of Life on WhatsApp at +91 63529 25472${p.etsy ? ', or use the Buy on Etsy button on this page; checkout and payment are handled securely by Etsy' : ''}. You can also ask for sizing help or a custom request before ordering.`]);
   return faq;
 }
@@ -391,6 +392,8 @@ write('llms.txt', `# Style Of Life
 - Production: every piece is made to order in Surat, India, and is usually ready to ship in about 5–8 business days.
 - Shipping: free worldwide delivery with tracking.
 - Rings: made to order in the buyer's size, so there are no returns, exchanges or resizing. Buyers should send their ring size before ordering.
+- Returns: because every piece is made to order, returns and exchanges are not accepted on rings, necklaces, earrings or bracelets. All details are shown on each product page, and buyers can message the shop before ordering with any question or change request. Cancellation is free within 5 hours of ordering.
+- Founded: the shop started in 2025.
 - How to order: by WhatsApp (+91 63529 25472) or through the Etsy shop (${ETSY_SHOP}), where checkout and payment are handled by Etsy.
 - Prices: shown in US dollars. The price depends on the metal; each product page lists the price for every metal.
 - Website: ${DOMAIN}/ (updated ${TODAY})
