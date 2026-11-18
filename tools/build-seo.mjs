@@ -10,6 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { GUIDES } from './guides-data.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DOMAIN = 'https://styleoflife.co';
@@ -340,6 +341,37 @@ for (const f of ['index.html', 'jewelry.html', 'about.html']) {
   urls.push(['/shipping-returns.html', 0.5, 'monthly']);
 }
 
+// ---------- 6c. Buyer guides (/guides/) for search engines and AI assistants ----------
+{
+  const guidePages = [];
+  for (const g of GUIDES) {
+    const body = `<section class="section cat-page guide-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/guides/">Guides</a> › <span>${esc(g.short)}</span></nav>
+  <div class="section-head"><h1>${esc(g.h1)}</h1></div>
+  <div class="guide-body">
+    <p class="guide-answer"><b>${esc(g.answer)}</b></p>
+    ${g.sections.map((x) => `<h2>${esc(x[0])}</h2>\n    ${x[1]}`).join('\n    ')}
+  </div>
+  <div class="cat-faq"><h2>Quick answers</h2>${g.faq.map((q) => `<details><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`).join('')}</div>
+  <div class="cat-more">${catNav('')}</div>
+</section>`;
+    const article = { '@context': 'https://schema.org', '@type': 'Article', headline: g.h1, description: g.desc, datePublished: g.published, dateModified: TODAY, mainEntityOfPage: DOMAIN + '/guides/' + g.slug + '.html', author: { '@type': 'Organization', name: 'Style Of Life', url: DOMAIN + '/' }, publisher: { '@type': 'Organization', name: 'Style Of Life', url: DOMAIN + '/' } };
+    write('guides/' + g.slug + '.html', page({ title: g.title, desc: g.desc, urlPath: '/guides/' + g.slug + '.html', image: siteOg, ogType: 'article', schema: [breadcrumbLd([['Home', '/'], ['Guides', '/guides/'], [g.short, '/guides/' + g.slug + '.html']]), article, faqLd(g.faq)], body, ch }));
+    urls.push(['/guides/' + g.slug + '.html', 0.6, 'monthly']);
+    guidePages.push(g);
+  }
+  const idx = `<section class="section cat-page guide-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <span>Guides</span></nav>
+  <div class="section-head"><h1>Jewelry Buyer Guides</h1></div>
+  <div class="cat-intro"><p>Short, plain-language answers to common questions about lab grown diamond, moissanite and gold or silver jewelry, from Style Of Life in Surat, India.</p></div>
+  <div class="guide-body"><ul class="guide-list">${guidePages.map((g) => `<li><a href="/guides/${g.slug}.html">${esc(g.short)}</a><br><span>${esc(g.teaser)}</span></li>`).join('')}</ul></div>
+  <div class="cat-more">${catNav('')}</div>
+</section>`;
+  const idesc = 'Buyer guides from Style Of Life: lab grown diamond vs moissanite and more, explained in plain language by a made-to-order jewelry brand in Surat, India.';
+  write('guides/index.html', page({ title: 'Jewelry Buyer Guides | Style Of Life', desc: idesc, urlPath: '/guides/', image: siteOg, schema: [breadcrumbLd([['Home', '/'], ['Guides', '/guides/']])], body: idx, ch }));
+  urls.push(['/guides/', 0.6, 'weekly']);
+}
+
 // ---------- 7. sitemap ----------
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
   urls.map(([u, pr, f]) => `  <url><loc>${DOMAIN}${u}</loc><lastmod>${TODAY}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority>${imgMap[u] ? `<image:image><image:loc>${esc(imgMap[u].img)}</image:loc><image:title>${esc(imgMap[u].title)}</image:title></image:image>` : ''}</url>`).join('\n') + '\n</urlset>\n');
@@ -404,6 +436,8 @@ write('llms.txt', `# Style Of Life
 - [All jewelry](${DOMAIN}/jewelry.html): the full collection
 - [Our story](${DOMAIN}/about.html): about the founder and how orders are handled
 - [Shipping & Returns](${DOMAIN}/shipping-returns.html): delivery time, returns and cancellation policy
+- [Buyer guides](${DOMAIN}/guides/): plain-language answers about lab grown diamond, moissanite and jewelry metals
+${GUIDES.map((g) => `- [${g.short}](${DOMAIN}/guides/${g.slug}.html): ${g.teaser}`).join('\n')}
 ${catPages.map(catLine).join('\n')}
 
 ## Products

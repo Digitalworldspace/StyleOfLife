@@ -811,3 +811,13 @@ header nav{transition:padding .35s ease;} header.is-scrolled nav{padding-top:11p
 .shop-cats{padding:48px 24px; text-align:center; background:var(--ivory-2);} .shop-cats h2{margin-bottom:18px;}
 @media(max-width:820px){ .prod-grid{grid-template-columns:1fr; gap:24px;} .sgrid{grid-template-columns:repeat(2,1fr); gap:14px;} .cat-page,.prod-page{padding:28px 16px 44px;} .scard-body{padding:12px;} }
 nav.crumbs{display:flex; flex-wrap:wrap; justify-content:flex-start; align-items:center; gap:6px; position:static; padding:0; background:none; border:0;}
+
+/* ---- Buyer guides ---- */
+.guide-body{max-width:760px; margin:0 auto; line-height:1.7; color:var(--charcoal-soft);}
+.guide-body h2{font-size:1.35rem; margin:30px 0 8px; color:var(--charcoal);}
+.guide-body p{margin:0 0 14px;}
+.guide-body a{color:var(--gold-deep); text-decoration:underline;}
+.guide-answer{font-size:1.08rem; color:var(--charcoal);}
+.guide-list{list-style:none; padding:0; margin:0;}
+.guide-list li{padding:16px 0; border-bottom:1px solid var(--line);}
+.guide-list a{font-weight:600; font-size:1.1rem; text-decoration:none;}
