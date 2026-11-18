@@ -72,14 +72,16 @@ const CATS = {
   },
   'initial-necklaces': {
     slug: 'diamond-initial-necklaces', label: 'Diamond Initial Necklaces', short: 'Initial Necklaces',
-    title: 'Diamond Initial Necklaces, Letter Pendants A–Z | Style Of Life',
-    desc: 'Personalized diamond initial necklaces, letters A to Z, in 925 silver, 9K, 14K and 18K gold. Made to order in Surat, India, with free worldwide delivery. A meaningful gift for her.',
+    title: 'Diamond Initial Necklace, Letter Pendants A–Z | Style Of Life',
+    desc: 'Diamond initial necklace with a solid gold or 925 silver letter pendant, A to Z, in 9K, 14K and 18K gold. Made to order in Surat, India, free worldwide delivery. A gift for her.',
     intro: [
       'A diamond initial necklace is a personal piece: one letter for you, a partner, a child or someone you love. Choose any letter from A to Z, made to order in 925 sterling silver, 9K, 14K or 18K gold.',
       'Each pendant is available on a 16 inch close-fit chain or an 18 inch classic-fit chain. Prices shown are starting prices; open a letter to see the price for every metal.',
-      'Initial necklaces make a thoughtful gift for birthdays, anniversaries, Christmas and milestones. Every piece ships with tracking, free to most destinations worldwide.'
+      'Initial necklaces make a thoughtful gift for birthdays, anniversaries, Christmas and milestones. Every piece ships with tracking, free to most destinations worldwide.',
+      'Christmas gift: order by December 10 so your made-to-order letter necklace can reach you before Christmas.'
     ],
     faq: [
+      ['Can I get an initial necklace before Christmas?', 'Order by December 10. Every piece is made to order in about 5–8 business days and ships with free tracked delivery.'],
       ['What chain lengths are available?', 'A 16 inch close fit or an 18 inch classic fit chain.'],
       ['Which metals can I choose?', '925 sterling silver, 9K gold, 14K gold and 18K gold.'],
       ['Can I order a different letter or a custom design?', 'Yes. Message us on WhatsApp for a letter that is not listed, a different chain length or a custom design.'],
