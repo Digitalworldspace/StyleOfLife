@@ -56,7 +56,7 @@ const COMMON_FAQ_SHIP = ['How long does it take and how is it shipped?', 'Every 
 const CATS = {
   rings: {
     slug: 'lab-grown-diamond-rings', label: 'Lab Grown Diamond Rings', short: 'Rings',
-    title: 'Lab Grown Diamond Rings, SGL Certified | Style Of Life',
+    title: 'Lab Grown Diamond Engagement Rings, SGL Certified | Style Of Life',
     desc: 'SGL certified lab grown diamond engagement rings: halo, solitaire, pavé, toi et moi in 925 silver, 9K-18K gold. Made to order in Surat. Free worldwide delivery.',
     intro: [
       'Every ring in this collection is made to order in Surat, India, in your choice of 925 sterling silver, 9K, 14K or 18K gold, with yellow, white or rose tones. Our diamond rings are set with SGL certified lab grown diamonds, most in DEF color and VVS–VS clarity, and each order comes with its own SGL certificate. Selected designs use moissanite, clearly labeled on the ring page.',
@@ -66,6 +66,7 @@ const CATS = {
     faq: [
       ['Are your diamond rings certified?', 'Our lab grown diamond rings come with an individual SGL certificate for the diamond in your order. You can verify SGL reports at sgl-labs.com.'],
       ['Which metals can I choose?', '925 sterling silver, 9K gold, 14K gold and 18K gold, each in yellow, white or rose tone. Every option is described by its actual metal; tone finishes are never presented as solid gold.'],
+      ['Do you have lab grown diamond engagement and proposal rings?', 'Yes. Our four prong solitaires, halo rings and slim pavé band rings are popular as engagement and proposal rings. Each is made to order in Surat in your choice of 925 silver, 9K, 14K or 18K gold, with an SGL certified lab grown diamond. Order early for a proposal date: made to order takes about 5–8 business days plus tracked delivery, and rings cannot be returned or resized.'],
       ['Can I get a custom ring size?', 'Yes. Message us your size or measurements on WhatsApp or add a custom size request when you order. Because rings are made to order, they cannot be returned, exchanged or resized.'],
       COMMON_FAQ_SHIP
     ]
