@@ -489,3 +489,22 @@ console.log(`Built ${catPages.length} category pages, ${items.length} product pa
   }
   console.log(`Added Meta Pixel to ${n} pages`);
 }
+
+// ---------- 11. Microsoft Clarity (heatmaps and session recordings) on every public page (not admin) ----------
+{
+  const CLARITY_ID = 'zg3wm9phcu';
+  const tag = `<script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${CLARITY_ID}");</script>\n`;
+  const walk = (d) => fs.readdirSync(path.join(ROOT, d), { withFileTypes: true }).flatMap((e) => {
+    const rel = d ? d + '/' + e.name : e.name;
+    if (e.isDirectory()) return ['.git', '.github', 'tools', 'node_modules', 'data'].includes(e.name) ? [] : walk(rel);
+    return rel.endsWith('.html') && rel !== 'admin.html' ? [rel] : [];
+  });
+  let n = 0;
+  for (const f of walk('')) {
+    const s = read(f);
+    if (s.includes('clarity.ms/tag') || !s.includes('</head>')) continue;
+    write(f, s.replace('</head>', tag + '</head>'));
+    n++;
+  }
+  console.log(`Added Microsoft Clarity to ${n} pages`);
+}
