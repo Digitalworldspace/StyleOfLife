@@ -26,5 +26,31 @@ export const GUIDES = [
       ['Does moissanite sparkle more than a lab grown diamond?', 'Moissanite shows more colorful, rainbow-like flashes, while a diamond gives whiter brilliance. Which looks better is a matter of taste.'],
       ['Does Style Of Life certify its lab grown diamonds?', 'Our lab grown diamond rings come with an individual SGL certificate for the diamond in your order. Moissanite pieces are clearly labeled as moissanite on the product page.']
     ]
+  },
+  {
+    slug: 'sgl-certificate-lab-grown-diamond',
+    title: 'What Is an SGL Certificate? How to Verify a Lab Grown Diamond Report | Style Of Life',
+    desc: 'What an SGL certificate is, what a lab grown diamond report lists, and how to verify it online with the report number or QR code before you buy.',
+    h1: 'What Is an SGL Certificate and How Do You Verify It?',
+    short: 'SGL certificate: what it is and how to verify it',
+    teaser: 'What an SGL lab grown diamond report shows and how to check it online.',
+    published: '2026-11-19',
+    answer: 'An SGL certificate is a grading report issued by SGL (a gemological laboratory) that describes a diamond, such as its carat weight, color, clarity and cut, and states whether it is laboratory-grown. You can verify it for free by entering the report number on sgl-labs.com or by scanning the QR code printed on the certificate.',
+    sections: [
+      ['What is an SGL certificate?', '<p>A diamond certificate is an independent laboratory report about one specific stone. SGL is a gemological laboratory with offices in India and other countries, and it issues reports for diamonds, including lab grown diamonds. The report is not a promise about price. It is a record of what the laboratory measured and observed in the stone, so that a buyer can compare what they were told with what is written on paper.</p>'],
+      ['What does an SGL lab grown diamond report list?', '<p>According to SGL, a lab grown diamond report carries a unique report number and states the nature of origin, which for these stones reads &quot;Laboratory-Grown&quot;. It also lists carat weight, color grade, clarity grade, cut grade, measurements and proportions, polish and symmetry, fluorescence, a plotting diagram of the stone and any post-growth treatment, if applicable. Security features such as a QR code, a hologram and security paper are used to make the report hard to copy.</p>'],
+      ['How do you verify an SGL certificate online?', '<p>There are two simple ways. First, find the unique report number on your certificate, go to sgl-labs.com and type the number into the verification search box. Second, scan the QR code on the certificate with your phone camera, which opens the report in the laboratory&#39;s database. Then check that the report number, carat weight, color, clarity and the origin line on the screen match what is printed on your paper certificate. According to SGL, reports can be viewed and downloaded as PDF files without paying.</p>'],
+      ['What should you check when the certificate arrives?', '<p>Compare the details with your order. Look at the carat weight and the color and clarity grades, and confirm the origin line says laboratory-grown. If a number on paper does not match the online record, contact the seller before you wear the piece. Keep the certificate with the jewelry in a safe place, because it is the document that describes your stone.</p>'],
+      ['Why does a certificate matter when buying a diamond ring?', '<p>A ring is often a gift or a milestone purchase, and the stone is the most important part of it. A certificate gives you a neutral description of that stone that you can read, keep and check online, instead of relying on a seller&#39;s words alone. It also helps when you compare two rings: the same carat weight can come with different color, clarity and cut grades, and the report shows those differences clearly.</p>'],
+      ['Does a certificate mean the diamond is a certain price or value?', '<p>No. A certificate describes the stone; it does not set a price, and it is not an investment or resale document. Two certified stones with different grades, sizes and settings can be priced very differently, and prices depend on the seller, the metal and the design. Use the certificate to understand what you are buying, not to predict what it will be worth later.</p>'],
+      ['How does this work at Style Of Life?', '<p>Our lab grown diamond rings come with an individual SGL certificate for the diamond in your order. Moissanite is a different gemstone, so moissanite pieces are not sold with a diamond certificate and are labeled as moissanite on the product page. Each piece is made to order in Surat, India, and you can message us on WhatsApp at +91 63529 25472 before ordering to ask about the stone for your piece. See our <a href="/lab-grown-diamond-rings.html">lab grown diamond rings</a>, read how <a href="/guides/moissanite-vs-lab-grown-diamond.html">moissanite compares with lab grown diamond</a>, or check delivery details on the <a href="/shipping-returns.html">Shipping &amp; Returns</a> page.</p>']
+    ],
+    faq: [
+      ['What is an SGL certificate?', 'It is a gemological laboratory report from SGL that describes a specific diamond, including carat weight, color, clarity, cut and whether it is laboratory-grown.'],
+      ['How do I verify an SGL certificate?', 'Enter the report number in the verification box on sgl-labs.com, or scan the QR code on the certificate, then check that the details match your paper certificate.'],
+      ['Does it cost anything to check an SGL report online?', 'According to SGL, reports can be viewed and downloaded as PDF files for free.'],
+      ['Is a certificate a guarantee of value?', 'No. A certificate describes the stone. It is not a price guarantee, investment advice or a resale document.'],
+      ['Do Style Of Life lab grown diamond rings come with an SGL certificate?', 'Yes. Our lab grown diamond rings come with an individual SGL certificate for the diamond in your order. Moissanite pieces are labeled as moissanite on the product page.']
+    ]
   }
 ];
