@@ -343,6 +343,31 @@ for (const f of ['index.html', 'jewelry.html', 'about.html']) {
   urls.push(['/shipping-returns.html', 0.5, 'monthly']);
 }
 
+// ---------- 6c. Privacy page (tools used on the site: GA4, Meta Pixel, Microsoft Clarity) ----------
+{
+  const body = `<section class="section cat-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <span>Privacy</span></nav>
+  <div class="section-head"><h1>Privacy</h1></div>
+  <div class="cat-intro">
+    <p>This page explains in plain words what happens to information when you visit styleoflife.co. Last updated ${TODAY}.</p>
+    <p><b>What this website does not do.</b> This website has no accounts, no sign-up forms and no checkout. We do not ask for your name, address or payment details here, and we do not sell your information.</p>
+    <p><b>Orders.</b> You order through our Etsy shop, where checkout and payment are handled by Etsy under Etsy's own privacy policy. If you message us on WhatsApp, we use what you send only to answer you and to make your order.</p>
+    <p><b>Tools we use to understand our visitors.</b></p>
+    <ul>
+      <li><b>Google Analytics</b> counts visits and shows us which pages are used, what kind of device you have, your approximate location (country and city) and how you found the site.</li>
+      <li><b>Meta Pixel</b> (Facebook and Instagram) tells Meta when a page is opened or when someone taps a link to Etsy or WhatsApp, so we can measure and improve our ads.</li>
+      <li><b>Microsoft Clarity</b> shows us how visitors scroll and tap on our pages, as heatmaps and anonymous session recordings, so we can fix confusing pages. Clarity hides sensitive text and does not record what you type into other websites.</li>
+    </ul>
+    <p>These tools use cookies or similar technology and may receive your IP address, browser and device details. Each company handles that data under its own privacy policy.</p>
+    <p><b>Your choices.</b> You can block or delete cookies in your browser settings, use a tracking blocker, install the Google Analytics opt-out browser add-on, or change your ad settings in your Facebook and Instagram accounts. The site works the same without these tools.</p>
+    <p><b>Questions.</b> Message Style Of Life on WhatsApp at +91 63529 25472 or through our Etsy shop.</p>
+  </div>
+</section>`;
+  const desc = 'How styleoflife.co uses Google Analytics, Meta Pixel and Microsoft Clarity, what we do not collect, and how to opt out.';
+  write('privacy.html', page({ title: 'Privacy | Style Of Life', desc, urlPath: '/privacy.html', image: siteOg, schema: [breadcrumbLd([['Home', '/'], ['Privacy', '/privacy.html']])], body, ch }));
+  urls.push(['/privacy.html', 0.3, 'yearly']);
+}
+
 // ---------- 6c. Buyer guides (/guides/) for search engines and AI assistants ----------
 {
   const guidePages = [];
@@ -438,6 +463,7 @@ write('llms.txt', `# Style Of Life
 - [All jewelry](${DOMAIN}/jewelry.html): the full collection
 - [Our story](${DOMAIN}/about.html): about the founder and how orders are handled
 - [Shipping & Returns](${DOMAIN}/shipping-returns.html): delivery time, returns and cancellation policy
+- [Privacy](${DOMAIN}/privacy.html): which analytics tools the site uses and how to opt out
 - [Buyer guides](${DOMAIN}/guides/): plain-language answers about lab grown diamond, moissanite and jewelry metals
 ${GUIDES.map((g) => `- [${g.short}](${DOMAIN}/guides/${g.slug}.html): ${g.teaser}`).join('\n')}
 ${catPages.map(catLine).join('\n')}
@@ -507,4 +533,22 @@ console.log(`Built ${catPages.length} category pages, ${items.length} product pa
     n++;
   }
   console.log(`Added Microsoft Clarity to ${n} pages`);
+}
+
+// ---------- 12. Click and product-view events for GA4 and Meta Pixel (Etsy click, WhatsApp click, product view) ----------
+{
+  const tag = `<script>(function(){var isP=location.pathname.indexOf('/products/')===0;function ga(n,p){try{if(typeof gtag==='function'){p.transport_type='beacon';gtag('event',n,p);}}catch(e){}}function fb(m,n,p){try{if(typeof fbq==='function'){p?fbq(m,n,p):fbq(m,n);}}catch(e){}}if(isP){ga('view_item',{item_name:document.title});fb('track','ViewContent',{content_name:document.title,content_type:'product'});}document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href]'):null;if(!a)return;var h=a.href||'';if(h.indexOf('wa.me')>-1){ga('whatsapp_click',{link_url:h,page_path:location.pathname});fb('track','Contact');}else if(h.indexOf('etsy.com')>-1){ga('etsy_click',{link_url:h,page_path:location.pathname});fb('trackCustom','EtsyClick',{page:location.pathname});}},true);})();</script>\n`;
+  const walk = (d) => fs.readdirSync(path.join(ROOT, d), { withFileTypes: true }).flatMap((e) => {
+    const rel = d ? d + '/' + e.name : e.name;
+    if (e.isDirectory()) return ['.git', '.github', 'tools', 'node_modules', 'data'].includes(e.name) ? [] : walk(rel);
+    return rel.endsWith('.html') && rel !== 'admin.html' ? [rel] : [];
+  });
+  let n = 0;
+  for (const f of walk('')) {
+    const s = read(f);
+    if (s.includes("whatsapp_click") || !s.includes('</head>')) continue;
+    write(f, s.replace('</head>', tag + '</head>'));
+    n++;
+  }
+  console.log(`Added click and product-view events to ${n} pages`);
 }
