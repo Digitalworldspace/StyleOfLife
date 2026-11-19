@@ -107,7 +107,7 @@ const CATS = {
   },
   earrings: {
     slug: 'diamond-earrings', label: 'Diamond & Moissanite Earrings', short: 'Earrings',
-    title: 'Lab Grown Diamond & Moissanite Earrings | Style Of Life',
+    title: 'Lab Grown Diamond Stud Earrings, Moissanite | Style Of Life',
     desc: 'Lab grown diamond and moissanite stud, cluster and drop earrings in 925 silver, 9K-18K gold. SGL certified, made to order in Surat. Free worldwide delivery.',
     intro: [
       'From butterfly and flower studs to star clusters and drop earrings, every pair is made to order in 925 sterling silver, 9K, 14K or 18K gold, set with lab grown diamonds or moissanite.',
@@ -116,6 +116,8 @@ const CATS = {
     faq: [
       ['Are the earrings SGL certified?', 'Lab grown diamond pieces are SGL certified; stone details are listed on each earring page.'],
       ['Which metals can I choose?', '925 sterling silver, 9K gold, 14K gold and 18K gold.'],
+      ['Do you make lab grown diamond stud earrings in gold?', 'Yes. Stud earrings are made to order in 9K, 14K or 18K gold, or in 925 sterling silver, with lab grown diamonds or moissanite. Open any pair to see the price for each metal.'],
+      ['Can I return or exchange earrings?', 'Because every pair is made to order just for you, we do not accept returns or exchanges on earrings. You are welcome to message us on WhatsApp at +91 63529 25472 before ordering with any question.'],
       COMMON_FAQ_SHIP
     ]
   },
