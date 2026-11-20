@@ -52,5 +52,30 @@ export const GUIDES = [
       ['Is a certificate a guarantee of value?', 'No. A certificate describes the stone. It is not a price guarantee, investment advice or a resale document.'],
       ['Do Style Of Life lab grown diamond rings come with an SGL certificate?', 'Yes. Our lab grown diamond rings come with an individual SGL certificate for the diamond in your order. Moissanite pieces are labeled as moissanite on the product page.']
     ]
+  },
+  {
+    slug: '925-silver-vs-9k-14k-18k-gold',
+    title: '925 Silver vs 9K, 14K and 18K Gold Jewelry: How to Choose | Style Of Life',
+    desc: 'What 925 sterling silver and 9K, 14K and 18K gold mean, how they differ in gold content, color and durability, and which to choose for your jewelry.',
+    h1: '925 Silver vs 9K, 14K and 18K Gold: Which Should You Choose?',
+    short: '925 silver vs 9K, 14K and 18K gold',
+    teaser: 'What the numbers mean and how each metal differs in gold content and wear.',
+    published: '2026-11-20',
+    answer: '925 sterling silver is 92.5% silver, while 9K, 14K and 18K gold contain 37.5%, 58.3% and 75% pure gold, with the rest made up of other metals. Silver is the lightest on the budget, 9K and 14K gold are the most durable for everyday wear, and 18K gold has the richest gold color but is the softest of the three golds.',
+    sections: [
+      ['What does 925 mean on silver jewelry?', '<p>The number 925 is a purity mark. It means the metal is 92.5% pure silver, and the other 7.5% is usually copper or another metal added for strength, because pure silver is too soft for jewelry. This alloy is called sterling silver. Sterling silver is a precious metal, but it is not gold, and a piece made in 925 silver should never be described as gold jewelry.</p>'],
+      ['What do 9K, 14K and 18K mean?', '<p>Karat (K) tells you how many parts out of 24 are pure gold. 24K is pure gold. 18K is 18 parts gold, which is 75%. 14K is 14 parts gold, or about 58.3%, and 9K is 9 parts gold, or 37.5%. The remaining parts are other metals, such as silver and copper, mixed in to make the gold stronger and to set its color. All three are solid gold alloys. A piece that is only gold plated or has a gold tone finish is a different thing and is not solid gold.</p>'],
+      ['How do the metals differ in color?', '<p>The higher the gold content, the richer and warmer the yellow gold looks, so 18K yellow gold has the deepest color and 9K the lightest. White gold and rose gold get their look from the other metals in the alloy: white gold is mixed to a pale tone, and rose gold contains more copper, which gives it a pink tone. Silver has a cool, bright white shine. At Style Of Life we offer each metal in yellow, white or rose tone, and every option is described by its actual metal.</p>'],
+      ['Which metal is the most durable for everyday wear?', '<p>Gold with a lower karat has more other metals in it and is generally harder, so 9K and 14K gold resist scratches and bending better than 18K gold. 18K gold is softer, so it can show wear sooner on a ring that is worn every day. Sterling silver is also a softer metal and it can tarnish, which is a darkening that happens as silver reacts with air. Wiping it with a soft cloth and storing it in a dry pouch helps. Gold does not tarnish in the same way.</p>'],
+      ['How do you choose between them?', '<p>Think about how often you will wear the piece and what matters most to you. If you want the most affordable way to enjoy a design, 925 silver is the starting point. If you want a gold piece for daily wear, 14K is a popular balance of gold content and strength, and 9K gives a harder, lighter-colored gold. If you want the deepest gold color and a higher gold content, choose 18K and treat it with a little more care. Prices differ by metal, so open any piece on our site to see the price for each option.</p>'],
+      ['How does this work at Style Of Life?', '<p>Every piece is made to order in Surat, India, in 925 sterling silver, 9K, 14K or 18K gold. Because each piece is made for you, we do not accept returns or exchanges on rings, necklaces, earrings or bracelets, but you are welcome to message us on WhatsApp at +91 63529 25472 before ordering with any question or change request. Browse <a href="/lab-grown-diamond-rings.html">lab grown diamond rings</a>, <a href="/diamond-necklaces.html">necklaces</a>, <a href="/diamond-earrings.html">earrings</a> and <a href="/diamond-bracelets.html">bracelets</a>, or read about <a href="/guides/moissanite-vs-lab-grown-diamond.html">moissanite vs lab grown diamond</a> and our <a href="/shipping-returns.html">Shipping &amp; Returns</a> page.</p>']
+    ],
+    faq: [
+      ['What is the difference between 925 silver and gold?', '925 silver is 92.5% pure silver. 9K, 14K and 18K gold are gold alloys with 37.5%, 58.3% and 75% pure gold. Silver is a different metal from gold.'],
+      ['Is 14K gold real gold?', 'Yes. 14K gold is a solid gold alloy with about 58.3% pure gold, mixed with other metals for strength.'],
+      ['Which is stronger, 14K or 18K gold?', 'Gold with a lower karat is generally harder, so 14K is usually more resistant to scratches and bending than 18K.'],
+      ['Does sterling silver tarnish?', 'Yes, silver can darken over time as it reacts with air. A soft cloth and dry storage help slow this down.'],
+      ['Which metals does Style Of Life use?', 'Every piece is made to order in 925 sterling silver, 9K, 14K or 18K gold, in yellow, white or rose tone.']
+    ]
   }
 ];

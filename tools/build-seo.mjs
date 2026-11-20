@@ -96,7 +96,7 @@ const CATS = {
     title: 'Diamond & Moissanite Necklaces, Pendants | Style Of Life',
     desc: 'Lab grown diamond and moissanite bar, heart and tennis necklaces in 925 silver, 9K-18K gold. SGL certified, made to order in Surat. Free worldwide delivery.',
     intro: [
-      'Delicate bar necklaces, heart charm pendants, bow pendants and more, set with lab grown diamonds or moissanite and made to order in 925 sterling silver, 9K, 14K or 18K gold.',
+      'Delicate bar necklaces, heart charm pendants, bow pendants and more, set with lab grown diamonds or moissanite and made to order in 925 sterling silver, 9K, 14K or 18K gold. They suit everyday wear, layering and gifts for birthdays, anniversaries and milestones.',
       'Each piece shows its stone details on its own page. Prices shown are starting prices; open a necklace to see the price for every metal. For your preferred chain length, message us before you order.'
     ],
     faq: [
@@ -111,7 +111,7 @@ const CATS = {
     title: 'Lab Grown Diamond Stud Earrings, Moissanite | Style Of Life',
     desc: 'Lab grown diamond and moissanite stud, cluster and drop earrings in 925 silver, 9K-18K gold. SGL certified, made to order in Surat. Free worldwide delivery.',
     intro: [
-      'From butterfly and flower studs to star clusters and drop earrings, every pair is made to order in 925 sterling silver, 9K, 14K or 18K gold, set with lab grown diamonds or moissanite.',
+      'From butterfly and flower studs to star clusters and drop earrings, every pair is made to order in 925 sterling silver, 9K, 14K or 18K gold, set with lab grown diamonds or moissanite. They are made for everyday wear, special occasions and gifts.',
       'Prices shown are starting prices; open a pair to see the price for every metal and the stone details. Every order ships with tracking, free to most destinations worldwide.'
     ],
     faq: [
@@ -127,7 +127,7 @@ const CATS = {
     title: 'Diamond Tennis & Colorstone Bracelets | Style Of Life',
     desc: 'Lab grown diamond tennis bracelets and colorstone bracelets in 925 silver, 9K-18K gold. SGL certified, made to order in Surat. Free worldwide delivery.',
     intro: [
-      'Lab grown diamond tennis bracelets, blue and multicolor colorstone bracelets and diamond-accented designs, all made to order in 925 sterling silver, 9K, 14K or 18K gold.',
+      'Lab grown diamond tennis bracelets, blue and multicolor colorstone bracelets and diamond-accented designs, all made to order in 925 sterling silver, 9K, 14K or 18K gold. They suit everyday wear, weddings, anniversaries and gifts.',
       'Prices shown are starting prices; open a bracelet to see the price for every metal and the stone details. Please message us your wrist size before ordering so the fit is right.'
     ],
     faq: [
