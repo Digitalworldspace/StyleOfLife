@@ -38,7 +38,7 @@
       id: p.id, category: p.category, type: p.type || 'photo', name: p.name, sku: p.sku,
       price: p.price, oldPrice: p.old_price || p.oldPrice, description: p.description,
       details: p.details, metal: p.metal, stone: p.stone,
-      image: p.image_url || p.image, etsy: p.etsy_url || p.etsy, variants: Array.isArray(p.variants) ? p.variants : [], alt: p.alt || p.name, video: p.video_id || p.video
+      image: p.image_url || p.image, etsy: p.etsy_url || p.etsy, variants: Array.isArray(p.variants) ? p.variants : [], alt: p.alt || p.name, video: p.video_id || p.video, images: Array.isArray(p.images) ? p.images : []
     };
   }
 

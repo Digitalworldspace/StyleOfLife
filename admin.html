@@ -54,6 +54,12 @@
   .grouphead{font-family:'Bodoni Moda',serif; font-weight:600; background:var(--ivory-2); padding:8px 12px; margin:14px 0 0; border-radius:3px; font-size:0.95rem;}
   .toast{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:var(--charcoal); color:#fff; padding:11px 20px; border-radius:4px; font-size:0.88rem; opacity:0; pointer-events:none; transition:opacity .25s; z-index:99; max-width:90vw;}
   .toast.show{opacity:1;} .toast.bad{background:var(--red);}
+  .gal{display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:10px; margin-top:10px;}
+  .gal .g{border:1px solid var(--line); border-radius:4px; padding:6px; background:#fff; text-align:center;}
+  .gal .g img{width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:3px; display:block; background:var(--ivory-2);}
+  .gal .g .gb{display:flex; gap:4px; justify-content:center; margin-top:6px; flex-wrap:wrap;}
+  .gal .g .gb button{border:1px solid var(--line); background:#fff; border-radius:3px; padding:2px 7px; font-size:0.78rem; cursor:pointer;}
+  .gal .g .gb button:hover{background:var(--ivory-2);}
   .imgprev{width:110px; height:110px; object-fit:cover; border-radius:3px; border:1px solid var(--line); margin-top:8px; display:none;}
   .hint{font-size:0.76rem; color:var(--soft); margin-top:4px;}
   .preview{border:1px solid var(--line); border-radius:4px; overflow:hidden; margin-top:16px;}
@@ -140,6 +146,12 @@
           <div class="hint">Or paste an image address below. Uploaded photos are shrunk automatically and stored in Supabase.</div>
           <input type="text" id="e-img-url" placeholder="Image address (optional if you upload a file)" style="margin-top:8px;">
           <img id="e-prev" class="imgprev" alt="">
+        </div>
+        <div id="e-gal-box">
+          <label for="e-gfile">More photos (extra pictures of this product)</label>
+          <input type="file" id="e-gfile" accept="image/*" multiple>
+          <div class="hint">Pick as many as you like. Fill in the <b>SKU</b> first: all of this product's photos are saved in one folder named after the SKU. The big photo above is the main one; use <b>Main</b> to swap, the arrows to change the order, and <b>&times;</b> to take a photo off this product.</div>
+          <div id="e-gal" class="gal"></div>
         </div>
         <div id="e-video-box" class="hidden">
           <label for="e-yt">YouTube link *</label>
@@ -423,11 +435,11 @@
   }
 
   // ----- editor -----
-  var editingId = null, pendingBlob = null;
+  var editingId = null, pendingBlob = null, gallery = [];
   function typeVal(){ return document.querySelector('input[name="e-type"]:checked').value; }
   function syncType(){
     var v = typeVal() === 'video';
-    $('e-photo-box').classList.toggle('hidden', v); $('e-video-box').classList.toggle('hidden', !v);
+    $('e-photo-box').classList.toggle('hidden', v); $('e-gal-box').classList.toggle('hidden', v); $('e-video-box').classList.toggle('hidden', !v);
   }
   document.querySelectorAll('input[name="e-type"]').forEach(function(r){ r.addEventListener('change', syncType); });
   $('e-cat').addEventListener('change', function(){ $('e-cat-new').classList.toggle('hidden', $('e-cat').value !== '__new__'); });
@@ -462,17 +474,55 @@
     });
   }
   // photos go to Supabase Storage using a one-time upload ticket that only a logged-in admin can get
-  function uploadPhoto(blob){
-    return arpc('admin_new_upload').then(function(t){
-      var path = t.code + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
+  function skuFolder(){ return ($('e-sku').value || '').trim().replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64); }
+  function uploadPhoto(blob, folder){
+    return arpc('admin_new_upload', folder ? { p_folder: folder } : {}).then(function(t){
+      var path = (t.folder || t.code) + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
       return fetch(BASE + '/storage/v1/object/product-images/' + path, {
         method: 'POST', headers: hdr({'Content-Type':'image/jpeg', 'x-upsert':'false', 'cache-control':'max-age=31536000'}), body: blob
       }).then(parse).then(function(){ return BASE + '/storage/v1/object/public/product-images/' + path; });
     });
   }
 
+  // ---- extra photos of a product ----
+  function renderGallery(){
+    var box = $('e-gal');
+    box.innerHTML = gallery.map(function(u, i){
+      return '<div class="g" data-i="'+i+'"><img src="'+esc(u)+'" alt="" loading="lazy"><div class="gb">' +
+        '<button type="button" data-a="left" title="Move earlier">&#9664;</button>' +
+        '<button type="button" data-a="right" title="Move later">&#9654;</button>' +
+        '<button type="button" data-a="main" title="Make this the main photo">Main</button>' +
+        '<button type="button" data-a="del" title="Remove from this product">&times;</button></div></div>';
+    }).join('');
+  }
+  $('e-gal').addEventListener('click', function(e){
+    var b = e.target.closest('button[data-a]'); if(!b) return;
+    var i = parseInt(b.closest('.g').dataset.i, 10), a = b.dataset.a;
+    if(a === 'left' && i > 0){ var t = gallery[i-1]; gallery[i-1] = gallery[i]; gallery[i] = t; }
+    else if(a === 'right' && i < gallery.length - 1){ var t2 = gallery[i+1]; gallery[i+1] = gallery[i]; gallery[i] = t2; }
+    else if(a === 'del'){ gallery.splice(i, 1); }
+    else if(a === 'main'){
+      var oldMain = $('e-img-url').value.trim();
+      $('e-img-url').value = gallery[i]; pendingBlob = null; $('e-file').value = ''; showPrev(gallery[i]);
+      if(oldMain) gallery[i] = oldMain; else gallery.splice(i, 1);
+    }
+    renderGallery();
+  });
+  $('e-gfile').addEventListener('change', function(e){
+    var files = Array.prototype.slice.call(e.target.files || []); if(!files.length) return;
+    var folder = skuFolder();
+    if(!folder){ e.target.value = ''; return toast('Please fill in the SKU first, so the photos go into that SKU folder', true); }
+    var n = 0;
+    (function next(){
+      if(!files.length){ toast(n + ' photo' + (n === 1 ? '' : 's') + ' added. Press Save product to keep them.'); e.target.value = ''; return; }
+      var f = files.shift(); toast('Uploading photo ' + (n + 1) + '...');
+      shrink(f, 1600).then(function(blob){ return uploadPhoto(blob, folder); }).then(function(url){ gallery.push(url); n++; renderGallery(); next(); })
+        .catch(function(err){ e.target.value = ''; fail(err); });
+    })();
+  });
+
   function openEditor(p){
-    editingId = p ? p.id : null; pendingBlob = null;
+    editingId = p ? p.id : null; pendingBlob = null; gallery = (p && Array.isArray(p.images)) ? p.images.filter(function(u){ return typeof u === 'string' && /^https:\/\//.test(u); }) : []; renderGallery();
     $('ed-title').textContent = p ? 'Edit product' : 'Add a product';
     refreshCats();
     var cats = allCats();
@@ -492,7 +542,7 @@
     $('editor').classList.remove('hidden');
     $('editor').scrollIntoView({behavior:'smooth', block:'start'});
   }
-  function closeEditor(){ $('editor').classList.add('hidden'); editingId = null; pendingBlob = null; }
+  function closeEditor(){ $('editor').classList.add('hidden'); editingId = null; pendingBlob = null; gallery = []; }
   $('add-btn').addEventListener('click', function(){ openEditor(null); });
   $('e-cancel').addEventListener('click', closeEditor);
 
@@ -523,9 +573,10 @@
     }
 
     btn.disabled = true;
-    var upload = (type === 'photo' && pendingBlob) ? uploadPhoto(pendingBlob) : Promise.resolve(null);
+    var upload = (type === 'photo' && pendingBlob) ? uploadPhoto(pendingBlob, skuFolder()) : Promise.resolve(null);
     upload.then(function(url){
       if(url) payload.image_url = url;
+      payload.images = (type === 'photo') ? gallery.filter(function(u, i, a){ return u && u !== payload.image_url && a.indexOf(u) === i; }) : [];
       var peers = products.filter(function(x){ return x.category === category; });
       if(existing){
         payload.id = existing.id;

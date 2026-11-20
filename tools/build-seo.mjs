@@ -49,7 +49,8 @@ async function loadData() {
 function norm(p) {
   return { id: p.id, category: p.category, type: p.type || 'photo', name: p.name, sku: p.sku, price: p.price, oldPrice: p.old_price || p.oldPrice,
     description: p.description, details: p.details, metal: p.metal, stone: p.stone, image: p.image_url || p.image, etsy: p.etsy_url || p.etsy,
-    variants: Array.isArray(p.variants) ? p.variants : [], alt: p.alt || p.name };
+    variants: Array.isArray(p.variants) ? p.variants : [], alt: p.alt || p.name,
+    images: Array.isArray(p.images) ? p.images.filter((u) => typeof u === 'string' && /^https?:\/\//.test(u)) : [] };
 }
 
 // ---------- 2. category copy (only true facts from the listings) ----------
@@ -268,6 +269,7 @@ for (const p of items) {
   const catUrl = cat ? '/' + cat.slug + '.html' : '/jewelry.html';
   const lo = lowPrice(p), hi = highPrice(p);
   const bl = bullets(p.details);
+  const gal = [p.image, ...(p.images || [])].filter((u, i, a) => u && a.indexOf(u) === i);
   const desc = trim((p.description ? p.description.replace(/\.$/, '') + '. ' : '') + `Made to order in 925 silver, 9K, 14K or 18K gold. From ${money(lo)}. Free worldwide delivery.`, 158);
   const title = trim(`${p.name} | ${catLabel} | Style Of Life`, 70);
   const related = items.filter((q) => q.category === p.category && q !== p).slice(0, 4);
@@ -277,7 +279,9 @@ for (const p of items) {
   const body = `<section class="section prod-page">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/jewelry.html">Jewelry</a> › <a href="${catUrl}">${esc(catLabel)}</a> › <span>${esc(p.name)}</span></nav>
   <div class="prod-grid">
-    <div class="prod-media">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.alt || p.name)}" width="900" height="900">` : '<div class="prod-ph" aria-hidden="true"></div>'}</div>
+    <div class="prod-media">${gal.length ? `<img id="pmain" src="${esc(gal[0])}" alt="${esc(p.alt || p.name)}" width="900" height="900">` : '<div class="prod-ph" aria-hidden="true"></div>'}${gal.length > 1 ? `
+      <div class="prod-thumbs">${gal.map((u, i) => `<button type="button" class="pt${i ? '' : ' on'}" data-src="${esc(u)}" aria-label="Show photo ${i + 1} of ${gal.length}"><img src="${esc(u)}" alt="${esc(p.name)}, photo ${i + 1}" width="120" height="120" loading="lazy"></button>`).join('')}</div>
+      <script>(function(){var m=document.getElementById('pmain');if(!m)return;var bs=document.querySelectorAll('.prod-thumbs .pt');bs.forEach(function(b){b.addEventListener('click',function(){m.src=b.getAttribute('data-src');bs.forEach(function(x){x.classList.remove('on');});b.classList.add('on');});});})();</script>` : ''}</div>
     <div class="prod-info">
       <h1>${esc(p.name)}</h1>
       ${p.sku ? `<p class="prod-sku">SKU: ${esc(p.sku)}</p>` : ''}
@@ -299,12 +303,12 @@ for (const p of items) {
   const offer = { '@type': 'AggregateOffer', priceCurrency: 'USD', lowPrice: lo.toFixed(2), highPrice: hi.toFixed(2), offerCount: Math.max(1, (p.variants || []).length), availability: 'https://schema.org/InStock', ...(p.etsy ? { url: p.etsy } : {}), seller: { '@id': DOMAIN + '/#store' }, shippingDetails: SHIPPING_LD };
   const schema = [breadcrumbLd([['Home', '/'], ['Jewelry', '/jewelry.html'], [catLabel, catUrl], [p.name, '/products/' + p.slug + '.html']]),
     { '@context': 'https://schema.org', '@type': 'Product', '@id': DOMAIN + '/products/' + p.slug + '.html#product', name: p.name, ...(p.sku ? { sku: p.sku } : {}), description: p.description || desc, brand: { '@type': 'Brand', name: 'Style Of Life' }, category: catLabel,
-      ...(p.metal ? { material: p.metal } : {}), ...(p.image ? { image: [p.image] } : {}), url: DOMAIN + '/products/' + p.slug + '.html', countryOfOrigin: { '@type': 'Country', name: 'India' },
+      ...(p.metal ? { material: p.metal } : {}), ...(gal.length ? { image: gal } : {}), url: DOMAIN + '/products/' + p.slug + '.html', countryOfOrigin: { '@type': 'Country', name: 'India' },
       ...(p.stone ? { additionalProperty: [{ '@type': 'PropertyValue', name: 'Stone', value: p.stone }] } : {}), offers: offer },
     faqLd(pfaq)];
   write('products/' + p.slug + '.html', page({ title, desc, urlPath: '/products/' + p.slug + '.html', image: p.image || siteOg, ogType: 'product', schema, body, ch }));
   urls.push(['/products/' + p.slug + '.html', 0.7, 'weekly']);
-  if (p.image) imgMap['/products/' + p.slug + '.html'] = { img: p.image, title: p.name };
+  if (gal.length) imgMap['/products/' + p.slug + '.html'] = { imgs: gal, title: p.name };
 }
 write('products/slugs.json', JSON.stringify(items.map((p) => p.slug)));
 
@@ -401,7 +405,7 @@ for (const f of ['index.html', 'jewelry.html', 'about.html']) {
 
 // ---------- 7. sitemap ----------
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
-  urls.map(([u, pr, f]) => `  <url><loc>${DOMAIN}${u}</loc><lastmod>${TODAY}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority>${imgMap[u] ? `<image:image><image:loc>${esc(imgMap[u].img)}</image:loc><image:title>${esc(imgMap[u].title)}</image:title></image:image>` : ''}</url>`).join('\n') + '\n</urlset>\n');
+  urls.map(([u, pr, f]) => `  <url><loc>${DOMAIN}${u}</loc><lastmod>${TODAY}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority>${imgMap[u] ? (imgMap[u].imgs || [imgMap[u].img]).map((im) => `<image:image><image:loc>${esc(im)}</image:loc><image:title>${esc(imgMap[u].title)}</image:title></image:image>`).join('') : ''}</url>`).join('\n') + '\n</urlset>\n');
 
 // ---------- 7b. Google Merchant Center product feed (google-feed.xml) ----------
 //  Prices come straight from the product data (lowest price across metals, same as the "From $" on each page); nothing is changed here.
@@ -421,6 +425,7 @@ const feedXml = '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmln
 <g:description>${esc(desc)}</g:description>
 <g:link>${DOMAIN}/products/${p.slug}.html</g:link>
 <g:image_link>${esc(p.image)}</g:image_link>
+${(p.images || []).filter((u) => u !== p.image).slice(0, 10).map((u) => `<g:additional_image_link>${esc(u)}</g:additional_image_link>`).join('\n')}
 <g:availability>in_stock</g:availability>
 <g:price>${lo.toFixed(2)} USD</g:price>
 <g:brand>Style Of Life</g:brand>

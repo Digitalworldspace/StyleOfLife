@@ -792,6 +792,11 @@ header nav{transition:padding .35s ease;} header.is-scrolled nav{padding-top:11p
 .prod-grid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:44px; align-items:start;}
 .prod-media img,.prod-ph{width:100%; height:auto; aspect-ratio:1/1; object-fit:cover; border-radius:4px; display:block; background:var(--ivory-2);}
 .prod-ph{background:linear-gradient(135deg,#F3EFE6,#E8E0CF);}
+.prod-thumbs{display:grid; grid-template-columns:repeat(auto-fill,minmax(64px,1fr)); gap:8px; margin-top:10px;}
+.prod-thumbs .pt{padding:0; border:2px solid transparent; border-radius:4px; background:none; cursor:pointer; line-height:0;}
+.prod-thumbs .pt img{aspect-ratio:1/1; border-radius:3px;}
+.prod-thumbs .pt.on{border-color:var(--charcoal);}
+.prod-thumbs .pt:focus-visible{outline:2px solid var(--charcoal); outline-offset:2px;}
 .prod-info h1{font-size:clamp(1.7rem,3vw,2.3rem); line-height:1.2; margin:0 0 8px;}
 .prod-sku{margin:0 0 10px; font-size:.82rem; color:var(--charcoal-soft); letter-spacing:.04em;}
 .prod-price{font-size:1.4rem; font-weight:600; margin:0 0 14px;}
