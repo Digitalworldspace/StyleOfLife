@@ -235,6 +235,11 @@ const urls = [['/', 1.0, 'weekly'], ['/jewelry.html', 0.9, 'weekly'], ['/about.h
 const imgMap = {};
 const siteOg = siteImages['hero-banner'] || '';
 
+// RND-20261122-3: ring size chart (US size to inner diameter, ANSI formula d = 0.8128 x size + 11.63 mm) and chain length note
+const RING_SIZES = [5, 6, 7, 8, 9, 10].map((n) => [n, (0.8128 * n + 11.63).toFixed(1)]);
+const ringGuide = (id) => `<details class="size-guide"${id ? ` id="${id}"` : ''}><summary>Ring size guide</summary><table class="prod-table"><caption>US ring size and inner diameter</caption><thead><tr><th scope="col">US size</th><th scope="col">Inner diameter</th></tr></thead><tbody>${RING_SIZES.map((r) => `<tr><th scope="row">${r[0]}</th><td>${r[1]} mm</td></tr>`).join('')}</tbody></table><p>Charts vary slightly between brands. Between sizes? Message us and we will help you choose.</p></details>`;
+const chainGuide = () => `<details class="size-guide"><summary>Chain length guide</summary><p>16 in sits close at the collarbone, 18 in sits just below it. Message us if you would like a different length.</p></details>`;
+
 // category pages
 const catPages = [];
 for (const [key, cfg] of Object.entries(CATS)) {
@@ -248,6 +253,7 @@ for (const [key, cfg] of Object.entries(CATS)) {
   <div class="section-head"><h1>${esc(cfg.label)}</h1></div>
   <div class="cat-intro">${cfg.intro.map((t) => `<p>${esc(t)}</p>`).join('')}</div>
   <div class="sgrid">${list.map(card).join('\n')}</div>
+  ${key === 'rings' ? ringGuide('ring-size-guide') : ''}
   <div class="cat-more">${catNav(key)}</div>
   <div class="cat-faq"><h2>${esc(cfg.short)} questions, answered</h2>${faq.map((q) => `<details><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`).join('')}</div>
 </section>`;
@@ -275,6 +281,11 @@ for (const p of items) {
   const related = items.filter((q) => q.category === p.category && q !== p).slice(0, 4);
   const waText = encodeURIComponent(`Hi Style Of Life, I'm interested in ${p.name}${p.sku ? ' (SKU ' + p.sku + ')' : ''}.`);
   const pfaq = productFaq(p, lo, hi);
+  // RND-20261122-1: only lines that are true for this piece (certificate line only for SGL certified lab grown diamond pieces)
+  const trustLines = [];
+  if (/SGL/i.test(p.stone || '') && /diamond/i.test(p.stone || '') && !/moissanite|colorstone/i.test(p.stone || '')) trustLines.push('SGL certified lab grown diamond, for applicable orders');
+  trustLines.push('Made to order in Surat, India');
+  const chainNote = ['necklaces', 'initial-necklaces'].includes(p.category) && /chain/i.test(p.details || '');
   const rows = (p.variants || []).map((v) => `<tr><th scope="row">${esc(v.label)}</th><td>${esc(v.price)}</td></tr>`).join('');
   const body = `<section class="section prod-page">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/jewelry.html">Jewelry</a> › <a href="${catUrl}">${esc(catLabel)}</a> › <span>${esc(p.name)}</span></nav>
@@ -286,6 +297,7 @@ for (const p of items) {
       <h1>${esc(p.name)}</h1>
       ${p.sku ? `<p class="prod-sku">SKU: ${esc(p.sku)}</p>` : ''}
       <p class="prod-price">From ${money(lo)}${hi && hi > lo ? ` <span>– up to ${money(hi)} depending on metal</span>` : ''}</p>
+      ${trustLines.length ? `<ul class="prod-trust">${trustLines.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
       ${p.description ? `<p class="prod-desc">${esc(p.description)}</p>` : ''}
       ${rows ? `<table class="prod-table"><caption>Price by metal</caption><tbody>${rows}</tbody></table>` : ''}
       ${(p.metal || p.stone) ? `<ul class="prod-specs">${p.metal ? `<li><b>Metal</b> ${esc(p.metal)}</li>` : ''}${p.stone ? `<li><b>Stone</b> ${esc(p.stone)}</li>` : ''}</ul>` : ''}
@@ -294,7 +306,9 @@ for (const p of items) {
         <a class="btn btn-whatsapp" href="${WA}?text=${waText}" target="_blank" rel="noopener">Order on WhatsApp</a>
         ${p.etsy ? `<a class="btn btn-primary" href="${esc(p.etsy)}" target="_blank" rel="noopener">Buy on Etsy</a>` : ''}
       </div>
-      <p class="prod-note">Made to order in Surat, India, and ready to ship in about 5–8 business days. Free delivery worldwide with tracking. Message us for sizing, custom requests or a private quote.</p>
+      <ul class="prod-facts"><li>Ships in about 5–8 business days</li><li>Free tracked worldwide delivery</li><li>Made to order: no returns, message us before you order</li></ul>
+      <p class="prod-note">Made to order in Surat, India. Message us for sizing, custom requests or a private quote.</p>
+      ${p.category === 'rings' ? ringGuide() : ''}${chainNote ? chainGuide() : ''}
     </div>
   </div>
   <div class="cat-faq prod-faq"><h2>Questions about this piece, answered</h2>${pfaq.map((q) => `<details><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`).join('')}</div>

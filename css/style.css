@@ -850,3 +850,15 @@ nav.crumbs{display:flex; flex-wrap:wrap; justify-content:flex-start; align-items
 .pg-hint{position:absolute; left:50%; bottom:28px; transform:translateX(-50%); background:rgba(20,18,15,.7); color:#fff; font:600 12px/1 var(--font-body,system-ui,sans-serif); padding:7px 12px; border-radius:999px; white-space:nowrap; transition:opacity .6s; pointer-events:none;}
 @media(hover:none){.pg-arr{display:none;}}
 @media(prefers-reduced-motion:reduce){.pg-hint{transition:none;}}
+
+/* Product page trust lines, delivery strip, size guides (RND-20261122) */
+.prod-trust,.prod-facts{list-style:none; margin:0 0 14px; padding:0; font-size:.9rem; color:var(--charcoal-soft); line-height:1.5;}
+.prod-trust li,.prod-facts li{position:relative; padding-left:16px; margin:2px 0;}
+.prod-trust li::before,.prod-facts li::before{content:"\2713"; position:absolute; left:0; color:var(--charcoal-soft);}
+.prod-facts{margin:0 0 10px;}
+.size-guide{margin:14px 0 0; border-top:1px solid var(--line); padding-top:10px; font-size:.92rem;}
+.size-guide summary{cursor:pointer; font-weight:600;}
+.size-guide .prod-table{margin:10px 0; max-width:320px;}
+.size-guide p{margin:6px 0 0; color:var(--charcoal-soft); line-height:1.55;}
+.cat-page .size-guide{max-width:760px; margin:24px auto 0;}
+.svc .svc-sub{display:block; margin-top:10px; font-size:.88rem;}
