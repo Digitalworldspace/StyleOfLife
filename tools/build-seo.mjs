@@ -546,6 +546,24 @@ console.log(`Built ${catPages.length} category pages, ${items.length} product pa
   console.log(`Added Microsoft Clarity to ${n} pages`);
 }
 
+// ---------- 11b. Anonymous visit counter (counts only: day, page path, views, visits; no personal data) ----------
+{
+  const tag = `<script>(function(){try{var h=location.hostname;if(h!=='styleoflife.co'&&h!=='www.styleoflife.co')return;if(navigator.webdriver||/bot|crawl|spider|slurp|headless|lighthouse|preview/i.test(navigator.userAgent))return;var p=location.pathname.replace(/\/index\.html$/,'/')||'/';var nw=false;try{if(!sessionStorage.getItem('sol_v')){sessionStorage.setItem('sol_v','1');nw=true;}}catch(e){}var u='https://swxpigyeadtggjoocnfi.supabase.co',k='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3eHBpZ3llYWR0Z2dqb29jbmZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NjM3MzYsImV4cCI6MjEwOTQzOTczNn0.k49xipszz1Cf9yw_ZYpycDX8ucNCEqphQXcivAqiNs0';fetch(u+'/rest/v1/rpc/track_visit',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',apikey:k,Authorization:'Bearer '+k},body:JSON.stringify({p_path:p,p_new:nw})}).catch(function(){});}catch(e){}})();</script>\n`;
+  const walk = (d) => fs.readdirSync(path.join(ROOT, d), { withFileTypes: true }).flatMap((e) => {
+    const rel = d ? d + '/' + e.name : e.name;
+    if (e.isDirectory()) return ['.git', '.github', 'tools', 'node_modules', 'data'].includes(e.name) ? [] : walk(rel);
+    return rel.endsWith('.html') && rel !== 'admin.html' ? [rel] : [];
+  });
+  let n = 0;
+  for (const f of walk('')) {
+    const s = read(f);
+    if (s.includes('rpc/track_visit') || !s.includes('</head>')) continue;
+    write(f, s.replace('</head>', tag + '</head>'));
+    n++;
+  }
+  console.log(`Added visit counter to ${n} pages`);
+}
+
 // ---------- 12. Click and product-view events for GA4 and Meta Pixel (Etsy click, WhatsApp click, product view) ----------
 {
   const tag = `<script>(function(){var isP=location.pathname.indexOf('/products/')===0;function ga(n,p){try{if(typeof gtag==='function'){p.transport_type='beacon';gtag('event',n,p);}}catch(e){}}function fb(m,n,p){try{if(typeof fbq==='function'){p?fbq(m,n,p):fbq(m,n);}}catch(e){}}if(isP){ga('view_item',{item_name:document.title});fb('track','ViewContent',{content_name:document.title,content_type:'product'});}document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href]'):null;if(!a)return;var h=a.href||'';if(h.indexOf('wa.me')>-1){ga('whatsapp_click',{link_url:h,page_path:location.pathname});fb('track','Contact');}else if(h.indexOf('etsy.com')>-1){ga('etsy_click',{link_url:h,page_path:location.pathname});fb('trackCustom','EtsyClick',{page:location.pathname});}},true);})();</script>\n`;
