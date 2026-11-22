@@ -199,7 +199,7 @@ function card(p) {
   return `<article class="scard">
   <a class="scard-img" href="/products/${p.slug}.html">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.alt || p.name)}" loading="lazy" width="600" height="600">` : '<span class="scard-ph" aria-hidden="true"></span>'}</a>
   <div class="scard-body"><h2><a href="/products/${p.slug}.html">${esc(p.name)}</a></h2>
-  ${lo ? `<p class="scard-price">From ${money(lo)}</p>` : ''}
+  ${lo ? `<p class="scard-price">From ${money(lo)}</p>` : '<p class="scard-price">Enquire on WhatsApp</p>'}
   ${p.metal ? `<p class="scard-meta">${esc(p.metal)}</p>` : ''}
   <a class="card-link" href="/products/${p.slug}.html">View details →</a></div>
 </article>`;
@@ -212,9 +212,11 @@ function productFaq(p, lo, hi) {
   const made = [p.metal ? 'Metal: ' + p.metal + '.' : '', p.stone ? 'Stone: ' + p.stone + '.' : ''].filter(Boolean).join(' ');
   if (made) faq.push([`What is the ${p.name} made of?`, made + ' Each option is described by its actual metal.']);
   const vs = (p.variants || []).filter((v) => v.label && v.price).map((v) => `${v.label}: ${v.price}`).join('; ');
-  faq.push([`How much does the ${p.name} cost?`, `It starts from ${money(lo)}${hi > lo ? ` and goes up to ${money(hi)} depending on the metal you choose` : ''}.${vs ? ' Price by metal: ' + vs + '.' : ''} Prices are in US dollars.`]);
+  if (!lo) faq.push([`How much does the ${p.name} cost?`, 'The price depends on the stone size and quantity you need. Message Style Of Life on WhatsApp at +91 63529 25472 for the current price. Prices are in US dollars.']);
+  else faq.push([`How much does the ${p.name} cost?`, `It starts from ${money(lo)}${hi > lo ? ` and goes up to ${money(hi)} depending on the metal you choose` : ''}.${vs ? ' Price by metal: ' + vs + '.' : ''} Prices are in US dollars.`]);
   if (/SGL/i.test([p.stone, p.details, p.description].join(' '))) faq.push(['Is this piece certified?', 'Yes. This piece is SGL certified, as described in the details on this page. You can verify SGL reports at sgl-labs.com.']);
-  faq.push(['How long does it take to make and deliver?', 'It is made to order in Surat, India, and is ready to ship in about 5–8 business days. Delivery is free worldwide with tracking.']);
+  if (!lo) faq.push(['How is it delivered?', 'Delivery is free worldwide with tracking. Message us on WhatsApp for the current price and availability.']);
+  else faq.push(['How long does it take to make and deliver?', 'It is made to order in Surat, India, and is ready to ship in about 5–8 business days. Delivery is free worldwide with tracking.']);
   if (p.category === 'rings') faq.push(['Can I return, exchange or resize this ring?', 'No. Rings are made to order in your size, so there are no returns, exchanges or resizing. Please message us your ring size before ordering; custom sizes are welcome.']);
   if (['necklaces', 'initial-necklaces', 'earrings', 'bracelets'].includes(p.category)) faq.push([`Can I return or exchange the ${p.name}?`, 'Because each piece is made to order just for you, we do not accept returns or exchanges on necklaces, earrings or bracelets. Every detail is shown on this page, and you are always welcome to message us before ordering with any question or change request.']);
   faq.push(['How do I order?', `Message Style Of Life on WhatsApp at +91 63529 25472${p.etsy ? ', or use the Buy on Etsy button on this page; checkout and payment are handled securely by Etsy' : ''}. You can also ask for sizing help or a custom request before ordering.`]);
@@ -226,7 +228,8 @@ const SHIPPING_LD = { '@type': 'OfferShippingDetails', shippingRate: { '@type': 
 // ---------- 5. main ----------
 const { products: all, images: siteImages } = await loadData();
 const ch = chrome();
-const items = all.filter((p) => p.type !== 'video' && p.name && lowPrice(p));
+const isEnquiry = (p) => !lowPrice(p) && p.category === 'loose-diamonds';  // loose stones: no fixed price, enquire on WhatsApp
+const items = all.filter((p) => p.type !== 'video' && p.name && (lowPrice(p) || isEnquiry(p)));
 const used = new Set();
 items.forEach((p) => { let s = pSlug(p), n = 2, b = s; while (used.has(s)) s = b + '-' + n++; used.add(s); p.slug = s; });
 
@@ -270,7 +273,7 @@ for (const p of items) {
   const lo = lowPrice(p), hi = highPrice(p);
   const bl = bullets(p.details);
   const gal = [p.image, ...(p.images || [])].filter((u, i, a) => u && a.indexOf(u) === i);
-  const desc = trim((p.description ? p.description.replace(/\.$/, '') + '. ' : '') + `Made to order in 925 silver, 9K, 14K or 18K gold. From ${money(lo)}. Free worldwide delivery.`, 158);
+  const desc = trim((p.description ? p.description.replace(/\.$/, '') + '. ' : '') + (lo ? `Made to order in 925 silver, 9K, 14K or 18K gold. From ${money(lo)}. Free worldwide delivery.` : 'Enquire on WhatsApp for today\'s price. Free worldwide delivery.'), 158);
   const title = trim(`${p.name} | ${catLabel} | Style Of Life`, 70);
   const related = items.filter((q) => q.category === p.category && q !== p).slice(0, 4);
   const waText = encodeURIComponent(`Hi Style Of Life, I'm interested in ${p.name}${p.sku ? ' (SKU ' + p.sku + ')' : ''}.`);
@@ -285,27 +288,28 @@ for (const p of items) {
     <div class="prod-info">
       <h1>${esc(p.name)}</h1>
       ${p.sku ? `<p class="prod-sku">SKU: ${esc(p.sku)}</p>` : ''}
-      <p class="prod-price">From ${money(lo)}${hi && hi > lo ? ` <span>– up to ${money(hi)} depending on metal</span>` : ''}</p>
+      ${lo ? `<p class="prod-price">From ${money(lo)}${hi && hi > lo ? ` <span>– up to ${money(hi)} depending on metal</span>` : ''}</p>` : '<p class="prod-price">Enquire on WhatsApp <span>for today\'s price</span></p>'}
       ${p.description ? `<p class="prod-desc">${esc(p.description)}</p>` : ''}
       ${rows ? `<table class="prod-table"><caption>Price by metal</caption><tbody>${rows}</tbody></table>` : ''}
       ${(p.metal || p.stone) ? `<ul class="prod-specs">${p.metal ? `<li><b>Metal</b> ${esc(p.metal)}</li>` : ''}${p.stone ? `<li><b>Stone</b> ${esc(p.stone)}</li>` : ''}</ul>` : ''}
+      ${!lo ? `<table class="prod-table"><caption>Details</caption><tbody><tr><th scope="row">Product</th><td>${esc(p.name)}</td></tr>${p.stone ? `<tr><th scope="row">Stone</th><td>${esc(p.stone)}</td></tr>` : ''}${p.sku ? `<tr><th scope="row">SKU</th><td>${esc(p.sku)}</td></tr>` : ''}<tr><th scope="row">Price</th><td>Enquire on WhatsApp</td></tr><tr><th scope="row">Delivery</th><td>Ships worldwide with tracking</td></tr></tbody></table>` : ''}
       ${bl.length ? `<h2>Details</h2><ul class="prod-list">${bl.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
       <div class="prod-cta">
-        <a class="btn btn-whatsapp" href="${WA}?text=${waText}" target="_blank" rel="noopener">Order on WhatsApp</a>
+        <a class="btn btn-whatsapp" href="${WA}?text=${waText}" target="_blank" rel="noopener">${lo ? 'Order on WhatsApp' : 'Enquire on WhatsApp'}</a>
         ${p.etsy ? `<a class="btn btn-primary" href="${esc(p.etsy)}" target="_blank" rel="noopener">Buy on Etsy</a>` : ''}
       </div>
-      <p class="prod-note">Made to order in Surat, India, and ready to ship in about 5–8 business days. Free delivery worldwide with tracking. Message us for sizing, custom requests or a private quote.</p>
+      <p class="prod-note">${lo ? 'Made to order in Surat, India, and ready to ship in about 5–8 business days. Free delivery worldwide with tracking. Message us for sizing, custom requests or a private quote.' : 'Free delivery worldwide with tracking. Message us on WhatsApp for today\'s price and availability.'}</p>
     </div>
   </div>
   <div class="cat-faq prod-faq"><h2>Questions about this piece, answered</h2>${pfaq.map((q) => `<details><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`).join('')}</div>
   ${related.length ? `<div class="prod-related"><h2>More ${esc(catLabel.toLowerCase())}</h2><div class="sgrid">${related.map(card).join('\n')}</div></div>` : ''}
   <script>(function(){if(!('IntersectionObserver' in window)||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))return;var q=[['.prod-media','l'],['.prod-info > *','u'],['.prod-faq','u'],['.prod-related h2','u'],['.prod-related .card, .prod-related .sgrid > *','z']],n=[];q.forEach(function(a){[].forEach.call(document.querySelectorAll(a[0]),function(el,i){if(el.className&&String(el.className).indexOf('rv')>-1)return;el.classList.add('rv','rv-'+a[1]);el.style.transitionDelay=Math.min(i,6)*90+'ms';n.push(el);});});var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('rv-in');io.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -6% 0px'});n.forEach(function(el){io.observe(el);});})();</script>
 </section>`;
-  const offer = { '@type': 'AggregateOffer', priceCurrency: 'USD', lowPrice: lo.toFixed(2), highPrice: hi.toFixed(2), offerCount: Math.max(1, (p.variants || []).length), availability: 'https://schema.org/InStock', ...(p.etsy ? { url: p.etsy } : {}), seller: { '@id': DOMAIN + '/#store' }, shippingDetails: SHIPPING_LD };
+  const offer = !lo ? null : { '@type': 'AggregateOffer', priceCurrency: 'USD', lowPrice: lo.toFixed(2), highPrice: hi.toFixed(2), offerCount: Math.max(1, (p.variants || []).length), availability: 'https://schema.org/InStock', ...(p.etsy ? { url: p.etsy } : {}), seller: { '@id': DOMAIN + '/#store' }, shippingDetails: SHIPPING_LD };
   const schema = [breadcrumbLd([['Home', '/'], ['Jewelry', '/jewelry.html'], [catLabel, catUrl], [p.name, '/products/' + p.slug + '.html']]),
     { '@context': 'https://schema.org', '@type': 'Product', '@id': DOMAIN + '/products/' + p.slug + '.html#product', name: p.name, ...(p.sku ? { sku: p.sku } : {}), description: p.description || desc, brand: { '@type': 'Brand', name: 'Style Of Life' }, category: catLabel,
       ...(p.metal ? { material: p.metal } : {}), ...(gal.length ? { image: gal } : {}), url: DOMAIN + '/products/' + p.slug + '.html', countryOfOrigin: { '@type': 'Country', name: 'India' },
-      ...(p.stone ? { additionalProperty: [{ '@type': 'PropertyValue', name: 'Stone', value: p.stone }] } : {}), offers: offer },
+      ...(p.stone ? { additionalProperty: [{ '@type': 'PropertyValue', name: 'Stone', value: p.stone }] } : {}), ...(offer ? { offers: offer } : {}) },
     faqLd(pfaq)];
   write('products/' + p.slug + '.html', page({ title, desc, urlPath: '/products/' + p.slug + '.html', image: p.image || siteOg, ogType: 'product', schema, body, ch }));
   urls.push(['/products/' + p.slug + '.html', 0.7, 'weekly']);
@@ -415,7 +419,7 @@ const GCAT = { rings: 'Apparel & Accessories > Jewelry > Rings', 'initial-neckla
   earrings: 'Apparel & Accessories > Jewelry > Earrings', bracelets: 'Apparel & Accessories > Jewelry > Bracelets', 'signature-pieces': 'Apparel & Accessories > Jewelry' };
 const GCAT_DEFAULT = 'Apparel & Accessories > Jewelry';
 const feedWords = (s) => String(s || '').replace(/hand-?made/gi, 'made to order');
-const feedItems = items.filter((p) => p.image && /^https?:\/\//.test(p.image));
+const feedItems = items.filter((p) => lowPrice(p) && p.image && /^https?:\/\//.test(p.image));
 const feedXml = '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n<channel>\n<title>Style Of Life</title>\n<link>' + DOMAIN + '/</link>\n<description>Lab grown diamond, moissanite and colorstone jewelry, made to order in Surat, India.</description>\n' +
   feedItems.map((p) => {
     const lo = lowPrice(p);
@@ -444,7 +448,7 @@ console.log('Wrote google-feed.xml with', feedItems.length, 'products');
 
 // ---------- 8. llms.txt (plain-text guide to the shop for AI assistants) ----------
 const catLine = (c) => `- [${c.cfg.label}](${DOMAIN}/${c.cfg.slug}.html): ${c.list.length} designs, from ${money(Math.min(...c.list.map(lowPrice)))}`;
-const prodLine = (p) => `- [${p.name}](${DOMAIN}/products/${p.slug}.html): from ${money(lowPrice(p))}${p.sku ? ', SKU ' + p.sku : ''}${p.stone && p.stone.length < 90 ? ', ' + p.stone : ''}`;
+const prodLine = (p) => `- [${p.name}](${DOMAIN}/products/${p.slug}.html): ${lowPrice(p) ? 'from ' + money(lowPrice(p)) : 'price on request via WhatsApp'}${p.sku ? ', SKU ' + p.sku : ''}${p.stone && p.stone.length < 90 ? ', ' + p.stone : ''}`;
 const groups = {};
 items.forEach((p) => { const k = (CATS[p.category] ? CATS[p.category].label : (CAT_LABEL[p.category] || 'Jewelry')); (groups[k] = groups[k] || []).push(p); });
 write('llms.txt', `# Style Of Life
