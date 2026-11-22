@@ -72,7 +72,7 @@
   }
   function variantsHtml(p){
     if(!p.variants || !p.variants.length) return '';
-    return '<div class="vars"><span class="vars-l">Metal</span><div class="vars-pills">' + p.variants.map(function(v, i){
+    return '<div class="vars"><span class="vars-l">' + (p.category === 'loose-diamonds' ? 'Carat' : 'Metal') + '</span><div class="vars-pills">' + p.variants.map(function(v, i){
       return '<button type="button" class="vp' + (i === 0 ? ' on' : '') + '" data-i="' + i + '" data-price="' + esc(money(v.price)) + '">' + esc(v.label) + '</button>';
     }).join('') + '</div></div>';
   }

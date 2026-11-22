@@ -213,7 +213,7 @@ function productFaq(p, lo, hi) {
   if (made) faq.push([`What is the ${p.name} made of?`, made + ' Each option is described by its actual metal.']);
   const vs = (p.variants || []).filter((v) => v.label && v.price).map((v) => `${v.label}: ${v.price}`).join('; ');
   if (!lo) faq.push([`How much does the ${p.name} cost?`, 'The price depends on the stone size and quantity you need. Message Style Of Life on WhatsApp at +91 63529 25472 for the current price. Prices are in US dollars.']);
-  else faq.push([`How much does the ${p.name} cost?`, `It starts from ${money(lo)}${hi > lo ? ` and goes up to ${money(hi)} depending on the metal you choose` : ''}.${vs ? ' Price by metal: ' + vs + '.' : ''} Prices are in US dollars.`]);
+  else faq.push([`How much does the ${p.name} cost?`, `It starts from ${money(lo)}${hi > lo ? ` and goes up to ${money(hi)} depending on the ${p.category === 'loose-diamonds' ? 'carat range' : 'metal'} you choose` : ''}.${vs ? ' Price by ' + (p.category === 'loose-diamonds' ? 'carat range' : 'metal') + ': ' + vs + '.' : ''} Prices are in US dollars.`]);
   if (/SGL/i.test([p.stone, p.details, p.description].join(' '))) faq.push(['Is this piece certified?', 'Yes. This piece is SGL certified, as described in the details on this page. You can verify SGL reports at sgl-labs.com.']);
   if (!lo) faq.push(['How is it delivered?', 'Delivery is free worldwide with tracking. Message us on WhatsApp for the current price and availability.']);
   else faq.push(['How long does it take to make and deliver?', 'It is made to order in Surat, India, and is ready to ship in about 5–8 business days. Delivery is free worldwide with tracking.']);
@@ -289,9 +289,9 @@ for (const p of items) {
     <div class="prod-info">
       <h1>${esc(p.name)}</h1>
       ${p.sku ? `<p class="prod-sku">SKU: ${esc(p.sku)}</p>` : ''}
-      ${lo ? `<p class="prod-price">From ${money(lo)}${hi && hi > lo ? ` <span>– up to ${money(hi)} depending on metal</span>` : ''}</p>` : '<p class="prod-price">Enquire on WhatsApp <span>for today\'s price</span></p>'}
+      ${lo ? `<p class="prod-price">From ${money(lo)}${hi && hi > lo ? ` <span>– up to ${money(hi)} depending on ${p.category === 'loose-diamonds' ? 'carat range' : 'metal'}</span>` : ''}</p>` : '<p class="prod-price">Enquire on WhatsApp <span>for today\'s price</span></p>'}
       ${p.description ? `<p class="prod-desc">${esc(p.description)}</p>` : ''}
-      ${rows ? `<table class="prod-table"><caption>Price by metal</caption><tbody>${rows}</tbody></table>` : ''}
+      ${rows ? `<table class="prod-table"><caption>Price by ${p.category === 'loose-diamonds' ? 'carat range' : 'metal'}</caption><tbody>${rows}</tbody></table>` : ''}
       ${(p.metal || p.stone) ? `<ul class="prod-specs">${p.metal ? `<li><b>Metal</b> ${esc(p.metal)}</li>` : ''}${p.stone ? `<li><b>Stone</b> ${esc(p.stone)}</li>` : ''}</ul>` : ''}
       ${!lo ? `<table class="prod-table"><caption>Details</caption><tbody><tr><th scope="row">Product</th><td>${esc(p.name)}</td></tr>${p.stone ? `<tr><th scope="row">Stone</th><td>${esc(p.stone)}</td></tr>` : ''}${p.sku ? `<tr><th scope="row">SKU</th><td>${esc(p.sku)}</td></tr>` : ''}<tr><th scope="row">Price</th><td>Enquire on WhatsApp</td></tr><tr><th scope="row">Delivery</th><td>Ships worldwide with tracking</td></tr></tbody></table><details class="prod-sizes-d"><summary>Diamond size</summary><div class="size-pick"><label>Size (mm)<select id="sz-mm"><option value="">Choose mm</option>${LOOSE_SIZES.map((z, i) => `<option value="${i}">${z[0]} mm</option>`).join('')}</select></label><label>Weight (carat)<select id="sz-ct"><option value="">Choose carat</option>${LOOSE_SIZES.map((z, i) => `<option value="${i}">${z[1]} ct</option>`).join('')}</select></label></div><table class="prod-table prod-sizes"><caption>Size and approx. weight per stone</caption><thead><tr><th scope="col">No.</th><th scope="col">mm</th><th scope="col">Weight (carat) per stone, approx.</th></tr></thead><tbody>${LOOSE_SIZES.map((z, i) => `<tr><td>${i + 1}</td><td>${z[0]} mm</td><td>${z[1]}</td></tr>`).join('')}</tbody></table></details><script>(function(){var a=document.getElementById("sz-mm"),b=document.getElementById("sz-ct");if(!a||!b)return;var rows=document.querySelectorAll(".prod-sizes tbody tr");function hi(v){for(var i=0;i<rows.length;i++)rows[i].style.background=(String(i)===v)?"#f6efe0":"";}a.onchange=function(){b.value=a.value;hi(a.value);};b.onchange=function(){a.value=b.value;hi(b.value);};})();</script>` : ''}
       ${bl.length ? `<h2>Details</h2><ul class="prod-list">${bl.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
@@ -439,7 +439,7 @@ ${(p.images || []).filter((u) => u !== p.image).slice(0, 10).map((u) => `<g:addi
 <g:identifier_exists>no</g:identifier_exists>
 <g:age_group>adult</g:age_group>
 <g:gender>${/CAD|Loose/i.test(p.name) ? 'unisex' : 'female'}</g:gender>
-<g:color>Yellow/White/Rose</g:color>
+<g:color>${p.category === 'loose-diamonds' ? 'White' : 'Yellow/White/Rose'}</g:color>
 <g:google_product_category>${esc(GCAT[p.category] || GCAT_DEFAULT)}</g:google_product_category>
 <g:product_type>${esc(CAT_LABEL[p.category] || 'Jewelry')}</g:product_type>${p.metal ? `\n<g:material>${esc(trim(p.metal, 200))}</g:material>` : ''}
 </item>`;
