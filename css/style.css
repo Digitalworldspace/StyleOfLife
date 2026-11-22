@@ -850,3 +850,6 @@ nav.crumbs{display:flex; flex-wrap:wrap; justify-content:flex-start; align-items
 .pg-hint{position:absolute; left:50%; bottom:28px; transform:translateX(-50%); background:rgba(20,18,15,.7); color:#fff; font:600 12px/1 var(--font-body,system-ui,sans-serif); padding:7px 12px; border-radius:999px; white-space:nowrap; transition:opacity .6s; pointer-events:none;}
 @media(hover:none){.pg-arr{display:none;}}
 @media(prefers-reduced-motion:reduce){.pg-hint{transition:none;}}
+.prod-sizes th,.prod-sizes td{text-align:left; padding-right:12px;}
+.prod-sizes th{font-weight:600;}
+.prod-sizes td{font-weight:400;}
