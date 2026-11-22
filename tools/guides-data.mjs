@@ -103,5 +103,31 @@ export const GUIDES = [
       ['Can I resize a Style Of Life ring?', 'No. Every ring is made to order in your size and cannot be resized later, so please send us your ring size before ordering. Custom sizes are welcome.'],
       ['Should I size up for a wide band?', 'A wide band usually feels tighter than a thin one, so many people go up by a quarter or half size. Message us if you are unsure.']
     ]
+  },
+  {
+    slug: 'what-is-a-toi-et-moi-ring',
+    title: 'What Is a Toi et Moi Ring? Meaning and Style Guide | Style Of Life',
+    desc: 'What is a toi et moi ring? Learn the meaning of "you and me", how the two-stone design works, how to choose stones and metals, and how to wear one.',
+    h1: 'What Is a Toi et Moi Ring?',
+    short: 'What is a toi et moi ring?',
+    teaser: 'The meaning of "you and me", how the two-stone design works and how to choose yours.',
+    published: '2026-11-22',
+    answer: 'A toi et moi ring is a ring with two stones set side by side, and the name is French for "you and me". The two stones stand for two people, which is why the style is popular for engagements, anniversaries and gifts.',
+    sections: [
+      ['What does toi et moi mean?', '<p>Toi et moi (pronounced roughly "twah ay mwah") is French for "you and me". In a toi et moi ring, two stones sit next to each other on one band, often tilted toward one another, so the design reads as two people joined together. The idea is old and is often traced back to 1796, when Napoleon Bonaparte is said to have given Joséphine a famous two-stone ring. Today the style has returned, with modern cuts and colors.</p>'],
+      ['How is a toi et moi ring different from a solitaire or a three-stone ring?', '<p>A solitaire has one center stone. A three-stone ring has a center stone with a stone on each side. A toi et moi ring has just two main stones and no center, which gives it a balanced, slightly asymmetric look. Because there are two stones, you can also choose two different shapes, two different colors, or one lab grown diamond beside a colored stone.</p>'],
+      ['Which stones can you use in a toi et moi ring?', '<p>Any two stones that suit your taste. Popular choices are two lab grown diamonds, a diamond beside a colored gemstone, or two different shapes such as a pear and an oval. At Style Of Life, our toi et moi ring pairs a heart-shaped lab grown diamond with a heart-shaped red colorstone on a split band. A colorstone is a colored gemstone, not a diamond, and we always label stones exactly as they are. Our <a href="/guides/moissanite-vs-lab-grown-diamond.html">moissanite vs lab grown diamond guide</a> explains how the two main clear stones compare.</p>'],
+      ['Is a toi et moi ring a good engagement ring?', '<p>Yes. Many couples choose it because it feels personal and different from a classic solitaire. It also works as an anniversary ring or a gift. When you choose one for a proposal, think about daily wear: a low setting with secure prongs is more comfortable if you use your hands a lot. Two stones side by side also make the ring wider across the finger than a single stone, so many wearers try it on before deciding between a snug and a looser fit, or send their size and a measurement to be sure.</p>'],
+      ['Which metal is best for a toi et moi ring?', '<p>It is a matter of color and budget. 925 sterling silver is a bright white metal at a friendly price, while 9K, 14K and 18K gold are higher in gold content and come in yellow, white or rose tone. Our <a href="/guides/925-silver-vs-9k-14k-18k-gold.html">silver vs gold guide</a> explains the differences in plain language.</p>'],
+      ['Is there a toi et moi necklace as well?', '<p>Yes. The same idea works as a pendant. Our toi et moi necklace is a split heart pendant with two heart-shaped lab grown diamonds, one blue and one white, made to order in 925 sterling silver and SGL certified. It makes a thoughtful gift for a partner, a friend or a sister, because the two hearts stand for two people.</p>'],
+      ['How do you order a toi et moi ring from Style Of Life?', '<p>Every piece is made to order in Surat, India. Choose your metal and message us your ring size on WhatsApp at +91 63529 25472 before ordering, since rings cannot be resized later; our <a href="/guides/how-to-measure-ring-size-at-home.html">ring size guide</a> shows how to measure. You can see the ring and the pendant on our <a href="/lab-grown-diamond-rings.html">rings page</a> and <a href="/diamond-necklaces.html">necklaces page</a>, and delivery and order details are on <a href="/shipping-returns.html">Shipping &amp; Returns</a>.</p>']
+    ],
+    faq: [
+      ['What does toi et moi mean?', 'Toi et moi is French for "you and me". It describes a ring with two stones side by side, representing two people.'],
+      ['Is a toi et moi ring good for an engagement?', 'Yes. It is a popular alternative to a solitaire for engagements, anniversaries and gifts because the two stones feel personal and symbolic.'],
+      ['What stones are in the Style Of Life toi et moi ring?', 'A heart-shaped lab grown diamond beside a heart-shaped red colorstone, which is a colored gemstone and not a diamond, made to order in 925 silver or 9K, 14K or 18K gold.'],
+      ['Does Style Of Life make a toi et moi necklace?', 'Yes. It is a split heart pendant with two heart-shaped lab grown diamonds, one blue and one white, made to order in 925 sterling silver and SGL certified.'],
+      ['Can a toi et moi ring be resized?', 'No. Every ring is made to order in your size and cannot be resized, so please message your ring size before ordering.']
+    ]
   }
 ];
