@@ -228,6 +228,7 @@ const SHIPPING_LD = { '@type': 'OfferShippingDetails', shippingRate: { '@type': 
 // ---------- 5. main ----------
 const { products: all, images: siteImages } = await loadData();
 const ch = chrome();
+const LOOSE_SIZES = ['1.20 mm', '1.70 – 1.80 mm', '1.80 – 1.90 mm', '1.90 – 2.00 mm', '2.00 – 2.10 mm', '2.10 – 2.20 mm', '2.20 – 2.30 mm', '2.30 – 2.40 mm', '2.40 – 2.50 mm', '2.50 – 2.60 mm', '2.60 – 2.70 mm'];  // sizes offered on the Etsy listing
 const isEnquiry = (p) => !lowPrice(p) && p.category === 'loose-diamonds';  // loose stones: no fixed price, enquire on WhatsApp
 const items = all.filter((p) => p.type !== 'video' && p.name && (lowPrice(p) || isEnquiry(p)));
 const used = new Set();
@@ -292,7 +293,7 @@ for (const p of items) {
       ${p.description ? `<p class="prod-desc">${esc(p.description)}</p>` : ''}
       ${rows ? `<table class="prod-table"><caption>Price by metal</caption><tbody>${rows}</tbody></table>` : ''}
       ${(p.metal || p.stone) ? `<ul class="prod-specs">${p.metal ? `<li><b>Metal</b> ${esc(p.metal)}</li>` : ''}${p.stone ? `<li><b>Stone</b> ${esc(p.stone)}</li>` : ''}</ul>` : ''}
-      ${!lo ? `<table class="prod-table"><caption>Details</caption><tbody><tr><th scope="row">Product</th><td>${esc(p.name)}</td></tr>${p.stone ? `<tr><th scope="row">Stone</th><td>${esc(p.stone)}</td></tr>` : ''}${p.sku ? `<tr><th scope="row">SKU</th><td>${esc(p.sku)}</td></tr>` : ''}<tr><th scope="row">Price</th><td>Enquire on WhatsApp</td></tr><tr><th scope="row">Delivery</th><td>Ships worldwide with tracking</td></tr></tbody></table>` : ''}
+      ${!lo ? `<table class="prod-table"><caption>Details</caption><tbody><tr><th scope="row">Product</th><td>${esc(p.name)}</td></tr>${p.stone ? `<tr><th scope="row">Stone</th><td>${esc(p.stone)}</td></tr>` : ''}${p.sku ? `<tr><th scope="row">SKU</th><td>${esc(p.sku)}</td></tr>` : ''}<tr><th scope="row">Price</th><td>Enquire on WhatsApp</td></tr><tr><th scope="row">Delivery</th><td>Ships worldwide with tracking</td></tr></tbody></table><table class="prod-table"><caption>Available diamond sizes</caption><tbody>${LOOSE_SIZES.map((z, i) => `<tr><th scope="row">${i + 1}</th><td>${z}</td></tr>`).join('')}</tbody></table>` : ''}
       ${bl.length ? `<h2>Details</h2><ul class="prod-list">${bl.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
       <div class="prod-cta">
         <a class="btn btn-whatsapp" href="${WA}?text=${waText}" target="_blank" rel="noopener">${lo ? 'Order on WhatsApp' : 'Enquire on WhatsApp'}</a>
