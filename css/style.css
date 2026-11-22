@@ -853,3 +853,9 @@ nav.crumbs{display:flex; flex-wrap:wrap; justify-content:flex-start; align-items
 .prod-sizes th,.prod-sizes td{text-align:left; padding-right:12px;}
 .prod-sizes th{font-weight:600;}
 .prod-sizes td{font-weight:400;}
+.prod-sizes-d{border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin:0 0 18px; padding:14px 0;}
+.prod-sizes-d summary{cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; font-weight:600;}
+.prod-sizes-d summary::-webkit-details-marker{display:none;}
+.prod-sizes-d summary:after{content:"+"; color:var(--gold-deep); font-size:1.4rem; line-height:1;}
+.prod-sizes-d[open] summary:after{content:"\2212";}
+.prod-sizes-d .prod-table{margin:12px 0 0;}
