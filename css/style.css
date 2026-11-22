@@ -859,3 +859,7 @@ nav.crumbs{display:flex; flex-wrap:wrap; justify-content:flex-start; align-items
 .prod-sizes-d summary:after{content:"+"; color:var(--gold-deep); font-size:1.4rem; line-height:1;}
 .prod-sizes-d[open] summary:after{content:"\2212";}
 .prod-sizes-d .prod-table{margin:12px 0 0;}
+
+.size-pick{display:flex; gap:12px; flex-wrap:wrap; margin:12px 0 0;}
+.size-pick label{flex:1 1 150px; font-size:.85rem; color:var(--muted,#666); display:flex; flex-direction:column; gap:4px;}
+.size-pick select{padding:10px; border:1px solid var(--line); border-radius:8px; font-size:1rem; background:#fff; color:inherit;}
