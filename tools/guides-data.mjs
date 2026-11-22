@@ -77,5 +77,31 @@ export const GUIDES = [
       ['Does sterling silver tarnish?', 'Yes, silver can darken over time as it reacts with air. A soft cloth and dry storage help slow this down.'],
       ['Which metals does Style Of Life use?', 'Every piece is made to order in 925 sterling silver, 9K, 14K or 18K gold, in yellow, white or rose tone.']
     ]
+  },
+  {
+    slug: 'how-to-measure-ring-size-at-home',
+    title: 'How to Measure Your Ring Size at Home | Style Of Life',
+    desc: 'How to measure your ring size at home with a ring you own, a strip of paper or string, plus a US size to diameter chart and tips for an accurate fit.',
+    h1: 'How to Measure Your Ring Size at Home',
+    short: 'How to measure your ring size at home',
+    teaser: 'Three easy ways to find your US ring size, with a size and diameter chart.',
+    published: '2026-11-22',
+    answer: 'The easiest way to measure your ring size at home is to measure the inside diameter of a ring that already fits the same finger, then match it to a US size chart (for example, 17.3 mm is a US size 7). If you have no ring to measure, wrap a thin strip of paper or string around the base of your finger, mark where it overlaps and measure the length in millimeters.',
+    sections: [
+      ['Why does ring size matter for a made to order ring?', '<p>A ring that is too tight is uncomfortable and hard to remove, and one that is too loose can slip off. Rings that are made to order in your size cannot be resized afterward, so the size you give before ordering is the size you will receive. Taking a few minutes to measure carefully is the best way to be happy with the fit.</p>'],
+      ['How do you measure with a ring you already own?', '<p>Pick a ring that fits the finger you want to wear the new ring on, and that sits on the same part of the finger. Place it on a flat ruler and measure the inside diameter, from one inner edge to the opposite inner edge, in millimeters. Do not measure the outside of the band. Then find the closest number in the chart below. If your measurement falls between two sizes, choose the larger one for a wide band and tell us both numbers.</p>'],
+      ['How do you measure with a strip of paper or string?', '<p>Cut a strip of paper about 6 mm wide and 15 cm long, or use a piece of thin string. Wrap it snugly around the base of the finger, with the end overlapping. Mark the exact point where the paper or string overlaps with a pen. Unwrap it, lay it flat and measure the length from the end to your mark in millimeters. That number is the circumference of your finger. Match it to the circumference column in the chart. Repeat two or three times and use the average, since it is easy to pull the strip too tight.</p>'],
+      ['What is the US ring size chart in millimeters?', '<p>These are standard US sizes, with the inside diameter and the inside circumference in millimeters, rounded to one decimal place:</p><ul><li>US 5: diameter 15.7 mm, circumference 49.3 mm</li><li>US 6: diameter 16.5 mm, circumference 51.9 mm</li><li>US 7: diameter 17.3 mm, circumference 54.4 mm</li><li>US 8: diameter 18.1 mm, circumference 57.0 mm</li><li>US 9: diameter 18.9 mm, circumference 59.5 mm</li><li>US 10: diameter 19.8 mm, circumference 62.1 mm</li></ul><p>Charts from different brands can differ by a fraction of a millimeter, so treat these numbers as a guide and send us your measurement as well as your size.</p>'],
+      ['When and how should you measure for the most accurate size?', '<p>Fingers change size during the day. They are usually smallest in the morning and in cold weather, and larger when it is hot, after exercise or after a salty meal. Measure at the end of the day when your hand is at normal temperature, and measure more than once on different days. A wide band feels tighter than a thin band, so if you are choosing a wide band, consider going up by a quarter or half size. Your knuckle matters too: the ring must pass over the knuckle but still stay in place at the base of the finger.</p>'],
+      ['What if you are buying a ring as a gift or a proposal?', '<p>If you cannot ask, borrow a ring the person already wears on the same finger and measure its inside diameter, or trace the inside of the ring on paper. You can also ask a close friend or family member for help. Because rings are made to order here, please double check the size before you place the order.</p>'],
+      ['How does this work at Style Of Life?', '<p>Every ring is made to order in Surat, India, in your size, and it cannot be resized later, so please message us your ring size before ordering. You can send your US size or your measurement in millimeters on WhatsApp at +91 63529 25472, and custom sizes are welcome. Browse our <a href="/lab-grown-diamond-rings.html">lab grown diamond and moissanite rings</a>, and read our <a href="/shipping-returns.html">Shipping &amp; Returns</a> page for delivery details. You can also compare stones in our guide to <a href="/guides/moissanite-vs-lab-grown-diamond.html">moissanite vs lab grown diamond</a>.</p>']
+    ],
+    faq: [
+      ['What is the easiest way to find my ring size at home?', 'Measure the inside diameter of a ring that already fits the same finger and match it to a US size chart, for example 17.3 mm is a US size 7.'],
+      ['How do I measure my ring size with string or paper?', 'Wrap a thin strip of paper or string around the base of your finger, mark where it overlaps, measure the length in millimeters and match it to the circumference column of a size chart.'],
+      ['What is a US size 7 ring in millimeters?', 'A US size 7 has an inside diameter of about 17.3 mm and an inside circumference of about 54.4 mm.'],
+      ['Can I resize a Style Of Life ring?', 'No. Every ring is made to order in your size and cannot be resized later, so please send us your ring size before ordering. Custom sizes are welcome.'],
+      ['Should I size up for a wide band?', 'A wide band usually feels tighter than a thin one, so many people go up by a quarter or half size. Message us if you are unsure.']
+    ]
   }
 ];
