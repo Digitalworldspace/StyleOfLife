@@ -129,5 +129,30 @@ export const GUIDES = [
       ['Does Style Of Life make a toi et moi necklace?', 'Yes. It is a split heart pendant with two heart-shaped lab grown diamonds, one blue and one white, made to order in 925 sterling silver and SGL certified.'],
       ['Can a toi et moi ring be resized?', 'No. Every ring is made to order in your size and cannot be resized, so please message your ring size before ordering.']
     ]
+  },
+  {
+    slug: 'how-to-choose-an-initial-necklace-gift',
+    title: 'How to Choose an Initial Necklace as a Gift | Style Of Life',
+    desc: 'How to choose an initial necklace as a gift: which letter to pick, metal, chain length, and when a tennis bracelet is the better gift. Made to order in Surat, India.',
+    h1: 'How to Choose an Initial Necklace as a Gift',
+    short: 'How to choose an initial necklace as a gift',
+    teaser: 'Which letter, metal and chain length to pick, and what to give instead if she prefers a bracelet.',
+    published: '2026-11-23',
+    answer: 'Choose the first letter of her name, or the initial of someone she loves, then pick the metal by budget and skin comfort and a chain length by how she likes to wear a necklace. If you are not sure, an 18 inch chain and a letter she will recognize at once are the safest choices.',
+    sections: [
+      ['Which letter should you choose?', '<p>The most common choice is the first letter of her first name. Other popular choices are the initial of a child, a partner or a grandmother, or the first letter of a name she gave to a loved one. If you want a gift that works for sure, ask a friend or family member which names matter most to her, rather than guessing. You can browse every letter from A to Z on our <a href="/diamond-initial-necklaces.html">diamond initial necklaces page</a>, for example <a href="/products/diamond-initial-necklace-letter-a-sol-ini-a.html">Letter A</a>.</p>'],
+      ['Which metal is best for an initial necklace?', '<p>Each necklace is made to order in 925 sterling silver, 9K gold, 14K gold or 18K gold. Silver is the lightest on the budget and has a bright white look. Gold is a better fit when you want a piece she can wear every day for years, and the higher the karat number, the higher the gold content. Our <a href="/guides/925-silver-vs-9k-14k-18k-gold.html">silver vs gold guide</a> compares them in plain language. Open a letter to see the price for each metal before you decide.</p>'],
+      ['Which chain length should you pick?', '<p>We offer a 16 inch close fit and an 18 inch classic fit. A 16 inch chain sits near the collarbone and shows the letter clearly on its own. An 18 inch chain sits a little lower and is easier to layer with other necklaces. If you do not know how she wears her jewelry, 18 inches is the safer pick for a gift.</p>'],
+      ['Is an initial necklace a good gift for different people?', '<p>Yes, because the letter makes it personal. It works for a partner on an anniversary, a daughter at a birthday, a sister, a close friend, or a mother wearing the initial of her child. It is a small piece, so it suits people who prefer a quiet, everyday style.</p>'],
+      ['What if she prefers a bracelet?', '<p>If the person you are shopping for wears bracelets more than necklaces, a tennis bracelet is a classic gift. Our <a href="/products/moissanite-princess-cut-tennis-bracelet-brc18.html">Moissanite Princess Cut Tennis Bracelet</a> is SGL certified and made to order in 925 silver or 9K, 14K or 18K gold. Please message us her wrist size before ordering. You can see more styles on our <a href="/diamond-bracelets.html">bracelets page</a>.</p>'],
+      ['How does ordering and delivery work?', '<p>Every piece is made to order in Surat, India, and ready to ship in about 5 to 8 business days. Delivery is free and tracked. You can order through Etsy or message us on WhatsApp at +91 63529 25472 with any question or change request before you order. Because every necklace is made for the buyer, we show all details on the product page; the full details are on <a href="/shipping-returns.html">Shipping &amp; Returns</a>. If you need the gift for a specific date, order early and message us the date.</p>']
+    ],
+    faq: [
+      ['Which letter should I choose for an initial necklace gift?', 'Usually the first letter of her first name, or the initial of a child, partner or someone she loves.'],
+      ['Which metals are available?', '925 sterling silver, 9K gold, 14K gold and 18K gold. Open a letter to see the price for each metal.'],
+      ['Which chain length is best for a gift?', 'We offer 16 inch close fit and 18 inch classic fit chains. An 18 inch chain is the safer choice if you do not know how she wears her jewelry.'],
+      ['How long does an initial necklace take to make?', 'Every piece is made to order and is ready to ship in about 5 to 8 business days, with free tracked delivery.'],
+      ['Can I order a letter that is not listed or a custom design?', 'Yes. Message us on WhatsApp at +91 63529 25472 before ordering.']
+    ]
   }
 ];
