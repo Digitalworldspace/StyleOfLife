@@ -264,6 +264,8 @@
   .foot-links{display:flex; gap:22px;}
   .foot-brand{display:flex; align-items:center; gap:10px;}
   .foot-brand img{width:22px; height:22px; object-fit:contain;}
+  .foot-address{max-width:1120px; margin:16px auto 0; padding:0 20px; text-align:center; font-size:.8rem; line-height:1.7; opacity:.85;}
+  .foot-address a{color:inherit; text-decoration:underline;}
 
   /* Floating WhatsApp */
   .float-wa{

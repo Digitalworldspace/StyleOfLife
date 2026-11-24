@@ -399,6 +399,46 @@ for (const f of ['index.html', 'jewelry.html', 'about.html']) {
   urls.push(['/privacy.html', 0.3, 'yearly']);
 }
 
+// ---------- 6d. Contact page and Terms page (business identity: name, owner, address, phone, email) ----------
+{
+  const contactBody = `<section class="section cat-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <span>Contact</span></nav>
+  <div class="section-head"><h1>Contact Style Of Life</h1></div>
+  <div class="cat-intro">
+    <p>Style Of Life is a jewelry brand based in Surat, India. We make lab grown diamond, moissanite and colorstone jewelry to order. Message us any time and we reply within 24 hours.</p>
+    <p><b>Business name.</b> Style Of Life</p>
+    <p><b>Owner.</b> Prince Rajvinbhai Akbari</p>
+    <p><b>Address.</b> Shrushti House, Amroli, Surat, Gujarat, India - 394107</p>
+    <p><b>Phone and WhatsApp.</b> <a href="https://wa.me/916352925472" target="_blank" rel="noopener">+91 63529 25472</a></p>
+    <p><b>Email.</b> <a href="mailto:styleoflife987@gmail.com">styleoflife987@gmail.com</a></p>
+    <p><b>Our Etsy shop.</b> <a href="https://styleoflifein.etsy.com" target="_blank" rel="noopener">styleoflifein.etsy.com</a>, where orders are placed and paid securely through Etsy.</p>
+    <p>Before you order, you can read our <a href="/shipping-returns.html">Shipping &amp; Returns</a>, <a href="/terms.html">Terms</a> and <a href="/privacy.html">Privacy</a> pages.</p>
+  </div>
+</section>`;
+  const orgLd = { '@context': 'https://schema.org', '@type': 'Organization', name: 'Style Of Life', url: DOMAIN + '/', email: 'styleoflife987@gmail.com', telephone: '+91 63529 25472', founder: { '@type': 'Person', name: 'Prince Rajvinbhai Akbari' }, address: { '@type': 'PostalAddress', streetAddress: 'Shrushti House, Amroli', addressLocality: 'Surat', addressRegion: 'Gujarat', postalCode: '394107', addressCountry: 'IN' }, contactPoint: { '@type': 'ContactPoint', contactType: 'customer service', telephone: '+91 63529 25472', email: 'styleoflife987@gmail.com', availableLanguage: 'English' } };
+  write('contact.html', page({ title: 'Contact | Style Of Life', desc: 'Contact Style Of Life, Surat, India: address, phone, WhatsApp and email. We reply within 24 hours.', urlPath: '/contact.html', image: siteOg, schema: [orgLd, breadcrumbLd([['Home', '/'], ['Contact', '/contact.html']])], body: contactBody, ch }));
+  urls.push(['/contact.html', 0.5, 'yearly']);
+
+  const termsBody = `<section class="section cat-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <span>Terms</span></nav>
+  <div class="section-head"><h1>Terms of Use</h1></div>
+  <div class="cat-intro">
+    <p>These terms explain in plain words how ordering from Style Of Life works. Last updated ${TODAY}.</p>
+    <p><b>Who we are.</b> Style Of Life, run by Prince Rajvinbhai Akbari, Shrushti House, Amroli, Surat, Gujarat, India - 394107. Email styleoflife987@gmail.com, phone and WhatsApp +91 63529 25472.</p>
+    <p><b>Ordering and payment.</b> You order through our Etsy shop, where checkout and payment are handled by Etsy under Etsy's own terms. For custom requests you can message us on WhatsApp first. An order is confirmed when we confirm it to you.</p>
+    <p><b>Made to order.</b> Every piece is made for you in Surat. Delivery time, free tracked worldwide delivery, cancellation, returns and ring sizes are explained on our <a href="/shipping-returns.html">Shipping &amp; Returns</a> page, which is part of these terms.</p>
+    <p><b>Prices.</b> Prices are shown in US dollars on our Etsy listings. The price you see at Etsy checkout is the price you pay.</p>
+    <p><b>Product information.</b> We describe our pieces as accurately as we can. Because each piece is made to order and screens show colors differently, small differences from the photos can happen. Where a product page mentions a certificate, it is the certificate named on that page.</p>
+    <p><b>Our content.</b> The photos, videos and text on this website belong to Style Of Life. Please ask us before you copy or reuse them.</p>
+    <p><b>Privacy.</b> How this website uses analytics is explained on our <a href="/privacy.html">Privacy</a> page.</p>
+    <p><b>Changes.</b> We may update these terms. The date at the top shows the latest version.</p>
+    <p><b>Questions.</b> See our <a href="/contact.html">Contact</a> page.</p>
+  </div>
+</section>`;
+  write('terms.html', page({ title: 'Terms of Use | Style Of Life', desc: 'Plain-language terms for ordering from Style Of Life: how orders, payment, delivery and product information work.', urlPath: '/terms.html', image: siteOg, schema: [breadcrumbLd([['Home', '/'], ['Terms', '/terms.html']])], body: termsBody, ch }));
+  urls.push(['/terms.html', 0.3, 'yearly']);
+}
+
 // ---------- 6c. Buyer guides (/guides/) for search engines and AI assistants ----------
 {
   const guidePages = [];
@@ -496,6 +536,8 @@ write('llms.txt', `# Style Of Life
 - [Our story](${DOMAIN}/about.html): about the founder and how orders are handled
 - [Shipping & Returns](${DOMAIN}/shipping-returns.html): delivery time, returns and cancellation policy
 - [Privacy](${DOMAIN}/privacy.html): which analytics tools the site uses and how to opt out
+- [Contact](${DOMAIN}/contact.html): business name, owner, address, phone, WhatsApp and email
+- [Terms](${DOMAIN}/terms.html): how ordering, payment and delivery work
 - [Buyer guides](${DOMAIN}/guides/): plain-language answers about lab grown diamond, moissanite and jewelry metals
 ${GUIDES.map((g) => `- [${g.short}](${DOMAIN}/guides/${g.slug}.html): ${g.teaser}`).join('\n')}
 ${catPages.map(catLine).join('\n')}
