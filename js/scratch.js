@@ -71,11 +71,10 @@
     var c=build({price:price, priceNote:'starting price, 5% off applied on WhatsApp', wa:waLink('Hi, I unlocked 5% off on the website. Bracelet: '+name+(sku?' ('+sku+')':'')+'. Please confirm my price.')});
     slot.appendChild(c); init(c);
   }
-  // 2) popup for ad visitors on the home page
+  // 2) popup on the home page for every visitor, once per visit
   function fromAd(){ return /[?&](fbclid|gclid|msclkid)=|[?&]utm_medium=(paid|cpc|ppc|social_paid)|[?&]utm_source=(facebook|fb|ig|instagram|meta)/i.test(location.search); }
   function popup(){
     if(!(location.pathname==='/'||/\/index\.html$/.test(location.pathname))) return;
-    if(!fromAd()) return;
     try{ if(sessionStorage.getItem('sol_scratch')) return; sessionStorage.setItem('sol_scratch','1'); }catch(e){}
     setTimeout(function(){
       var ov=document.createElement('div'); ov.className='sc-overlay'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-label','Scratch to reveal your Christmas offer');
