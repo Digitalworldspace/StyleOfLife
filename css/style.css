@@ -740,7 +740,12 @@ header nav{transition:padding .35s ease;} header.is-scrolled nav{padding-top:11p
   .hb-overlay{min-height:440px; padding:44px 20px;}
   /* the sticky bottom bar already has Order on WhatsApp + Shop on Etsy, so only the main shop button stays in the banner on phones */
   .hb-text .hero-ctas .btn-whatsapp{display:none;}
-  .hb-text .hero-ctas{margin-top:24px;}
+  .hb-text .hero-ctas{margin-top:auto; padding-top:24px;}
+  /* phones: headline on top, the bracelet photo stays visible in the middle, shop button at the bottom */
+  .hb-overlay{min-height:560px; align-items:stretch;}
+  .hb-text{display:flex; flex-direction:column; width:100%;}
+  .hb-text .hero-copy{display:none;}
+  .hb-text .hero-proof{margin-top:14px;}
 }
 
 /* Christmas touches (auto-hide after the date in data-xmas-until) */
