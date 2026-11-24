@@ -307,6 +307,7 @@ for (const p of items) {
       <h1>${esc(p.name)}</h1>
       ${p.sku ? `<p class="prod-sku">SKU: ${esc(p.sku)}</p>` : ''}
       ${lo ? `<p class="prod-price">From ${money(lo)}${hi && hi > lo ? ` <span>– up to ${money(hi)} depending on ${p.category === 'loose-diamonds' ? 'carat range' : 'metal'}</span>` : ''}</p>` : '<p class="prod-price">Enquire on WhatsApp <span>for today\'s price</span></p>'}
+      ${p.category === 'bracelets' && lo ? '<div class="scratch-slot"></div><script src="/js/scratch.js" defer></script>' : ''}
       ${trustLines.length ? `<ul class="prod-trust">${trustLines.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
       ${p.description ? `<p class="prod-desc">${esc(p.description)}</p>` : ''}
       ${rows ? `<table class="prod-table"><caption>Price by ${p.category === 'loose-diamonds' ? 'carat range' : 'metal'}</caption><tbody>${rows}</tbody></table>` : ''}
