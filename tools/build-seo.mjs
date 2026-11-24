@@ -243,6 +243,11 @@ const siteOg = siteImages['hero-banner'] || '';
 const RING_SIZES = [5, 6, 7, 8, 9, 10].map((n) => [n, (0.8128 * n + 11.63).toFixed(1)]);
 const ringGuide = (id) => `<details class="size-guide"${id ? ` id="${id}"` : ''}><summary>Ring size guide</summary><table class="prod-table"><caption>US ring size and inner diameter</caption><thead><tr><th scope="col">US size</th><th scope="col">Inner diameter</th></tr></thead><tbody>${RING_SIZES.map((r) => `<tr><th scope="row">${r[0]}</th><td>${r[1]} mm</td></tr>`).join('')}</tbody></table><p>Charts vary slightly between brands. Between sizes? Message us and we will help you choose.</p></details>`;
 const chainGuide = () => `<details class="size-guide"><summary>Chain length guide</summary><p>16 in sits close at the collarbone, 18 in sits just below it. Message us if you would like a different length.</p></details>`;
+// RND-20261123-1 / RND-20261124-3: Christmas order-by text. The .xmas-until span hides itself from Dec 11 2026 (local time) by a date check; also delete it when it is stale.
+const XMAS_JS = `<script>(function(){if(new Date()>=new Date(2026,11,11)){[].forEach.call(document.querySelectorAll('.xmas-until'),function(e){e.style.display='none';});}})();</script>`;
+const xmasLine = () => `<p class="xmas-line">Made to order. <span class="xmas-until">Order by Dec 10 for Christmas.</span> Free tracked delivery. Gift box included.</p>${XMAS_JS}`;
+// RND-20261124-1: wrist size helper for bracelet pages
+const wristGuide = (name) => `<details class="size-guide wrist-guide"><summary>Find your wrist size</summary><ol><li>Wrap a soft tape or a strip of paper around your wrist.</li><li>Mark the spot where it meets.</li><li>Measure the length in inches.</li></ol><p>Add about half an inch for a comfortable fit. Not sure? Message us your wrist size and we will confirm.</p><a class="btn btn-whatsapp" href="${WA}?text=${encodeURIComponent('Hi, my wrist size is ___ inches. Bracelet: ' + name)}" target="_blank" rel="noopener">Send my wrist size</a></details>`;
 
 // category pages
 const catPages = [];
@@ -255,6 +260,7 @@ for (const [key, cfg] of Object.entries(CATS)) {
   const body = `<section class="section cat-page">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/jewelry.html">Jewelry</a> › <span>${esc(cfg.short)}</span></nav>
   <div class="section-head"><h1>${esc(cfg.label)}</h1></div>
+  ${xmasLine()}
   <div class="cat-intro">${cfg.intro.map((t) => `<p>${esc(t)}</p>`).join('')}</div>
   <div class="sgrid">${list.map(card).join('\n')}</div>
   ${key === 'rings' ? ringGuide('ring-size-guide') : ''}
@@ -304,14 +310,15 @@ for (const p of items) {
       ${trustLines.length ? `<ul class="prod-trust">${trustLines.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
       ${p.description ? `<p class="prod-desc">${esc(p.description)}</p>` : ''}
       ${rows ? `<table class="prod-table"><caption>Price by ${p.category === 'loose-diamonds' ? 'carat range' : 'metal'}</caption><tbody>${rows}</tbody></table>` : ''}
+      ${p.category === 'bracelets' ? wristGuide(p.name) : ''}
       ${(p.metal || p.stone) ? `<ul class="prod-specs">${p.metal ? `<li><b>Metal</b> ${esc(p.metal)}</li>` : ''}${p.stone ? `<li><b>Stone</b> ${esc(p.stone)}</li>` : ''}</ul>` : ''}
       ${!lo ? `<table class="prod-table"><caption>Details</caption><tbody><tr><th scope="row">Product</th><td>${esc(p.name)}</td></tr>${p.stone ? `<tr><th scope="row">Stone</th><td>${esc(p.stone)}</td></tr>` : ''}${p.sku ? `<tr><th scope="row">SKU</th><td>${esc(p.sku)}</td></tr>` : ''}<tr><th scope="row">Price</th><td>Enquire on WhatsApp</td></tr><tr><th scope="row">Delivery</th><td>Ships worldwide with tracking</td></tr></tbody></table><details class="prod-sizes-d"><summary>Diamond size</summary><div class="size-pick"><label>Size (mm)<select id="sz-mm"><option value="">Choose mm</option>${LOOSE_SIZES.map((z, i) => `<option value="${i}">${z[0]} mm</option>`).join('')}</select></label><label>Weight (carat)<select id="sz-ct"><option value="">Choose carat</option>${LOOSE_SIZES.map((z, i) => `<option value="${i}">${z[1]} ct</option>`).join('')}</select></label></div><table class="prod-table prod-sizes"><caption>Size and approx. weight per stone</caption><thead><tr><th scope="col">No.</th><th scope="col">mm</th><th scope="col">Weight (carat) per stone, approx.</th></tr></thead><tbody>${LOOSE_SIZES.map((z, i) => `<tr><td>${i + 1}</td><td>${z[0]} mm</td><td>${z[1]}</td></tr>`).join('')}</tbody></table></details><script>(function(){var a=document.getElementById("sz-mm"),b=document.getElementById("sz-ct");if(!a||!b)return;var rows=document.querySelectorAll(".prod-sizes tbody tr");function hi(v){for(var i=0;i<rows.length;i++)rows[i].style.background=(String(i)===v)?"#f6efe0":"";}a.onchange=function(){b.value=a.value;hi(a.value);};b.onchange=function(){a.value=b.value;hi(b.value);};})();</script>` : ''}
       ${bl.length ? `<h2>Details</h2><ul class="prod-list">${bl.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
+      ${lo ? `<p class="prod-gift">Made to order, ready to ship in about 5–8 business days. Free tracked delivery. Gift box included. <span class="xmas-until">Order by Dec 10 for Christmas.</span></p>${XMAS_JS}` : ''}
       <div class="prod-cta">
         <a class="btn btn-whatsapp" href="${WA}?text=${waText}" target="_blank" rel="noopener">${lo ? 'Order on WhatsApp' : 'Enquire on WhatsApp'}</a>
         ${p.etsy ? `<a class="btn btn-primary" href="${esc(p.etsy)}" target="_blank" rel="noopener">Buy on Etsy</a>` : ''}
       </div>
-      <ul class="prod-facts"><li>Ships in about 5–8 business days</li><li>Free tracked worldwide delivery</li></ul>
       <p class="prod-note">${lo ? 'Made to order in Surat, India, and ready to ship in about 5–8 business days. Free delivery worldwide with tracking. Message us for sizing, custom requests or a private quote.' : 'Free delivery worldwide with tracking. Message us on WhatsApp for today\'s price and availability.'}</p>
       ${p.category === 'rings' ? ringGuide() : ''}${chainNote ? chainGuide() : ''}
     </div>
