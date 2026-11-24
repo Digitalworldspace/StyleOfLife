@@ -355,6 +355,7 @@ for (const f of ['index.html', 'jewelry.html', 'about.html']) {
 {
   const faq = [
     ['How long does it take to receive my order?', 'Every piece is made to order in Surat, India, and is usually ready to ship in about 5–8 business days. Delivery is free worldwide and every parcel ships with tracking.'],
+    ['Can I get my order in time for Christmas?', 'Yes. Every piece is made to order in Surat, India, so order by Dec 10 for Christmas. Delivery is free and tracked worldwide, and a gift box is included.'],
     ['Do you accept returns or exchanges?', 'Because each piece is made to order just for you, we do not accept returns or exchanges on rings, necklaces, earrings or bracelets. Every detail is shown on the product page, and you are always welcome to message us before ordering with any question or change request.'],
     ['Can a ring be resized?', 'Rings are made to order in your size and cannot be resized later, so please send us your ring size before you order. Custom sizes are welcome.'],
     ['Can I cancel my order?', 'Yes. Cancellation is free within 5 hours of placing your order.'],
