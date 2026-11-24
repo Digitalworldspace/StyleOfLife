@@ -3,7 +3,7 @@
 export const GUIDES = [
   {
     slug: 'moissanite-vs-lab-grown-diamond',
-    title: 'Moissanite vs Lab Grown Diamond: Differences Explained | Style Of Life',
+    title: 'Moissanite vs Lab Grown Diamond: Key Differences | Style Of Life',
     desc: 'Moissanite vs lab grown diamond: material, hardness, sparkle, sizing and certification explained simply, so you can pick the right stone for your ring.',
     h1: 'Moissanite vs Lab Grown Diamond',
     short: 'Moissanite vs lab grown diamond',
@@ -29,7 +29,7 @@ export const GUIDES = [
   },
   {
     slug: 'sgl-certificate-lab-grown-diamond',
-    title: 'What Is an SGL Certificate? How to Verify a Lab Grown Diamond Report | Style Of Life',
+    title: 'What Is an SGL Certificate? Verify Your Diamond | Style Of Life',
     desc: 'What an SGL certificate is, what a lab grown diamond report lists, and how to verify it online with the report number or QR code before you buy.',
     h1: 'What Is an SGL Certificate and How Do You Verify It?',
     short: 'SGL certificate: what it is and how to verify it',
@@ -55,7 +55,7 @@ export const GUIDES = [
   },
   {
     slug: '925-silver-vs-9k-14k-18k-gold',
-    title: '925 Silver vs 9K, 14K and 18K Gold Jewelry: How to Choose | Style Of Life',
+    title: '925 Silver vs 9K, 14K, 18K Gold: How to Choose | Style Of Life',
     desc: 'What 925 sterling silver and 9K, 14K and 18K gold mean, how they differ in gold content, color and durability, and which to choose for your jewelry.',
     h1: '925 Silver vs 9K, 14K and 18K Gold: Which Should You Choose?',
     short: '925 silver vs 9K, 14K and 18K gold',

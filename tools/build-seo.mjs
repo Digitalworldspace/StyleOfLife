@@ -151,7 +151,7 @@ function chrome() {
   const tail = abs(j.slice(j.indexOf('<section class="cta-band"')));
   return { header, tail };
 }
-const FAV = '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%2315130F%27/%3E%3Ctext x=%2732%27 y=%2744%27 font-size=%2738%27 text-anchor=%27middle%27 fill=%27%23E7D2A9%27 font-family=%27Georgia,serif%27%3ES%3C/text%3E%3C/svg%3E">';
+const FAV = '<link rel="icon" type="image/jpeg" sizes="192x192" href="https://swxpigyeadtggjoocnfi.supabase.co/storage/v1/object/public/product-images/fb20f659ba393e2be83110e8/1795144048771-3s3xvd.jpg"><link rel="apple-touch-icon" href="https://swxpigyeadtggjoocnfi.supabase.co/storage/v1/object/public/product-images/fb20f659ba393e2be83110e8/1795144048771-3s3xvd.jpg">';
 const FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Bodoni+Moda:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">';
 
 function page({ title, desc, urlPath, image, ogType, schema, body, ch }) {
