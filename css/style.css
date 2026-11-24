@@ -738,8 +738,9 @@ header nav{transition:padding .35s ease;} header.is-scrolled nav{padding-top:11p
 .hero-banner:has(.hb-slot.has) .hb-text .btn-primary{background:#fff; color:var(--charcoal,#14110D);}
 @media(max-width:760px){
   .hb-overlay{min-height:440px; padding:44px 20px;}
-  /* the sticky bottom bar already has Order on WhatsApp + Shop on Etsy, so the banner buttons are hidden on phones */
-  .hb-text .hero-ctas{display:none;}
+  /* the sticky bottom bar already has Order on WhatsApp + Shop on Etsy, so only the main shop button stays in the banner on phones */
+  .hb-text .hero-ctas .btn-whatsapp{display:none;}
+  .hb-text .hero-ctas{margin-top:24px;}
 }
 
 /* Christmas touches (auto-hide after the date in data-xmas-until) */

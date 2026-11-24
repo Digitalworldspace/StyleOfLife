@@ -138,7 +138,12 @@ window.SOL_startHero = function(items){
 // ---- Christmas touches: snow + offer strip, switched off automatically after data-xmas-until ----
 (function(){
   try{
-    var els = document.querySelectorAll('[data-xmas-until]'), now = new Date(), on = false;
+    var now = new Date(), on = false;
+    document.querySelectorAll('[data-xmas-text-until]').forEach(function(el){
+      var e2 = new Date(el.getAttribute('data-xmas-text-until') + 'T23:59:59');
+      if(now > e2 && el.getAttribute('data-after')){ el.textContent = el.getAttribute('data-after'); }
+    });
+    var els = document.querySelectorAll('[data-xmas-until]');
     els.forEach(function(el){
       var end = new Date(el.getAttribute('data-xmas-until') + 'T23:59:59');
       if(now > end){ el.parentNode.removeChild(el); } else { on = true; }
