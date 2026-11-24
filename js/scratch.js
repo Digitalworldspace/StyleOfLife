@@ -1,4 +1,4 @@
-/* Scratch-to-reveal card: shows the real Christmas gift perks. No data is collected or stored on a server.
+/* Scratch-to-reveal card: reveals 5% off for orders placed on WhatsApp (owner decision 2026-11-24) plus the real gift perks. No data is collected or stored on a server.
    1) Bracelet product pages: card under the price (.scratch-slot).
    2) Home page: popup once per visit for visitors who arrive from an ad link (fbclid, gclid or paid utm params). */
 (function(){
@@ -11,10 +11,17 @@
     if(xmasOpen()) li.push('Order by Dec 10 for Christmas');
     return '<ul>'+li.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>';
   }
+  function money(n){ return '$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+  function parse(t){ var m=/\$\s*([\d,]+(?:\.\d+)?)/.exec(t||''); return m?parseFloat(m[1].replace(/,/g,'')):null; }
+  function off(n){ return Math.round(n*0.95*100)/100; }
+  function waLink(msg){ return WA+'?text='+encodeURIComponent(msg); }
   function build(opts){
+    var amt='';
+    if(opts.price){ amt='<p class="sc-amt"><s>'+money(opts.price)+'</s> <b>'+money(off(opts.price))+'</b><small>'+(opts.priceNote||'from price')+'</small></p>'; }
     var root=document.createElement('div'); root.className='scratch-card';
-    root.innerHTML='<div class="sc-under"><b class="sc-title">Your Christmas gift perks</b>'+perks()+
-      '<a class="btn btn-whatsapp sc-cta" target="_blank" rel="noopener" href="'+(opts.wa||WA)+'">Order on WhatsApp</a></div>'+
+    root.innerHTML='<div class="sc-under"><b class="sc-title">You unlocked 5% off</b>'+(opts.label?'<span class="sc-for">'+opts.label+'</span>':'')+amt+
+      '<p class="sc-claim">Claim it when you order on WhatsApp.</p>'+perks()+
+      '<a class="btn btn-whatsapp sc-cta" target="_blank" rel="noopener" href="'+(opts.wa||WA)+'">Claim 5% off on WhatsApp</a></div>'+
       '<canvas class="sc-foil" aria-hidden="true"></canvas>'+
       '<button type="button" class="sc-reveal">Tap to reveal</button>';
     return root;
@@ -33,7 +40,7 @@
       var g=ctx.createLinearGradient(0,0,W,H); g.addColorStop(0,'#E7D2A9'); g.addColorStop(.5,'#C9A961'); g.addColorStop(1,'#E9DDBB');
       ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
       ctx.fillStyle='rgba(20,17,13,.78)'; ctx.font='600 '+Math.round(Math.min(W/11,22))+'px Georgia,serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText('SCRATCH TO REVEAL', W/2, H/2-10); ctx.font='500 '+Math.round(Math.min(W/20,13))+'px sans-serif'; ctx.fillText('your Christmas gift perks', W/2, H/2+14);
+      ctx.fillText('SCRATCH TO REVEAL', W/2, H/2-10); ctx.font='500 '+Math.round(Math.min(W/20,13))+'px sans-serif'; ctx.fillText('your Christmas offer', W/2, H/2+14);
     }
     paint();
     function pos(e){ var r=cv.getBoundingClientRect(); return {x:(e.clientX-r.left)*W/r.width, y:(e.clientY-r.top)*H/r.height}; }
@@ -59,7 +66,9 @@
   // 1) product page card
   function productCard(){
     var slot=document.querySelector('.scratch-slot'); if(!slot) return;
-    var wa=document.querySelector('.prod-cta .btn-whatsapp'); var c=build({wa:wa?wa.getAttribute('href'):WA});
+    var pe=document.querySelector('.prod-price'), h=document.querySelector('.prod-info h1'), sk=document.querySelector('.prod-sku');
+    var price=pe?parse(pe.textContent):null, name=h?h.textContent.trim():'bracelet', sku=sk?sk.textContent.replace(/^SKU:\s*/,'').trim():'';
+    var c=build({price:price, priceNote:'starting price, 5% off applied on WhatsApp', wa:waLink('Hi, I unlocked 5% off on the website. Bracelet: '+name+(sku?' ('+sku+')':'')+'. Please confirm my price.')});
     slot.appendChild(c); init(c);
   }
   // 2) popup for ad visitors on the home page
@@ -69,10 +78,20 @@
     if(!fromAd()) return;
     try{ if(sessionStorage.getItem('sol_scratch')) return; sessionStorage.setItem('sol_scratch','1'); }catch(e){}
     setTimeout(function(){
-      var ov=document.createElement('div'); ov.className='sc-overlay'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-label','Scratch to reveal your Christmas gift perks');
-      ov.innerHTML='<div class="sc-modal"><button type="button" class="sc-x" aria-label="Close">×</button><p class="sc-brand">STYLE OF LIFE</p><h2>Try your luck</h2><p class="sc-sub">Scratch below to reveal your Christmas gift perks</p><div class="sc-host"></div><a class="sc-shop" href="/diamond-bracelets.html">Shop bracelets</a></div>';
+      var ov=document.createElement('div'); ov.className='sc-overlay'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-label','Scratch to reveal your Christmas offer');
+      ov.innerHTML='<div class="sc-modal"><button type="button" class="sc-x" aria-label="Close">×</button><p class="sc-brand">STYLE OF LIFE</p><h2>Try your luck</h2><p class="sc-sub">Scratch below to reveal your Christmas offer</p><div class="sc-host"></div><a class="sc-shop" href="/diamond-bracelets.html">Shop bracelets</a></div>';
       document.body.appendChild(ov);
-      var c=build({}); ov.querySelector('.sc-host').appendChild(c); init(c);
+      var host=ov.querySelector('.sc-host');
+      function mount(o){ var c=build(o); host.appendChild(c); init(c); }
+      var fallback={wa:waLink('Hi, I unlocked 5% off on the website. Please confirm my price.')};
+      try{
+        fetch('/data/products.json').then(function(r){return r.json();}).then(function(list){
+          var p=null; for(var i=0;i<list.length;i++){ if(list[i].sku==='BRC18'){ p=list[i]; break; } }
+          var pr=p?parse(p.price):null;
+          if(!p||!pr){ mount(fallback); return; }
+          mount({price:pr, priceNote:'starting price, 5% off applied on WhatsApp', label:p.name, wa:waLink('Hi, I unlocked 5% off on the website. Bracelet: '+p.name+' (BRC18). Please confirm my price.')});
+        }).catch(function(){ mount(fallback); });
+      }catch(e){ mount(fallback); }
       function close(){ if(ov.parentNode) ov.parentNode.removeChild(ov); document.removeEventListener('keydown',key); }
       function key(e){ if(e.key==='Escape') close(); }
       ov.querySelector('.sc-x').addEventListener('click',close);

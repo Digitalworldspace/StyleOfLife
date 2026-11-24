@@ -921,3 +921,10 @@ nav.crumbs{display:flex; flex-wrap:wrap; justify-content:flex-start; align-items
 .sc-modal .scratch-card{margin:0 auto; text-align:left; max-width:none;}
 .sc-x{position:absolute; top:8px; right:12px; background:none; border:0; font-size:1.8rem; line-height:1; color:#14110D; cursor:pointer;}
 .sc-shop{display:inline-block; margin-top:14px; font-size:.9rem; color:#14110D; text-decoration:underline;}
+
+.scratch-card .sc-amt{margin:2px 0 0; font-size:1.25rem; color:#14110D;}
+.scratch-card .sc-amt s{color:#8a7f6a; font-size:.95rem; margin-right:6px;}
+.scratch-card .sc-amt b{font-family:'Bodoni Moda',serif; font-size:1.5rem;}
+.scratch-card .sc-amt small{display:block; font-size:.72rem; color:#6b604d;}
+.scratch-card .sc-for{font-size:.82rem; color:#6b604d;}
+.scratch-card .sc-claim{margin:0; font-size:.88rem; color:#3a342b;}
