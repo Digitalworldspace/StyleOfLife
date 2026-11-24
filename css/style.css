@@ -750,6 +750,19 @@ header nav{transition:padding .35s ease;} header.is-scrolled nav{padding-top:11p
   .hb-text .hero-proof{margin-top:14px;}
 }
 
+
+/* Desktop banner: photo on the right half at a sane crop (portrait photos were cut into a thin strip), headline on dark left half */
+@media(min-width:761px){
+  .hero-banner:has(.hb-slot.has){background:#14110D;}
+  .hb-slot.has{inset:0 0 0 auto; width:52%;}
+  .hb-slot img{object-position:50% 38%;}
+  .hb-slot.has::after{background:linear-gradient(90deg,#14110D 0%,rgba(20,17,13,0) 28%);}
+  .hero-banner:has(.hb-slot.has) .hb-overlay{justify-content:flex-start; text-align:left; padding-left:max(48px,calc((100vw - 1120px)/2));}
+  .hero-banner:has(.hb-slot.has) .hb-text{max-width:46%;}
+  .hero-banner:has(.hb-slot.has) .hb-text .hero-copy{margin-left:0;}
+  .hero-banner:has(.hb-slot.has) .hb-text .hero-ctas{justify-content:flex-start;}
+}
+
 /* Christmas touches (auto-hide after the date in data-xmas-until) */
 .xmas-strip{background:#14281E; color:#F4EBD6; border-top:1px solid rgba(231,210,169,.35); border-bottom:1px solid rgba(231,210,169,.35);}
 .xmas-in{max-width:1120px; margin:0 auto; padding:16px 24px; display:flex; align-items:center; gap:18px; flex-wrap:wrap; justify-content:center;}
