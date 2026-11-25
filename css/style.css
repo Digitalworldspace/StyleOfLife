@@ -928,3 +928,18 @@ nav.crumbs{display:flex; flex-wrap:wrap; justify-content:flex-start; align-items
 .scratch-card .sc-amt small{display:block; font-size:.72rem; color:#6b604d;}
 .scratch-card .sc-for{font-size:.82rem; color:#6b604d;}
 .scratch-card .sc-claim{margin:0; font-size:.88rem; color:#3a342b;}
+
+/* RND-20261125-3: product page order bar (mobile only, appears after the main buttons scroll away, hides near the footer) */
+.mb-prod{display:none;}
+@media(max-width:760px){
+  .mb-prod{display:flex; transform:translateY(110%); visibility:hidden; transition:transform .25s ease, visibility 0s linear .25s;}
+  .mb-prod.on{transform:none; visibility:visible; transition:transform .25s ease;}
+}
+@media(prefers-reduced-motion:reduce){ .mb-prod, .mb-prod.on{transition:none;} }
+/* RND-20261123-3: BRC18 gift card */
+.gift-card{display:flex; gap:22px; align-items:center; max-width:760px; margin:0 auto 26px; padding:16px; background:#FBF6EA; border:1px solid rgba(184,147,90,.45);}
+.gift-card .gc-img{flex:0 0 150px;} .gift-card .gc-img img{display:block; width:150px; height:150px; object-fit:cover;}
+.gc-body{flex:1; min-width:0;} .gc-kicker{font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:#96723C;}
+.gift-card h2{margin:4px 0 4px; font-size:1.2rem;} .gc-price{margin:0 0 4px; font-weight:600;} .gc-note{margin:0 0 12px; font-size:.88rem; color:var(--charcoal-soft); line-height:1.45;}
+.gc-btns{display:flex; flex-wrap:wrap; gap:10px;}
+@media(max-width:560px){ .gift-card{flex-direction:column; text-align:center; margin:0 16px 22px;} .gift-card .gc-img img{width:100%; height:auto; max-width:260px; margin:0 auto;} .gc-btns{justify-content:center;} }
