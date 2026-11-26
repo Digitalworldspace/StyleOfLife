@@ -46,7 +46,10 @@ async function loadData() {
   if (!products || !products.length) { products = JSON.parse(read('data/products.json')); console.log('Using data/products.json:', products.length); }
   return { products, images };
 }
+// HK-20261126-1: forbidden word guard. The words handmade / hand-made never go on the site; say made to order instead.
+const noHandmade = (t) => (typeof t === 'string' ? t.replace(/\bhand[- ]?made\b/gi, 'made to order') : t);
 function norm(p) {
+  p = { ...p, name: noHandmade(p.name), description: noHandmade(p.description), details: noHandmade(p.details), metal: noHandmade(p.metal), stone: noHandmade(p.stone) };
   return { id: p.id, category: p.category, type: p.type || 'photo', name: p.name, sku: p.sku, price: p.price, oldPrice: p.old_price || p.oldPrice,
     description: p.description, details: p.details, metal: p.metal, stone: p.stone, image: p.image_url || p.image, etsy: p.etsy_url || p.etsy,
     variants: Array.isArray(p.variants) ? p.variants : [], alt: p.alt || p.name,
@@ -246,7 +249,7 @@ const { products: all, images: siteImages } = await loadData();
 const ch = chrome();
 const LOOSE_SIZES = [['up to 0.80', '0.002'], ['0.80 – 0.90', '0.003'], ['0.90 – 1.00', '0.004'], ['1.00 – 1.10', '0.005'], ['1.10 – 1.15', '0.006'], ['1.15 – 1.20', '0.007'], ['1.20 – 1.25', '0.008'], ['1.25 – 1.30', '0.009'], ['1.30 – 1.35', '0.010'], ['1.35 – 1.40', '0.011'], ['1.40 – 1.45', '0.012'], ['1.45 – 1.50', '0.013'], ['1.50 – 1.55', '0.014'], ['1.55 – 1.60', '0.016'], ['1.60 – 1.70', '0.018'], ['1.70 – 1.80', '0.021'], ['1.80 – 1.90', '0.025'], ['1.90 – 2.00', '0.029'], ['2.00 – 2.10', '0.035'], ['2.10 – 2.20', '0.039'], ['2.20 – 2.30', '0.044'], ['2.30 – 2.40', '0.052'], ['2.40 – 2.50', '0.058'], ['2.50 – 2.60', '0.069'], ['2.60 – 2.70', '0.074'], ['2.70 – 2.80', '0.078'], ['2.80 – 2.90', '0.086'], ['2.90 – 3.00', '0.095'], ['3.00 – 3.10', '0.108'], ['3.10 – 3.20', '0.116'], ['3.20 – 3.30', '0.125'], ['3.30 – 3.40', '0.135'], ['3.40 – 3.50', '0.146'], ['3.50 – 3.60', '0.159'], ['3.60 – 3.70', '0.175'], ['3.80', '0.200'], ['4.10', '0.250'], ['4.50', '0.330'], ['4.80', '0.400'], ['5.20', '0.500'], ['5.80', '0.750'], ['6.50', '1.000']];  // [size mm, approx carat per stone] from the owner's sieve chart (2026-11-22)
 const isEnquiry = (p) => !lowPrice(p) && p.category === 'loose-diamonds';  // loose stones: no fixed price, enquire on WhatsApp
-const items = all.filter((p) => p.type !== 'video' && p.name && (lowPrice(p) || isEnquiry(p)));
+const items = all.filter((p) => p.type !== 'video' && p.name && (lowPrice(p) || isEnquiry(p))).map((p) => ({ ...p, name: noHandmade(p.name), description: noHandmade(p.description), details: noHandmade(p.details), metal: noHandmade(p.metal), stone: noHandmade(p.stone) }));
 const used = new Set();
 items.forEach((p) => { let s = pSlug(p), n = 2, b = s; while (used.has(s)) s = b + '-' + n++; used.add(s); p.slug = s; });
 
@@ -261,6 +264,7 @@ const ringGuide = (id) => `<details class="size-guide"${id ? ` id="${id}"` : ''}
 const chainGuide = () => `<details class="size-guide"><summary>Chain length guide</summary><p>16 in sits close at the collarbone, 18 in sits just below it. Message us if you would like a different length.</p></details>`;
 // RND-20261123-1 / RND-20261124-3: Christmas order-by text. The .xmas-until span hides itself from Dec 11 2026 (local time) by a date check; also delete it when it is stale.
 const XMAS_JS = `<script>(function(){if(new Date()>=new Date(2026,11,11)){[].forEach.call(document.querySelectorAll('.xmas-until'),function(e){e.style.display='none';});}})();</script>`;
+const faqItem = (q) => `<details${/Christmas/i.test(q[0]) ? ' class="xmas-until"' : ''}><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`;
 const xmasLine = () => `<p class="xmas-line">Made to order. <span class="xmas-until">Order by Dec 10 for Christmas.</span> Free tracked delivery. Gift box included.</p>${XMAS_JS}`;
 // RND-20261124-1: wrist size helper for bracelet pages
 const wristGuide = (name) => `<details class="size-guide wrist-guide"><summary>Find your wrist size</summary><ol><li>Wrap a soft tape or a strip of paper around your wrist.</li><li>Mark the spot where it meets.</li><li>Measure the length in inches.</li></ol><p>Add about half an inch for a comfortable fit. Not sure? Message us your wrist size and we will confirm.</p><a class="btn btn-whatsapp" href="${WA}?text=${encodeURIComponent('Hi, my wrist size is ___ inches. Bracelet: ' + name)}" target="_blank" rel="noopener">Send my wrist size</a></details>`;
@@ -277,11 +281,11 @@ for (const [key, cfg] of Object.entries(CATS)) {
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/jewelry.html">Jewelry</a> › <span>${esc(cfg.short)}</span></nav>
   <div class="section-head"><h1>${esc(cfg.label)}</h1></div>
   ${xmasLine()}
-  <div class="cat-intro">${cfg.intro.map((t) => `<p>${esc(t)}</p>`).join('')}</div>
+  <div class="cat-intro">${cfg.intro.map((t) => `<p${/^Christmas gift:/.test(t) ? ' class="xmas-until"' : ''}>${esc(t)}</p>`).join('')}</div>
   <div class="sgrid">${list.map(card).join('\n')}</div>
   ${key === 'rings' ? ringGuide('ring-size-guide') : ''}
   <div class="cat-more">${catNav(key)}</div>
-  <div class="cat-faq"><h2>${esc(cfg.short)} questions, answered</h2>${faq.map((q) => `<details><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`).join('')}</div>
+  <div class="cat-faq"><h2>${esc(cfg.short)} questions, answered</h2>${faq.map(faqItem).join('')}</div>${XMAS_JS}
 </section>`;
   const schema = [breadcrumbLd([['Home', '/'], ['Jewelry', '/jewelry.html'], [cfg.short, '/' + cfg.slug + '.html']]),
     { '@context': 'https://schema.org', '@type': 'CollectionPage', name: cfg.label, url: DOMAIN + '/' + cfg.slug + '.html', description: cfg.desc, isPartOf: { '@id': DOMAIN + '/#website' }, about: { '@id': DOMAIN + '/#store' } },
@@ -305,7 +309,7 @@ for (const p of items) {
   const desc = trim((p.description ? p.description.replace(/\.$/, '') + '. ' : '') + (lo ? `Made to order in 925 silver, 9K, 14K or 18K gold. From ${money(lo)}. Free worldwide delivery.` : 'Enquire on WhatsApp for today\'s price. Free worldwide delivery.'), 158);
   const title = trim(`${p.name} | ${catLabel} | Style Of Life`, 70);
   const related = items.filter((q) => q.category === p.category && q !== p).slice(0, 4);
-  const waText = encodeURIComponent(`Hi Style Of Life, I'm interested in ${p.name}${p.sku ? ' (SKU ' + p.sku + ')' : ''}.`);
+  const waText = encodeURIComponent(`Hi Style Of Life, I'm interested in ${p.name}${p.sku ? ' (SKU ' + p.sku + ')' : ''}.${p.category === 'bracelets' ? ' My wrist size is ___ inches.' : ''}`);
   const pfaq = productFaq(p, lo, hi);
   // RND-20261122-1: only lines that are true for this piece (certificate line only for SGL certified lab grown diamond pieces)
   const trustLines = [];
@@ -397,7 +401,7 @@ for (const f of ['index.html', 'jewelry.html', 'about.html']) {
     <p><b>Ring sizes.</b> Rings are made in your size and cannot be resized, so please send us your ring size before you order.</p>
     <p><b>Cancellations.</b> You can cancel free within 5 hours of placing your order.</p>
   </div>
-  <div class="cat-faq"><h2>Shipping and returns questions, answered</h2>${faq.map((q) => `<details><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`).join('')}</div>
+  <div class="cat-faq"><h2>Shipping and returns questions, answered</h2>${faq.map(faqItem).join('')}</div>${XMAS_JS}
 </section>`;
   const desc = 'Made to order in Surat, India. Ships in about 5–8 business days with free tracked worldwide delivery. No returns or exchanges on made-to-order pieces.';
   write('shipping-returns.html', page({ title: 'Shipping & Returns | Style Of Life', desc, urlPath: '/shipping-returns.html', image: siteOg, schema: [breadcrumbLd([['Home', '/'], ['Shipping & Returns', '/shipping-returns.html']]), faqLd(faq)], body, ch }));

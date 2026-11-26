@@ -139,6 +139,7 @@ window.SOL_startHero = function(items){
 (function(){
   try{
     var now = new Date(), on = false;
+    if(now >= new Date(2026,11,11)){ document.querySelectorAll('.xmas-until').forEach(function(el){ el.style.display = 'none'; }); } // HK-20261126-2: Dec 10 text hides itself from Dec 11
     document.querySelectorAll('[data-xmas-text-until]').forEach(function(el){
       var e2 = new Date(el.getAttribute('data-xmas-text-until') + 'T23:59:59');
       if(now > e2 && el.getAttribute('data-after')){ el.textContent = el.getAttribute('data-after'); }
