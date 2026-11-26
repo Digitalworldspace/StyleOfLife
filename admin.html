@@ -249,11 +249,11 @@
   "use strict";
   var CFG = window.SOL_CONFIG || {};
   var $ = function(id){ return document.getElementById(id); };
-  var DEFAULT_CATS = ['initial-necklaces','necklaces','custom-design','loose-diamonds','bracelets','rings','earrings','signature-pieces'];
+  var DEFAULT_CATS = ['initial-necklaces','necklaces','custom-design','loose-diamonds','bracelets','rings','earrings','nose-pins','signature-pieces'];
 
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function label(cat){
-    var k = {'initial-necklaces':'Initial Necklaces','custom-design':'Custom Design','loose-diamonds':'Loose Diamonds','necklaces':'Necklaces','bracelets':'Bracelets','rings':'Rings','earrings':'Earrings','signature-pieces':'Signature Pieces'};
+    var k = {'initial-necklaces':'Initial Necklaces','custom-design':'Custom Design','loose-diamonds':'Loose Diamonds','necklaces':'Necklaces','bracelets':'Bracelets','rings':'Rings','earrings':'Earrings','nose-pins':'Nose Pins','signature-pieces':'Signature Pieces'};
     return k[cat] || String(cat).replace(/[-_]/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
   }
   var toastT;

@@ -124,6 +124,20 @@ const CATS = {
       COMMON_FAQ_SHIP
     ]
   },
+  'nose-pins': {
+    slug: 'nose-pins', label: 'Nose Pins & Nose Studs', short: 'Nose Pins',
+    title: 'Gold & Moissanite Nose Pins, Nose Studs | Style Of Life',
+    desc: 'Dainty moissanite and plain metal nose studs and nose pins in 925 silver, 9K, 14K and 18K gold. Made to order in Surat. Free delivery worldwide.',
+    intro: [
+      'Small, light nose studs and nose pins for a healed nose piercing, made to order in 925 sterling silver, 9K, 14K or 18K gold in yellow, white or rose tone. Choose a sparkling moissanite stud or a plain spiral nose pin for everyday wear, weddings and gifts.',
+      'Prices shown are starting prices; open a nose pin to see the price for every metal. Every order ships with tracking, free to most destinations worldwide.'
+    ],
+    faq: [
+      ['Which metals can I choose?', '925 sterling silver, 9K gold, 14K gold and 18K gold, each in yellow, white or rose tone.'],
+      ['Are these for a healed piercing?', 'Yes. They are made for a healed nose piercing and are sold as a single piece. Message us on WhatsApp at +91 63529 25472 if you need a specific post.'],
+      COMMON_FAQ_SHIP
+    ]
+  },
   bracelets: {
     slug: 'diamond-bracelets', label: 'Diamond Tennis & Colorstone Bracelets', short: 'Bracelets',
     title: 'Diamond Tennis & Colorstone Bracelets | Style Of Life',
@@ -140,7 +154,7 @@ const CATS = {
     ]
   }
 };
-const CAT_LABEL = { rings: 'Rings', 'initial-necklaces': 'Initial Necklaces', necklaces: 'Necklaces', earrings: 'Earrings', bracelets: 'Bracelets', 'custom-design': 'Custom Design', 'loose-diamonds': 'Loose Diamonds', 'signature-pieces': 'Signature Pieces' };
+const CAT_LABEL = { rings: 'Rings', 'initial-necklaces': 'Initial Necklaces', necklaces: 'Necklaces', earrings: 'Earrings', bracelets: 'Bracelets', 'nose-pins': 'Nose Pins', 'custom-design': 'Custom Design', 'loose-diamonds': 'Loose Diamonds', 'signature-pieces': 'Signature Pieces' };
 
 // ---------- 3. shared page chrome (copied from jewelry.html so edits there carry over) ----------
 function chrome() {
@@ -494,7 +508,7 @@ write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="htt
 //  Prices come straight from the product data (lowest price across metals, same as the "From $" on each page); nothing is changed here.
 //  Every active product with a name, a price and a photo is included automatically (new products appear on the next nightly build). Unknown categories fall back to the general Jewelry category.
 const GCAT = { rings: 'Apparel & Accessories > Jewelry > Rings', 'initial-necklaces': 'Apparel & Accessories > Jewelry > Necklaces', necklaces: 'Apparel & Accessories > Jewelry > Necklaces',
-  earrings: 'Apparel & Accessories > Jewelry > Earrings', bracelets: 'Apparel & Accessories > Jewelry > Bracelets', 'signature-pieces': 'Apparel & Accessories > Jewelry' };
+  earrings: 'Apparel & Accessories > Jewelry > Earrings', bracelets: 'Apparel & Accessories > Jewelry > Bracelets', 'nose-pins': 'Apparel & Accessories > Jewelry > Body Jewelry', 'signature-pieces': 'Apparel & Accessories > Jewelry' };
 const GCAT_DEFAULT = 'Apparel & Accessories > Jewelry';
 const feedWords = (s) => String(s || '').replace(/hand-?made/gi, 'made to order');
 const feedItems = items.filter((p) => lowPrice(p) && p.image && /^https?:\/\//.test(p.image));

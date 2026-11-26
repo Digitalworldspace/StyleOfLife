@@ -6,9 +6,9 @@
   var HAS_DB = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY);
   var CAT_LABELS = {
     "initial-necklaces": "Initial Necklaces", "necklaces": "Necklaces", "custom-design": "Custom Design", "loose-diamonds": "Loose Diamonds",
-    "bracelets": "Bracelets", "rings": "Rings", "earrings": "Earrings", "signature-pieces": "Signature Pieces"
+    "bracelets": "Bracelets", "rings": "Rings", "earrings": "Earrings", "nose-pins": "Nose Pins", "signature-pieces": "Signature Pieces"
   };
-  var CAT_ORDER = ["initial-necklaces", "necklaces", "custom-design", "loose-diamonds", "bracelets", "rings", "earrings", "signature-pieces"];
+  var CAT_ORDER = ["initial-necklaces", "necklaces", "custom-design", "loose-diamonds", "bracelets", "rings", "earrings", "nose-pins", "signature-pieces"];
 
   function esc(s){
     return String(s==null?"":s).replace(/[&<>"']/g, function(c){
