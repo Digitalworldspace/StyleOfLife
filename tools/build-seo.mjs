@@ -238,6 +238,7 @@ function productFaq(p, lo, hi) {
   else faq.push(['How long does it take to make and deliver?', 'It is made to order in Surat, India, and is ready to ship in about 5–8 business days. Delivery is free worldwide with tracking.']);
   if (p.category === 'rings') faq.push(['Can I return, exchange or resize this ring?', 'No. Rings are made to order in your size, so there are no returns, exchanges or resizing. Please message us your ring size before ordering; custom sizes are welcome.']);
   if (['necklaces', 'initial-necklaces', 'earrings', 'bracelets'].includes(p.category)) faq.push([`Can I return or exchange the ${p.name}?`, 'Because each piece is made to order just for you, we do not accept returns or exchanges on necklaces, earrings or bracelets. Every detail is shown on this page, and you are always welcome to message us before ordering with any question or change request.']);
+  if (p.category === 'bracelets') faq.push([`How do I find the right wrist size for the ${p.name}?`, 'Wrap a soft tape or a strip of paper around your wrist just below the wrist bone, mark where it meets and measure in inches. Add about a quarter to half an inch for comfort, then message us your wrist size on WhatsApp before ordering and we will confirm the fit.']);
   faq.push(['How do I order?', `Message Style Of Life on WhatsApp at +91 63529 25472${p.etsy ? ', or use the Buy on Etsy button on this page; checkout and payment are handled securely by Etsy' : ''}. You can also ask for sizing help or a custom request before ordering.`]);
   return faq;
 }
