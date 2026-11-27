@@ -121,8 +121,11 @@
       priceHtml(p)+variantsHtml(p)+ctasHtml(p, true)+
       '<div class="card-more"><div class="card-more-in">'+more+'</div></div></div>';
   }
+  var slotN = 0;
   function slotHtml(p){
-    return '<div class="slot">' + (p.image ? '<img src="'+esc(p.image)+'" alt="'+esc(p.alt)+'" loading="lazy">' : '') + '</div>';
+    var n = slotN++;
+    var attrs = n === 0 ? ' fetchpriority="high"' : (n < 2 ? '' : ' loading="lazy"');
+    return '<div class="slot">' + (p.image ? '<img src="'+esc(p.image)+'" alt="'+esc(p.alt)+'"'+attrs+'>' : '') + '</div>';
   }
   function photoCard(p){
     return '<div class="card"><div class="card-art card-art-photo">'+slotHtml(p)+'</div>'+bodyHtml(p)+'</div>';

@@ -943,3 +943,5 @@ nav.crumbs{display:flex; flex-wrap:wrap; justify-content:flex-start; align-items
 .gift-card h2{margin:4px 0 4px; font-size:1.2rem;} .gc-price{margin:0 0 4px; font-weight:600;} .gc-note{margin:0 0 12px; font-size:.88rem; color:var(--charcoal-soft); line-height:1.45;}
 .gc-btns{display:flex; flex-wrap:wrap; gap:10px;}
 @media(max-width:560px){ .gift-card{flex-direction:column; text-align:center; margin:0 16px 22px;} .gift-card .gc-img img{width:100%; height:auto; max-width:260px; margin:0 auto;} .gc-btns{justify-content:center;} }
+
+.prod-thumbs .pt{aspect-ratio:1/1;}
