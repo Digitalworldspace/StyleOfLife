@@ -8,6 +8,6 @@
 // ---------------------------------------------------------------
 window.SOL_CONFIG = {
   SUPABASE_URL: "https://swxpigyeadtggjoocnfi.supabase.co",       // e.g. "https://abcdxyz.supabase.co"
-  PAYPAL_URL: "",   // owner: paste your PayPal.Me / payment link here (https://www.paypal.com/...)
+  PAYPAL_URL: "https://paypal.me/PrinceAkbari757",   // owner PayPal.Me link
   SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3eHBpZ3llYWR0Z2dqb29jbmZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NjM3MzYsImV4cCI6MjEwOTQzOTczNn0.k49xipszz1Cf9yw_ZYpycDX8ucNCEqphQXcivAqiNs0"   // e.g. "eyJhbGciOi..."
 };
