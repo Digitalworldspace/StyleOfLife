@@ -396,12 +396,27 @@ const giftCardHtml = (() => {
   const glo = lowPrice(g), img = [g.image, ...(g.images || [])].find(Boolean);
   if (!glo || !img) return '';
   const wa = `${WA}?text=${encodeURIComponent('Hi, I want the ' + g.name + ' (BRC18) as a Christmas gift')}`;
-  return `<section class="gift-card xmas-until" aria-label="Christmas gift pick"><a class="gc-img" href="/products/${g.slug}.html"><img src="${esc(img)}" alt="${esc(g.name)} BRC18" width="320" height="320" loading="lazy"></a><div class="gc-body"><span class="gc-kicker">Christmas gift pick</span><h2>${esc(g.name)}</h2><p class="gc-price">From ${money(glo)}</p><p class="gc-note">Made to order. Order by Dec 10 for Christmas. Free tracked delivery. Gift box included.</p><div class="gc-btns"><a class="btn btn-primary btn-sm" href="/products/${g.slug}.html">View bracelet</a><a class="btn btn-whatsapp btn-sm" href="${wa}" target="_blank" rel="noopener">Ask on WhatsApp</a></div></div></section>${XMAS_JS}`;
+  return `<section class="gift-card xmas-until" aria-label="Christmas gift pick"><a class="gc-img" href="/products/${g.slug}.html"><img src="${esc(img)}" alt="${esc(g.name)} BRC18" width="320" height="320" loading="lazy"></a><div class="gc-body"><span class="gc-kicker">Christmas gift pick</span><h2>${esc(g.name)}</h2><p class="gc-price">From ${money(glo)}</p><p class="gc-note">Made to order. Order by Dec 10 for Christmas. Free tracked delivery. Gift box included.</p><div class="gc-btns"><a class="btn btn-primary btn-sm" href="/products/${g.slug}.html">View bracelet</a><a class="btn btn-whatsapp btn-sm" href="${wa}" target="_blank" rel="noopener">Ask on WhatsApp</a></div><p class="gc-links"><a href="/diamond-bracelets.html">See all bracelets</a> <span aria-hidden="true">·</span> <a href="/guides/tennis-bracelet-gift-for-her.html">How to choose a tennis bracelet gift</a></p></div></section>${XMAS_JS}`;
 })();
 const catLinksHtml = catPages.length ? '<ul class="catlinks">' + catPages.map((c) => `<li><a href="/${c.cfg.slug}.html">${esc(c.cfg.label)}</a></li>`).join('') + '</ul>' : '';
+// RND-20261128-1: bracelets first, photo tiles (first product photo of each category, read from the data)
+const TILE_ORDER = ['bracelets', 'initial-necklaces', 'necklaces', 'earrings', 'rings', 'nose-pins'];
+const catTilesHtml = catPages.length ? '<ul class="cat-tiles">' + [...catPages].sort((a, b) => (TILE_ORDER.indexOf(a.key) + 1 || 99) - (TILE_ORDER.indexOf(b.key) + 1 || 99)).map((c) => {
+  const im = (c.list.find((p) => p.image) || {}).image;
+  return `<li><a href="/${c.cfg.slug}.html">${im ? `<img src="${esc(im)}" alt="${esc(c.cfg.label)}" width="300" height="300" loading="lazy">` : ''}<span>${esc(c.cfg.label)}</span></a></li>`;
+}).join('') + '</ul>' : '';
+// RND-20261128-3: bracelet starting price card, price read from the product data (never typed by hand)
+const braceletPriceHtml = (() => {
+  const lows = items.filter((p) => p.category === 'bracelets').map(lowPrice).filter(Boolean);
+  if (!lows.length) return '';
+  const lo = Math.min(...lows);
+  return `<div class="price-card"><h3>Bracelets</h3><span class="from">From</span><span class="amt">${money(lo)}</span><p>Diamond tennis and colorstone bracelets, made to order in 925 silver or gold.</p><a class="btn btn-primary btn-sm" href="/diamond-bracelets.html">View bracelets</a></div>`;
+})();
 for (const f of ['index.html', 'jewelry.html', 'about.html']) {
   let s = read(f);
   s = s.replace(/<!--CATLINKS-->/g, catLinksHtml);
+  if (catTilesHtml) s = s.replace(/<!--CATTILES-->[\s\S]*?<!--\/CATTILES-->/g, () => catTilesHtml);
+  s = s.replace(/<!--BRCPRICE-->/g, () => braceletPriceHtml);
   s = s.replace(/<!--GIFTCARD-->/g, giftCardHtml);
   if (siteOg && !/property="og:image"/.test(s)) s = s.replace('</head>', `<meta property="og:image" content="${esc(siteOg)}">\n<meta name="twitter:image" content="${esc(siteOg)}">\n</head>`);
   write(f, s);
