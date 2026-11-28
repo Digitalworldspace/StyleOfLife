@@ -338,9 +338,34 @@ for (const p of items) {
       ${bl.length ? `<h2>Details</h2><ul class="prod-list">${bl.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
       ${lo ? `<p class="prod-gift">Made to order, ready to ship in about 5–8 business days. Free tracked delivery. Gift box included. <span class="xmas-until">Order by Dec 10 for Christmas.</span></p>${XMAS_JS}` : ''}
       <div class="prod-cta">
+        <a class="btn btn-primary" href="#order-online">Order online</a>
         <a class="btn btn-whatsapp" href="${WA}?text=${waText}" target="_blank" rel="noopener">${lo ? 'Order on WhatsApp' : 'Enquire on WhatsApp'}</a>
-        ${p.etsy ? `<a class="btn btn-primary" href="${esc(p.etsy)}" target="_blank" rel="noopener">Buy on Etsy</a>` : ''}
+        ${p.etsy ? `<a class="btn btn-secondary" href="${esc(p.etsy)}" target="_blank" rel="noopener">Buy on Etsy</a>` : ''}
+        ${false ? `<a class="btn btn-primary" href="${esc(p.etsy)}" target="_blank" rel="noopener">Buy on Etsy</a>` : ''}
       </div>
+
+      <section class="order-box" id="order-online" aria-label="Order online">
+        <h2>Order online</h2>
+        <p class="of-intro">Send your order request. We confirm the details with you, then you pay securely with PayPal. Your details are used only to process your order.</p>
+        <form id="order-form" data-sku="${esc(p.sku || '')}" data-name="${esc(p.name)}" novalidate>
+          ${(p.variants || []).length ? `<label>Metal<select name="metal" required>${(p.variants || []).filter((v) => v.label).map((v) => `<option>${esc(v.label)}${v.price ? ' – ' + esc(v.price) : ''}</option>`).join('')}</select></label>` : ''}
+          <label>${p.category === 'rings' ? 'Ring size' : p.category === 'bracelets' ? 'Wrist size (inches)' : 'Size or length (if needed)'}<input name="size" maxlength="40" placeholder="${p.category === 'bracelets' ? 'for example 6.5' : ''}"></label>
+          <label>Your name<input name="name" required maxlength="120" autocomplete="name"></label>
+          <label>Email<input name="email" type="email" required maxlength="200" autocomplete="email"></label>
+          <label>WhatsApp number (optional)<input name="whatsapp" maxlength="40" autocomplete="tel"></label>
+          <label>Country<input name="country" required maxlength="80" autocomplete="country-name"></label>
+          <label>Delivery address (optional now, we can ask later)<textarea name="address" maxlength="500" rows="2"></textarea></label>
+          <label>Note (optional)<textarea name="note" maxlength="800" rows="2"></textarea></label>
+          <input class="of-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button class="btn btn-primary" type="submit">Send order request</button>
+          <p class="of-msg" role="status"></p>
+        </form>
+        <div id="order-done" hidden>
+          <p><b>Thank you, your order request is received.</b> We will check the details with you shortly. Made to order, free tracked delivery worldwide.</p>
+          <p><a id="order-paypal" class="btn btn-primary" href="#" target="_blank" rel="noopener" hidden>Pay with PayPal</a> <a id="order-wa" class="btn btn-whatsapp" data-base="${WA}" href="${WA}" target="_blank" rel="noopener">Message us on WhatsApp</a></p>
+        </div>
+      </section>
+      <script src="/js/config.js"></script><script src="/js/order.js" defer></script>
       <div class="mobile-bar mb-prod" id="mb-prod" aria-label="Order options"><a class="mb-wa" href="${WA}?text=${waText}" target="_blank" rel="noopener">${lo ? 'Order on WhatsApp' : 'Enquire on WhatsApp'}</a>${p.etsy ? `<a class="mb-etsy" href="${esc(p.etsy)}" target="_blank" rel="noopener">Buy on Etsy</a>` : ''}</div>
       <script>(function(){var b=document.getElementById('mb-prod'),c=document.querySelector('.prod-cta'),f=document.querySelector('footer');if(!b||!c)return;var t=false;function u(){t=false;var past=c.getBoundingClientRect().bottom<0,near=f&&f.getBoundingClientRect().top<window.innerHeight;b.classList.toggle('on',past&&!near);}function s(){if(!t){t=true;requestAnimationFrame(u);}}window.addEventListener('scroll',s,{passive:true});window.addEventListener('resize',s);u();})();</script>
       <p class="prod-note">${lo ? 'Made to order in Surat, India, and ready to ship in about 5–8 business days. Free delivery worldwide with tracking. Message us for sizing, custom requests or a private quote.' : 'Free delivery worldwide with tracking. Message us on WhatsApp for today\'s price and availability.'}</p>

@@ -945,3 +945,13 @@ nav.crumbs{display:flex; flex-wrap:wrap; justify-content:flex-start; align-items
 @media(max-width:560px){ .gift-card{flex-direction:column; text-align:center; margin:0 16px 22px;} .gift-card .gc-img img{width:100%; height:auto; max-width:260px; margin:0 auto;} .gc-btns{justify-content:center;} }
 
 .prod-thumbs .pt{aspect-ratio:1/1;}
+
+/* order online form */
+.order-box{margin:26px 0;padding:20px;border:1px solid #e3dccf;border-radius:14px;background:#fbf8f2}
+.order-box h2{margin:0 0 6px;font-size:1.25rem}
+.order-box .of-intro{margin:0 0 14px;font-size:.95rem;opacity:.85}
+.order-box label{display:block;margin:0 0 12px;font-size:.9rem;font-weight:600}
+.order-box input,.order-box select,.order-box textarea{display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid #cfc7b8;border-radius:8px;font:inherit;background:#fff;box-sizing:border-box}
+.order-box .of-hp{position:absolute;left:-9999px;height:0;width:0;opacity:0}
+.order-box .of-msg{min-height:1.2em;margin:10px 0 0;font-size:.9rem}
+.btn-secondary{background:transparent;color:inherit;border:1px solid #1b1b1b}
